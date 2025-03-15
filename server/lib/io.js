@@ -8,7 +8,7 @@ import fs from 'node:fs'
 /**
  * 简单文件类
  */
-class io {
+export default class io {
     /**
      * 构建函数
      * @param { String } path 
@@ -44,7 +44,7 @@ class io {
      * @param { Boolean } 是否搜索文件夹内的文件
      * @returns { String[] } 文件完整路径列表
      */
-    static listFiles(path, filter, recursive) {
+    static listFiles(path, { filter, recursive } = {}) {
         let a = fs.readdirSync(path, { recursive: recursive })
         a.forEach(function(v, index, arrayThis) {
             arrayThis[index] = `${path}//${v}`
@@ -59,11 +59,12 @@ class io {
     /**
      * 枚举目录下所有文件夹
      * @param { String } 扫描路径 
-     * @param { Function<String> } 过滤器<文件夹完整路径>
-     * @param { Boolean } 是否搜索文件夹内的文件夹
+     * @param { Object } 额外参数
+     * @param { Function<String> } [filter] 额外参数.过滤器<文件夹完整路径>
+     * @param { Boolean } [recursive] 额外参数.是否搜索文件夹内的文件夹
      * @returns { String[] } 文件夹完整路径列表
      */
-     static listFolders(path, filter, recursive) {
+     static listFolders(path, { filter, recursive } = {}) {
         let a = fs.readdirSync(path, { recursive: recursive })
         a.forEach(function(v, index, arrayThis) {
             arrayThis[index] = `${path}//${v}`
@@ -245,5 +246,3 @@ class io {
         delete this.w
     }
 }
-
-export default io

@@ -1,24 +1,31 @@
-class UserManager {
-    static findUserById(id) {
+import io from '../lib/io.js';
 
+const baseDir = 'whiteslik_data/user'
+
+export class UserManager {
+    static getUserProfileDir(id) {
+        return `${baseDir}/${id}`
+    }
+    static findUserById(id) {
+        let list = io.listFolders(baseDir)
+        console.log(list)
     }
     static findUserByName(name) {
-
+        
     }
 
     /**
      * 创建新用户
      * @param { Object } arg
      * @param { String } [arg.name] 用户名
-     * @param { String } [arg.name] 用户名
      * @returns { User }
      */
-    static createUser() {
-
+    static createUser({ name } = {}) {
+        
     }
 }
 
-class User {
+export class User {
     /** @type { Number } */
     id
     /** @type { String } */
@@ -29,14 +36,8 @@ class User {
     description
 }
 
-class UserApi {
+export class UserApi {
     static createUser() {
 
     }
-}
-
-export {
-    User,
-    UserManager,
-    UserApi
 }
