@@ -1,7 +1,7 @@
 import crypto from 'node:crypto'
 
 /**
- * 获取 Sha-256 哈希
+ * 获取 Sha-256 Hex 格式哈希
  * @param { crypto.BinaryLike } data 
  * @returns 
  */
