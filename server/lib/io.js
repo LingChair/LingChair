@@ -26,7 +26,7 @@ export default class io {
      */
     static open(path, mode) {
         if (!mode || mode == '')
-             throw new Error('当前文件对象未设置属性!')
+            throw new Error('当前文件对象未设置属性!')
         return new io(path, mode)
     }
     /**
@@ -40,41 +40,56 @@ export default class io {
     /**
      * 枚举目录下所有文件
      * @param { String } 扫描路径 
-     * @param { Function<String> } 过滤器<文件完整路径>
-     * @param { Boolean } 是否搜索文件夹内的文件
-     * @returns { String[] } 文件完整路径列表
+     * @param { Object } extra 额外参数
+     * @param { Function<String> } [extra.filter] 过滤器<文件路径>
+     * @param { Boolean } [extra.recursive] 是否搜索文件夹内的文件
+     * @param { Boolean } [extra.fullPath] 是否返回完整文件路径
+     * @returns { String[] } 文件路径列表
      */
-    static listFiles(path, { filter, recursive } = {}) {
+    static listFiles(path, { filter, recursive = false, fullPath = true } = {}) {
         let a = fs.readdirSync(path, { recursive: recursive })
-        a.forEach(function(v, index, arrayThis) {
+        a.forEach(function (v, index, arrayThis) {
             arrayThis[index] = `${path}//${v}`
         })
-        return a.filter(function(v) {
+
+        a = a.filter(function (v) {
             if (!fs.lstatSync(v).isFile()) return false
 
             if (filter) return filter(v)
             return true
         })
+        if (!fullPath)
+            a.forEach(function (v, index, arrayThis) {
+                arrayThis[index] = v.substring(v.lastIndexOf('/') + 1)
+            })
+        return a
     }
     /**
      * 枚举目录下所有文件夹
      * @param { String } 扫描路径 
-     * @param { Object } 额外参数
-     * @param { Function<String> } [filter] 额外参数.过滤器<文件夹完整路径>
-     * @param { Boolean } [recursive] 额外参数.是否搜索文件夹内的文件夹
-     * @returns { String[] } 文件夹完整路径列表
+     * @param { Object } extra 额外参数
+     * @param { Function<String> } [extra.filter] 过滤器<文件夹路径>
+     * @param { Boolean } [extra.recursive] 是否搜索文件夹内的文件夹
+     * @param { Boolean } [extra.fullPath] 是否返回完整文件路径
+     * @returns { String[] } 文件夹路径列表
      */
-     static listFolders(path, { filter, recursive } = {}) {
+    static listFolders(path, { filter, recursive = false, fullPath = true } = {}) {
         let a = fs.readdirSync(path, { recursive: recursive })
-        a.forEach(function(v, index, arrayThis) {
+        a.forEach(function (v, index, arrayThis) {
             arrayThis[index] = `${path}//${v}`
         })
-        return a.filter(function(v) {
+
+        a = a.filter(function (v) {
             if (!fs.lstatSync(v).isDirectory()) return false
 
             if (filter) return filter(v)
             return true
         })
+        if (!fullPath)
+            a.forEach(function (v, index, arrayThis) {
+                arrayThis[index] = v.substring(v.lastIndexOf('/') + 1)
+            })
+        return a
     }
     /**
      * 获取文件(夹)的全名
@@ -95,7 +110,7 @@ export default class io {
      * @param { String } path 
      * @returns { String } parentPath
      */
-     static getParent(path) {
+    static getParent(path) {
         return path.substring(0, path.lastIndexOf(this.getName(path)) - 1)
     }
     /**
@@ -105,10 +120,10 @@ export default class io {
      */
     static copyDir(from, to) {
         this.mkdirs(to)
-        this.listFiles(from).forEach(function(v) {
+        this.listFiles(from).forEach(function (v) {
             io.open(v, 'r').pipe(io.open(`${to}//${io.getName(v)}`, 'w')).close()
         })
-        this.listFolders(from).forEach(function(v) {
+        this.listFolders(from).forEach(function (v) {
             io.copyDir(v, `${to}//${io.getName(v)}`)
         })
     }
@@ -184,7 +199,7 @@ export default class io {
         let r
         if (this.r)
             r = this.readAll()
-        else 
+        else
             throw new Error('当前文件对象未设置可读!')
         this.close()
         return r
@@ -232,7 +247,7 @@ export default class io {
         let r
         if (this.r)
             r = JSON.parse(this.readAll().toString())
-        else 
+        else
             throw new Error('当前文件对象未设置可读!')
         this.close()
         return r
