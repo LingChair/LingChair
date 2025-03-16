@@ -1,17 +1,19 @@
 import io from '../lib/io.js';
 
 const baseDir = 'whiteslik_data/user'
+io.mkdirs(baseDir)
 
 export class UserManager {
     static getUserProfileDir(id) {
         return `${baseDir}/${id}`
     }
-    static findUserById(id) {
-        let list = io.listFolders(baseDir)
-        console.log(list)
+    static getUserById(id) {
+        return new User(id)
     }
-    static findUserByName(name) {
-        
+    static getUserByName(name) {
+        let list = io.listFolders(baseDir, {
+            fullPath: false,
+        })
     }
 
     /**
@@ -21,19 +23,78 @@ export class UserManager {
      * @returns { User }
      */
     static createUser({ name } = {}) {
-        
+        let idCountFile = io.open(`${baseDir}/idcount`, 'rw').checkExistsOrWrite('10000')
+        let idCount = parseInt(idCountFile.readAll())
+
+        io.mkdirs(`${baseDir}/${idCount}`)
+
+        idCount++
+        idCountFile.writeAll(idCount + '').close()
+        idCount--
+
+        let user = new User(idCount)
+        user.id = idCount
+        user.name = name
+        user.updateProfile()
+        return user
     }
 }
 
 export class User {
-    /** @type { Number } */
+    constructor(id) {
+        if (!io.exists(`${baseDir}/${id}`)) throw new Error(`用户 [id=${id}]不存在!`)
+
+        // 尽管所有的键都是 undefined 但是仍然是键哦
+        for (let k of Object.keys(this)) {
+            this[k] = io.open(`${baseDir}/${id}/${k}`, 'rw').checkExistsOrWrite('').readAllAndClose().toString()
+        }
+    }
+    updateProfile() {
+        // 尽管所有的键都是 undefined 但是仍然是键哦
+        for (let k of Object.keys(this)) {
+            io.open(`${baseDir}/${this.id}/${k}`, 'w').writeAll((this[k] || '') + '').close()
+        }
+        // 防止服务端错误修改此值 主要是都是属性了再搞特殊对待很麻烦的
+        io.open(`${baseDir}/${this.id}/id`, 'w').writeAll(this.id + '').close()
+    }
+    /**
+     * 设置头像
+     * @param { Buffer } data 头像数据
+     */
+    setAvatar(data) {
+        io.open(`${baseDir}/${this.id}/avatar`, 'w').writeAll(data).close()
+    }
+    /**获取头像
+     * @returns { Buffer } data 头像数据
+     */
+    getAvatar() {
+        return io.open(`${baseDir}/${this.id}/avatar`, 'r').readAllAndClose()
+    }
+    /** 
+     * 用户 ID
+     * @type { String }
+     */
     id
-    /** @type { String } */
+    /** 
+     * 用户名
+     * @type { String }
+     */
     name
-    /** @type { String } */
+    /** 
+     * 用户昵称
+     * @type { String }
+     */
     nick
-    /** @type { String } */
+    /** 
+     * 用户简介
+     * @type { String }
+     */
     description
+    /** 
+     * 密码(经过哈希处理)
+     * @type { String }
+     */
+    passwordHashed
 }
 
 export class UserApi {
