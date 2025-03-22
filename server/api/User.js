@@ -1,4 +1,5 @@
 import io from '../lib/io.js';
+import { CallbackMessage } from '../Types.js';
 
 const baseDir = 'whiteslik_data/user'
 io.mkdirs(baseDir)
@@ -97,8 +98,16 @@ export class User {
     passwordHashed
 }
 
-export class UserApi {
-    static createUser() {
-
-    }
+export const UserApi = {
+    API_NAME: 'UserApi',
+    /**
+     * @param { Object } arg 
+     * @returns { CallbackMessage }
+     */
+    ["createUser"]: (arg) => {
+        return {
+            msg: '🥰🥰🥰🥰🥰',
+            code: CallbackMessage.Code.OK,
+        }
+    },
 }
