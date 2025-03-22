@@ -10,6 +10,8 @@ const app = express()
 const httpApp = http.createServer(app)
 const io = new SocketIoServer(httpApp, {})
 
+app.use('/', express.static('client/'))
+
 const events = {}
 import { UserApi } from './api/User.js'
 
@@ -17,7 +19,8 @@ for (let i of [
     UserApi,
 ]) {
     for (let i2 of Object.keys(i)) {
-        events[i2] = i[i2]
+        if (i2 == 'API_NAME') continue
+        events[i.API_NAME + '.' + [i2]] = i[i2]
     }
 }
 
