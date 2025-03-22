@@ -25,11 +25,17 @@ io.on("connection", (socket) => {
     socket.on('the_white_silk',
         /** 
          * @param { TheWhiteSilkParams } params
-         * @param { Function<> } callback
+         * @param { Function } callback
          */
         (params, callback) => {
-            if ((params || callback) == null || typeof callback != Function) return;
-            (events[params.method] || (() => callback({mess})))(params.args)
+            if ((params || callback) == null || typeof callback != 'function') return;
+            
+            /** @type { CallbackMessage } */
+            let data = events[params.method] ? events[params.method](params.args) : {
+                msg: '找不到此方法',
+                code: CallbackMessage.Code.NOT_FOUND,
+            }
+            callback(data)
         }
     )
 })
