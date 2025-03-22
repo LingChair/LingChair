@@ -1,5 +1,5 @@
 import io from '../lib/io.js';
-
+import { sha256 } from '../lib/crypto.js'
 
 const baseDir = 'whiteslik_data/chat'
 io.mkdirs(baseDir)
@@ -12,14 +12,15 @@ export class ChatManager {
      * @returns { Chat } 
      */
     static getPrivateChat(a, b) {
-        let id = [
+        let id = sha256([
             a,
             b,
-        ].sort()
-        if (!io.exists(`${baseDir}/${id}`)) {
-            io.mkdirs(`${baseDir}/${id}`)
-
-        }
+        ].sort().join())
+        io.mkdirs(`${baseDir}/${id}`)
+        let chat = new Chat(id)
+        chat.id = id
+        chat.updateInfo()
+        return chat
     }
 }
 
