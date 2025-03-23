@@ -1,4 +1,5 @@
 import io from '../lib/io.js';
+import { sha256 } from '../lib/crypto.js'
 import { CallbackMessage } from '../Types.js';
 
 const baseDir = 'whiteslik_data/user'
@@ -92,7 +93,7 @@ export class User {
      */
     description
     /** 
-     * 密码(经过哈希处理)
+     * 密码(经过加盐哈希处理后的 哈希后的密码)
      * @type { String }
      */
     passwordHashed
@@ -101,13 +102,26 @@ export class User {
 export const UserApi = {
     API_NAME: 'UserApi',
     /**
-     * @param { Object } arg 
+     * 注册用户
+     * @param { Object } args 
+     * @param { String } args.name 用户名(必须, 注册后可以删除)
+     * @param { String } args.password 密码(哈希后)
      * @returns { CallbackMessage }
      */
-    ["createUser"]: (arg) => {
+    ["createUser"]: (args) => {
+        // TODO: 想办法解决账号注册的问题
+        // 思路之一: 扫名称 重复则不允许
+        // 思路之二: 邮箱制 但是无法多账号 以及其他遗留问题
+        // 长远思考
+        let user = UserManager.createUser({
+            name: args.name,
+        })
+        user.passwordHashed = sha256('我是盐 这个后面会给成配置文件来配置的喵~' + args.password)
+        user.updateProfile()
         return {
             msg: '🥰🥰🥰🥰🥰',
             code: CallbackMessage.Code.OK,
+            data: args,
         }
     },
 }
