@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN" class="mdui-theme-auto">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" />
+    <meta name="renderer" content="webkit" />
+
+    <!-- UI -->
+    <script src="https://unpkg.com/mdui@2/mdui.global.js">
+    </script>
+    <link rel="icon" href="icon.ico" />
+    <link rel="stylesheet" href="https://unpkg.com/mdui@2/mdui.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
+
+    <!-- Tools -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js">
+    </script>
+
+    <!-- Connection -->
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.7.5/dist/socket.io.min.js">
+    </script>
+
+    <title>登录到 铃之椅</title>
+
+    <link href="style-shared.css" rel="stylesheet" />
+
+    <script src="utils-shared.js">
+    </script>
+</head>
+
+<body style="display: flex; flex-direction: column;" id="app">
+    <div class="size-as-window"
+        style="margin-top: calc(var(--window-height) / 2 - 190px); margin-left: 30px; margin-right: 30px;">
+        <h2>登录到 铃之椅</h2>
+        <mdui-text-field label="账号" style="margin-top: 30px;">
+        </mdui-text-field>
+        <mdui-text-field label="密码" type="password" toggle-password="toggle-password" style="margin-top: 30px;">
+        </mdui-text-field>
+        <div style="margin-top: 30px; display: flex; justify-content: center; margin-left: 40px; margin-right: 40px;">
+            <mdui-button class="fill-width">登录账号</mdui-button>
+            <div style="margin: 5px">
+            </div>
+            <mdui-button class="fill-width">注册账号</mdui-button>
+            <div style="margin: 5px">
+            </div>
+            <mdui-button class="fill-width">游客登录</mdui-button>
+        </div>
+    </div>
+    <span style="position: fixed; bottom: 10px; width: 100%; text-align: center;">©2024 满月叶</span>
+
+    <script src="ui-controller-shared.js">
+    </script>
+    <script src="client-side.js">
+    </script>
+
+    <script src="global-appconfig.js">
+    </script>
+</body>
+
+</html>
