@@ -2,7 +2,7 @@ import io from '../lib/io.js';
 import { sha256 } from '../lib/crypto.js'
 import { CallbackMessage } from '../Types.js';
 
-const baseDir = 'whiteslik_data/user'
+const baseDir = 'whitesilk_data/user'
 io.mkdirs(baseDir)
 
 export class UserManager {

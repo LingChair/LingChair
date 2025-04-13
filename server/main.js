@@ -8,9 +8,13 @@ import { TheWhiteSilkParams, CallbackMessage } from './Types.js'
 
 const app = express()
 const httpApp = http.createServer(app)
-const io = new SocketIoServer(httpApp, {})
+const sio = new SocketIoServer(httpApp, {})
 
-app.use('/', express.static('client/'))
+// 编译前端代码
+import io from './lib/io.js'
+io.copyDir('./client/', './whitesilk_data/page_builded/')
+await import('./build.js').then(a => a.default('whitesilk_data/page_builded/'))
+app.use('/', express.static('whitesilk_data/page_builded/'))
 
 const events = {}
 import { UserApi } from './api/User.js'
@@ -24,7 +28,7 @@ for (let i of [
     }
 }
 
-io.on("connection", (socket) => {
+sio.on("connection", (socket) => {
     socket.on('the_white_silk',
         /** 
          * @param { TheWhiteSilkParams } params

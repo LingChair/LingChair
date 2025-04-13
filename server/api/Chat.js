@@ -1,7 +1,7 @@
 import io from '../lib/io.js';
 import { sha256 } from '../lib/crypto.js'
 
-const baseDir = 'whiteslik_data/chat'
+const baseDir = 'whitesilk_data/chat'
 io.mkdirs(baseDir)
 
 export class ChatManager {
