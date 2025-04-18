@@ -31,6 +31,13 @@
     <script type="module">
         import App from './ui/App.js'
         ReactDOM.createRoot(document.getElementById('app')).render(React.createElement(App, null))
+        
+        let onResize = () => {
+            document.body.style.setProperty('--whitesilk-widget-message-maxwidth', mdui.breakpoint().down('md') ? "80%" : "70%")
+        }
+        window.addEventListener('resize', onResize)
+        onResize()
+        
     </script>
 </body>
 
