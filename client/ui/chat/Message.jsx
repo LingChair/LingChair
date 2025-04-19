@@ -5,10 +5,10 @@ import Avatar from "../Avatar.js"
  * @param { Object } param
  * @param { "left" | "right" } [param.direction="left"] 消息方向
  * @param { String } [param.avatar] 头像链接
- * @param { String } [param.nickname] 昵称
+ * @param { String } [param.nickName] 昵称
  * @returns { React.JSX.Element }
  */
-export default function Message({ direction = 'left', avatar, nickname, children, ...props } = {}) {
+export default function Message({ direction = 'left', avatar, nickName, children, ...props } = {}) {
     let isAtRight = direction == 'right'
     return (
         <div
@@ -32,7 +32,7 @@ export default function Message({ direction = 'left', avatar, nickname, children
                             alignSelf: "center",
                             fontSize: "90%"
                         }}>
-                        {nickname}
+                        {nickName}
                     </span>
                 }
                 {
@@ -40,7 +40,7 @@ export default function Message({ direction = 'left', avatar, nickname, children
                 }
                 <Avatar
                     src={avatar}
-                    text={nickname}
+                    text={nickName}
                     style={{
                         width: "43px",
                         height: "43px",
@@ -53,7 +53,7 @@ export default function Message({ direction = 'left', avatar, nickname, children
                             alignSelf: "center",
                             fontSize: "90%"
                         }}>
-                        {nickname}
+                        {nickName}
                     </span>
                 }
             </div>
