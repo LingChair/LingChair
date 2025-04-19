@@ -2,7 +2,7 @@
  * 消息容器
  * @returns { React.JSX.Element }
  */
-export default function MessageContainer({ children, ...props } = {}) {
+export default function MessageContainer({ children, style, ...props } = {}) {
     return (
         <div style={{
             display: 'flex',
@@ -10,7 +10,8 @@ export default function MessageContainer({ children, ...props } = {}) {
             justifyContent: 'flex-end',
             alignItems: 'center',
             paddingTop: '10px',
-            paddingBottom: '14px'
+            paddingBottom: '14px',
+            ...style,
         }}
         {...props}>
             {children}

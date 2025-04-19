@@ -1,6 +1,8 @@
 import Message from "./chat/Message.js"
 import MessageContainer from "./chat/MessageContainer.js"
+import ContactsListItem from "./main/ContactsListItem.js"
 import RecentsListItem from "./main/RecentsListItem.js"
+import useEventListener from './useEventListener.js'
 
 export default function App() {
     const [recentsList, setRecentsList] = React.useState([
@@ -15,15 +17,85 @@ export default function App() {
             avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
             nickName: "Maya Fey",
             content: "我是绫里真宵, 是一名灵媒师~"
-        }
+        },
+        {
+            userId: 0,
+            avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
+            nickName: "麻油衣酱",
+            content: "成步堂君, 我又坐牢了（"
+        },
+        {
+            userId: 0,
+            avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
+            nickName: "Maya Fey",
+            content: "我是绫里真宵, 是一名灵媒师~"
+        },
+        {
+            userId: 0,
+            avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
+            nickName: "麻油衣酱",
+            content: "成步堂君, 我又坐牢了（"
+        },
+        {
+            userId: 0,
+            avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
+            nickName: "Maya Fey",
+            content: "我是绫里真宵, 是一名灵媒师~"
+        },
+        {
+            userId: 0,
+            avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
+            nickName: "麻油衣酱",
+            content: "成步堂君, 我又坐牢了（"
+        },
+        {
+            userId: 0,
+            avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
+            nickName: "Maya Fey",
+            content: "我是绫里真宵, 是一名灵媒师~"
+        },
+        {
+            userId: 0,
+            avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
+            nickName: "麻油衣酱",
+            content: "成步堂君, 我又坐牢了（"
+        },
+        {
+            userId: 0,
+            avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
+            nickName: "Maya Fey",
+            content: "我是绫里真宵, 是一名灵媒师~"
+        },
     ])
-    const [contactsList, setContactsList] = React.useState([])
+    const [contactsMap, setContactsMap] = React.useState({
+        默认分组: [
+            {
+                userId: 0,
+                avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
+                nickName: "麻油衣酱",
+            },
+            {
+                userId: 0,
+                avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
+                nickName: "Maya Fey",
+            }
+        ],
+    })
+    const [navigationItemSelected, setNavigationItemSelected] = React.useState('Recents')
+
+    const navigationRailRef = React.useRef(null)
+    useEventListener(navigationRailRef, 'change', (event) => {
+        setNavigationItemSelected(event.target.value)
+    })
 
     return (
         <div style={{
             display: "flex",
+            position: 'relative',
+            width: 'calc(var(--whitesilk-window-width) - 80px)',
+            height: 'var(--whitesilk-window-height)',
         }}>
-            <mdui-navigation-rail contained value="Recents">
+            <mdui-navigation-rail contained value="Recents" ref={navigationRailRef}>
                 <mdui-button-icon icon="menu" slot="top"></mdui-button-icon>
 
                 <mdui-navigation-rail-item icon="watch_later--outlined" value="Recents"></mdui-navigation-rail-item>
@@ -33,24 +105,39 @@ export default function App() {
             </mdui-navigation-rail>
             {
                 // 侧边列表
-                // 囊括内容: 最近, 联系人
-                // 最近 对应 聊天页面
-                // 联系人 对应 ???
             }
             <mdui-list style={{
-                width: "22.4%"
+                width: "35%",
+                overflowY: 'auto',
+                paddingRight: '10px'
             }}>
                 {
-                    recentsList.map((v) =>
-                        <RecentsListItem
-                            title={v.nickName}
-                            avatar={v.avatar}
-                            content={v.content} />
-                    )
+                    navigationItemSelected == "Recents" ?
+                        // 最近聊天
+                        recentsList.map((v) =>
+                            <RecentsListItem
+                                nickName={v.nickName}
+                                avatar={v.avatar}
+                                content={v.content} />
+                        ) :
+                        // 联系人列表
+                        Object.keys(contactsMap).map((v) =>
+                            <>
+                                <mdui-list-subheader>{v}</mdui-list-subheader>
+                                {
+                                    contactsMap[v].map((v2) =>
+                                        <ContactsListItem
+                                            nickName={v2.nickName}
+                                            avatar={v2.avatar} />
+                                    )
+                                }
+                            </>
+                        )
                 }
             </mdui-list>
             <div style={{
-                height: '100%',
+                height: 'calc(var(--whitesilk-window-height) - 16px)',
+                marginRight: '10px',
             }}>
                 <mdui-divider vertical></mdui-divider>
             </div>
@@ -59,6 +146,7 @@ export default function App() {
             }
             <div style={{
                 width: '100%',
+                height: '100%',
             }}>
                 <mdui-top-app-bar style={{
                     position: 'relative',
@@ -67,7 +155,43 @@ export default function App() {
                     <mdui-top-app-bar-title>Title</mdui-top-app-bar-title>
                     <mdui-button-icon icon="more_vert"></mdui-button-icon>
                 </mdui-top-app-bar>
-                <MessageContainer>
+                <MessageContainer style={{
+                    overflowY: 'auto',
+                    height: '100%',
+                }}>
+                    <Message
+                        nickName="Fey"
+                        avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
+                        Test
+                    </Message>
+                    <Message
+                        direction="right"
+                        nickName="Fey"
+                        avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
+                        Test
+                    </Message>
+                    <Message
+                        nickName="Fey"
+                        avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
+                        Test
+                    </Message>
+                    <Message
+                        direction="right"
+                        nickName="Fey"
+                        avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
+                        Test
+                    </Message>
+                    <Message
+                        nickName="Fey"
+                        avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
+                        Test
+                    </Message>
+                    <Message
+                        direction="right"
+                        nickName="Fey"
+                        avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
+                        Test
+                    </Message>
                     <Message
                         nickName="Fey"
                         avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
