@@ -102,12 +102,6 @@
         }
         window.addEventListener('resize', onResize)
         onResize()
-
-        function shadowInnerInit(event) {
-            let v = event.currentTarget
-            $(v.parentElement.shadowRoot).append(v.children)
-            v.parentNode.removeChild(v)
-        }
     </script>
 </body>
 
