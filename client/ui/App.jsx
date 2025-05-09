@@ -80,6 +80,18 @@ export default function App() {
                 nickName: "Maya Fey",
             }
         ],
+        测试分组114514: [
+            {
+                userId: 0,
+                avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
+                nickName: "麻油衣酱",
+            },
+            {
+                userId: 0,
+                avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
+                nickName: "Maya Fey",
+            }
+        ],
     })
     const [navigationItemSelected, setNavigationItemSelected] = React.useState('Recents')
 
@@ -95,6 +107,10 @@ export default function App() {
             width: 'calc(var(--whitesilk-window-width) - 80px)',
             height: 'var(--whitesilk-window-height)',
         }}>
+            {
+                // 移动端用 页面调试
+                (new URL(location.href).searchParams.get('debug') == 'true') && <script src="https://unpkg.com/eruda/eruda.js"></script>
+            }
             <mdui-navigation-rail contained value="Recents" ref={navigationRailRef}>
                 <mdui-button-icon icon="menu" slot="top"></mdui-button-icon>
 
@@ -106,21 +122,33 @@ export default function App() {
             {
                 // 侧边列表
             }
-            <mdui-list style={{
-                width: "35%",
-                overflowY: 'auto',
-                paddingRight: '10px'
-            }}>
-                {
-                    navigationItemSelected == "Recents" ?
-                        // 最近聊天
+            {
+                // 最近聊天
+                (navigationItemSelected == "Recents") &&
+                <mdui-list style={{
+                    width: "35%",
+                    overflowY: 'auto',
+                    paddingRight: '10px'
+                }}>
+                    {
                         recentsList.map((v) =>
                             <RecentsListItem
                                 nickName={v.nickName}
                                 avatar={v.avatar}
                                 content={v.content} />
-                        ) :
-                        // 联系人列表
+                        )
+                    }
+                </mdui-list>
+            }
+            {
+                // 联系人列表
+                (navigationItemSelected == "Contacts") &&
+                <mdui-list style={{
+                    width: "35%",
+                    overflowY: 'auto',
+                    paddingRight: '10px'
+                }}>
+                    {
                         Object.keys(contactsMap).map((v) =>
                             <>
                                 <mdui-list-subheader>{v}</mdui-list-subheader>
@@ -133,8 +161,12 @@ export default function App() {
                                 }
                             </>
                         )
-                }
-            </mdui-list>
+                    }
+                </mdui-list>
+            }
+            {
+                // 分割线
+            }
             <div style={{
                 height: 'calc(var(--whitesilk-window-height) - 16px)',
                 marginRight: '10px',
@@ -147,65 +179,68 @@ export default function App() {
             <div style={{
                 width: '100%',
                 height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                overflowY: 'auto',
             }}>
                 <mdui-top-app-bar style={{
-                    position: 'relative',
+                    position: 'sticky',
                 }}>
                     <mdui-button-icon icon="menu"></mdui-button-icon>
                     <mdui-top-app-bar-title>Title</mdui-top-app-bar-title>
                     <mdui-button-icon icon="more_vert"></mdui-button-icon>
                 </mdui-top-app-bar>
-                <MessageContainer style={{
-                    overflowY: 'auto',
-                    height: '100%',
-                }}>
-                    <Message
-                        nickName="Fey"
-                        avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
-                        Test
-                    </Message>
-                    <Message
-                        direction="right"
-                        nickName="Fey"
-                        avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
-                        Test
-                    </Message>
-                    <Message
-                        nickName="Fey"
-                        avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
-                        Test
-                    </Message>
-                    <Message
-                        direction="right"
-                        nickName="Fey"
-                        avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
-                        Test
-                    </Message>
-                    <Message
-                        nickName="Fey"
-                        avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
-                        Test
-                    </Message>
-                    <Message
-                        direction="right"
-                        nickName="Fey"
-                        avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
-                        Test
-                    </Message>
-                    <Message
-                        nickName="Fey"
-                        avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
-                        Test
-                    </Message>
-                    <Message
-                        direction="right"
-                        nickName="Fey"
-                        avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
-                        Test
-                    </Message>
-                </MessageContainer>
+                <div>
+                    <MessageContainer style={{
+                        height: '100%',
+                    }}>
+                        <Message
+                            nickName="Fey"
+                            avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
+                            Test
+                        </Message>
+                        <Message
+                            direction="right"
+                            nickName="Fey"
+                            avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
+                            Test
+                        </Message>
+                        <Message
+                            nickName="Fey"
+                            avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
+                            Test
+                        </Message>
+                        <Message
+                            direction="right"
+                            nickName="Fey"
+                            avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
+                            Test
+                        </Message>
+                        <Message
+                            nickName="Fey"
+                            avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
+                            Test
+                        </Message>
+                        <Message
+                            direction="right"
+                            nickName="Fey"
+                            avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
+                            Test
+                        </Message>
+                        <Message
+                            nickName="Fey"
+                            avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
+                            Test
+                        </Message>
+                        <Message
+                            direction="right"
+                            nickName="Fey"
+                            avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
+                            Test
+                        </Message>
+                    </MessageContainer>
+                </div>
             </div>
-
-        </div >
+        </div>
     )
 }
