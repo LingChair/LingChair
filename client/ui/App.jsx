@@ -3,6 +3,7 @@ import MessageContainer from "./chat/MessageContainer.js"
 import ContactsListItem from "./main/ContactsListItem.js"
 import RecentsListItem from "./main/RecentsListItem.js"
 import useEventListener from './useEventListener.js'
+import ShadowInner from './ShadowInner.js'
 
 export default function App() {
     const [recentsList, setRecentsList] = React.useState([
@@ -168,7 +169,8 @@ export default function App() {
                 // 分割线
             }
             <div style={{
-                height: 'calc(var(--whitesilk-window-height) - 16px)',
+                // 我们删除了 body 的padding 因此不需要再 calc 了
+                height: 'var(--whitesilk-window-height)',
                 marginRight: '10px',
             }}>
                 <mdui-divider vertical></mdui-divider>
@@ -193,6 +195,7 @@ export default function App() {
                 <div>
                     <MessageContainer style={{
                         height: '100%',
+                        paddingBottom: '20px',
                     }}>
                         <Message
                             nickName="Fey"
@@ -239,6 +242,40 @@ export default function App() {
                             Test
                         </Message>
                     </MessageContainer>
+                    {
+                        // 输入框
+                    }
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        paddingBottom: '0.1rem',
+                        paddingTop: '0.1rem',
+                        height: '4rem',
+                        position: 'sticky',
+                        bottom: '0',
+                        backgroundColor: 'rgb(var(--mdui-color-background))',
+                    }}>
+                        <mdui-text-field variant="outlined" placeholder="喵呜~">
+                            <mdui-button-icon slot="end-icon" icon="more_vert"></mdui-button-icon>
+                        </mdui-text-field>
+                        <mdui-button-icon icon="send" style={{
+                            marginTop: '0.75rem',
+                            marginBottom: '0.75rem',
+                            marginLeft: '0.75rem',
+                            marginRight: '0.4rem',
+                        }}></mdui-button-icon>
+                    </div>
+                    {/* <mdui-top-app-bar style={{
+                        position: 'sticky',
+                        bottom: '0',
+                    }}>
+                        <mdui-button-icon icon="menu"></mdui-button-icon>
+                        <mdui-top-app-bar-title>Title</mdui-top-app-bar-title>
+                        <div style={{
+                            flexGrow: 1,
+                        }}></div>
+                        <mdui-button-icon icon="more_vert"></mdui-button-icon>
+                    </mdui-top-app-bar> */}
                 </div>
             </div>
         </div>
