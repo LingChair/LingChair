@@ -3,7 +3,6 @@ import MessageContainer from "./chat/MessageContainer.js"
 import ContactsListItem from "./main/ContactsListItem.js"
 import RecentsListItem from "./main/RecentsListItem.js"
 import useEventListener from './useEventListener.js'
-import ShadowInner from './ShadowInner.js'
 
 export default function App() {
     const [recentsList, setRecentsList] = React.useState([
@@ -110,7 +109,8 @@ export default function App() {
         }}>
             {
                 // 移动端用 页面调试
-                (new URL(location.href).searchParams.get('debug') == 'true') && <script src="https://unpkg.com/eruda/eruda.js"></script>
+                // 換個地方弄
+                // (new URL(location.href).searchParams.get('debug') == 'true') && <script src="https://unpkg.com/eruda/eruda.js"></script>
             }
             <mdui-navigation-rail contained value="Recents" ref={navigationRailRef}>
                 <mdui-button-icon icon="menu" slot="top"></mdui-button-icon>
@@ -255,14 +255,14 @@ export default function App() {
                         bottom: '0',
                         backgroundColor: 'rgb(var(--mdui-color-background))',
                     }}>
-                        <mdui-text-field variant="outlined" placeholder="喵呜~">
-                            <mdui-button-icon slot="end-icon" icon="more_vert"></mdui-button-icon>
-                        </mdui-text-field>
+                        <mdui-text-field variant="outlined" placeholder="喵呜~" style={{
+                            marginRight: '10px',
+                        }}></mdui-text-field>
+                        <mdui-button-icon slot="end-icon" icon="more_vert" style={{
+                            marginRight: '6px',
+                        }}></mdui-button-icon>
                         <mdui-button-icon icon="send" style={{
-                            marginTop: '0.75rem',
-                            marginBottom: '0.75rem',
-                            marginLeft: '0.75rem',
-                            marginRight: '0.4rem',
+                            marginRight: '7px',
                         }}></mdui-button-icon>
                     </div>
                     {/* <mdui-top-app-bar style={{
