@@ -1,0 +1,20 @@
+{
+    // 導入包
+    "imports": {
+        // API & Web
+        "express": "npm:express@^4.21.2",
+        "socket.io": "npm:socket.io@^4.8.1",
+        // Database
+        "sequelize": "npm:sequelize@^6.37.7",
+        "sqlite3": "npm:sqlite3@^5.1.7",
+        // Front-end Compiling
+        "@babel/core": "npm:@babel/core@^7.26.10",
+        "@babel/preset-env": "npm:@babel/preset-env@^7.26.9",
+        "@babel/preset-react": "npm:@babel/preset-react@^7.26.3",
+        "babel-minify": "npm:babel-minify@^0.5.2"
+    },
+    "tasks": {
+        // 編譯前端頁面
+        "compile-webpage": "deno run --allow-read --allow-write --allow-import --allow-env ./compile-webpage.ts"
+    }
+}

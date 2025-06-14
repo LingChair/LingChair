@@ -1,7 +1,8 @@
+// @ts-types="npm:@types/babel__core"
 import babel from '@babel/core'
 import io from './lib/io.js'
 
-function compileJs(path) {
+function compileJs(path: string) {
     babel.transformFileAsync(path, {
         presets: [
             [
@@ -22,13 +23,14 @@ function compileJs(path) {
         },
         sourceMaps: true,
     }).then(function (result) {
+        if (result == null) throw new Error('result == null')
         io.open(path, 'w').writeAll(result.code + '\n' + `//@ sourceMappingURL=${io.getName(path)}.map`).close()
         io.open(path + '.map', 'w').writeAll(JSON.stringify(result.map)).close()
         console.log(`Compile js: ${path}`)
     })
 }
 
-export default function (path) {
+export default function (path: string) {
     io.listFiles(path, {
         recursive: true,
         fullPath: true,

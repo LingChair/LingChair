@@ -1,4 +1,5 @@
 {
-    "html.customData": ["./.vscode/mdui/html-data.zh-cn.json"],
-    "css.customData": ["./.vscode/mdui/css-data.zh-cn.json"],
-  }
+    "deno.enable": true,
+    "deno.lint": true,
+    "deno.unstable": false
+}
