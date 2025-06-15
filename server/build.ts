@@ -38,7 +38,7 @@ export default function (path: string) {
         if (v.endsWith('.js'))
             compileJs(v)
         else if (v.endsWith('.jsx')) {
-            let v2 = `${io.getParent(v)}//${io.getName(v).replace(/\.jsx/, '.js')}`
+            const v2 = `${io.getParent(v)}//${io.getName(v).replace(/\.jsx/, '.js')}`
             io.move(v, v2)
             compileJs(v2)
         }
