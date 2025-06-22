@@ -6,7 +6,7 @@ export default class Config {
             io.mkdirs(Config.dirs[key])
         }
     }
-    static BASE_DIR = 'whitesilk'
+    static BASE_DIR = 'whitesilk_data'
     static dirs : { [key: string]: string } = {
         WEB_PAGE_DIR: this.BASE_DIR + '/_webpage'
     }
