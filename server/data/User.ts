@@ -1,5 +1,5 @@
 // @ts-types="npm:sequelize"
-import { Sequelize, Op, Model, DataTypes } from 'sequelize'
+import { Sequelize, Model, DataTypes } from 'sequelize'
 
 export default class User extends Model {
     declare created_id: number 
@@ -9,7 +9,19 @@ export default class User extends Model {
                 type: DataTypes.INTEGER.UNSIGNED,
                 autoIncrement: true,
                 primaryKey: true,
-            }
+            },
+            user_name: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+            nick_name: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+            avatar: {
+                type: DataTypes.BLOB,
+            },
+            
         }, {
             sequelize: sequelize,
             tableName: name,

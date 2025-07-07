@@ -1,5 +1,5 @@
 // @ts-types="npm:sequelize"
-import { Sequelize, Op, Model, DataTypes } from 'sequelize'
+import { Sequelize } from 'sequelize'
 import Config from "../config.ts"
 import User from "./User.ts";
 
