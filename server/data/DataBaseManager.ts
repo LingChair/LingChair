@@ -1,10 +1,7 @@
-// @ts-types="npm:sequelize"
-import { Sequelize, Op, Model, DataTypes } from 'sequelize'
 import Config from "../config.ts"
 import User from "./User.ts";
 
 abstract class BaseDataManager {
-    declare sequelize: Sequelize
     declare name: string
     constructor(name: string) {
         this.init(name)
@@ -12,10 +9,7 @@ abstract class BaseDataManager {
     }
     private init(name: string) {
         this.name = name
-        this.sequelize = new Sequelize({
-            dialect: 'sqlite',
-            storage: Config.dirs.DATABASES_DIR + '/' + name + '.db'
-        })
+        
     }
     abstract onInit(): void
 }
@@ -23,7 +17,7 @@ abstract class BaseDataManager {
 class UserDataManager extends BaseDataManager {
     static SINGLE_INSTANCE = new UserDataManager('users')
     override onInit(): void {
-        User.initTable(this.sequelize, this.name)
+        
     }
 }
 
