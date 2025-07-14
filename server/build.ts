@@ -11,11 +11,7 @@ function compileJs(path: string) {
                 },
             ],
             "@babel/preset-react",
-            [
-                "minify", {
-
-                }
-            ],
+            // "minify",
         ],
         targets: {
             chrome: "53",

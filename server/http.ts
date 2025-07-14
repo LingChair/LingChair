@@ -41,4 +41,8 @@ sio.on("connection", (socket) => {
     })
 })
 
-httpApp.listen(80)
+export {
+    app as expressApp,
+    httpApp as httpServer,
+    sio as SocketIoServer,
+}

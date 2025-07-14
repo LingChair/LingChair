@@ -10,11 +10,12 @@
         // Front-end Compiling
         "@babel/core": "npm:@babel/core@^7.26.10",
         "@babel/preset-env": "npm:@babel/preset-env@^7.26.9",
-        "@babel/preset-react": "npm:@babel/preset-react@^7.26.3",
-        "babel-minify": "npm:babel-minify@^0.5.2"
+        "@babel/preset-react": "npm:@babel/preset-react@^7.26.3"
     },
     "tasks": {
+        // 編譯並運行
+        "run": "deno run --allow-read --allow-write --allow-import --allow-env --allow-net --allow-sys ./start-server.ts",
         // 編譯前端頁面
-        "compile-webpage": "deno run --allow-read --allow-write --allow-import --allow-env ./compile-webpage.ts"
+        "compile-webpage": "deno run --allow-read --allow-write --allow-import --allow-env --allow-sys ./compile-webpage.ts"
     }
 }
