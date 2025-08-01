@@ -1,0 +1,9 @@
+{
+    "tasks": {
+        "main": "deno run --allow-read --allow-write src/main.ts",
+        "test": "deno run --allow-read --allow-write src/main_test.ts"
+    },
+    "imports": {
+        "chalk": "npm:chalk@5.4.1"
+    }
+}
