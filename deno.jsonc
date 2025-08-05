@@ -4,6 +4,7 @@
         "test": "deno run --allow-read --allow-write src/main_test.ts"
     },
     "imports": {
-        "chalk": "npm:chalk@5.4.1"
+        "chalk": "npm:chalk@5.4.1",
+        "file-type": "npm:file-type@21.0.0"
     }
 }
