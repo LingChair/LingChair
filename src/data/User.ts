@@ -32,7 +32,7 @@ export default class User {
     
     static create(userName: string | null, nickName: string, avatar: Buffer | null): User {
         return new User(
-            User.findAllByCondition(
+            User.findAllBeansByCondition(
                 'count = ?', 
                 User.database.prepare(`INSERT INTO ${User.table_name} (
                     id,
@@ -53,7 +53,7 @@ export default class User {
         )
     }
     
-    private static findAllByCondition(condition: string, ...args: unknown[]): UserBean[] {
+    private static findAllBeansByCondition(condition: string, ...args: unknown[]): UserBean[] {
         return User.database.prepare(`SELECT * FROM ${User.table_name} WHERE ${condition}`).all(...args)
     }
     private static checkLengthOrThrow(array: Array, leng: number, errMsg: string): Array {
@@ -61,10 +61,10 @@ export default class User {
         return array
     }
     static findById(id: string): User {
-        return new User(checkLengthOrThrow(User.findAllByCondition('id = ?', id), 1, `找不到用户 ID 为 ${id} 的用户`)[0])
+        return new User(checkLengthOrThrow(User.findAllBeansByCondition('id = ?', id), 1, `找不到用户 ID 为 ${id} 的用户`)[0])
     }
     static findByUserName(userName: string): User {
-        return new User(checkLengthOrThrow(User.findAllByCondition('username = ?', userName), 1, `找不到用户名为 ${userName} 的用户`)[0])
+        return new User(checkLengthOrThrow(User.findAllBeansByCondition('username = ?', userName), 1, `找不到用户名为 ${userName} 的用户`)[0])
     }
     
     declare bean: UserBean
