@@ -3,6 +3,8 @@ import { Buffer } from "node:buffer"
 import path from 'node:path'
 import crypto from 'node:crypto'
 
+import chalk from 'chalk'
+
 import config from '../config.ts'
 import UserBean from './UserBean.ts'
 
@@ -15,7 +17,7 @@ export default class User {
     static table_name: string = "Users"
     private static database: DatabaseSync = User.init()
     private static init(): DatabaseSync {
-        const db: DatabaseSync = new DatabaseSync(path.join(config.data_path, 'Users.db'))
+        const db: DatabaseSync = new DatabaseSync(path.join(config.data_path, User.table_name + '.db'))
         db.exec(`
             CREATE TABLE IF NOT EXISTS ${User.table_name} (
                 /* 序号 */ count INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -31,18 +33,13 @@ export default class User {
     }
     
     static createWithUserNameChecked(userName: string | null, nickName: string, avatar: Buffer | null): User {
-        try {
-            User.findByUserName(userName)
+        if (User.findAllBeansByCondition('username = ?', userName).length > 0)
             throw new Error(`用户名 ${userName} 已存在`)
-        } catch (e) {
-            if (e.message.indexOf("找不到") == -1)
-                return User.create(
-                    userName,
-                    nickName,
-                    avatar
-                )
-            throw e
-        }
+         return User.create(
+            userName,
+            nickName,
+            avatar
+        )
     }
     
     static create(userName: string | null, nickName: string, avatar: Buffer | null): User {
@@ -56,7 +53,7 @@ export default class User {
                     nickname,
                     avatar,
                     settings
-                ) VALUES (?, ?, ?, ?, ?, ?)`).run(
+                ) VALUES (?, ?, ?, ?, ?, ?);`).run(
                     crypto.randomUUID(),
                     Date.now(),
                     userName,
@@ -69,17 +66,23 @@ export default class User {
     }
     
     private static findAllBeansByCondition(condition: string, ...args: unknown[]): UserBean[] {
-        return User.database.prepare(`SELECT * FROM ${User.table_name} WHERE ${condition}`).all(...args)
-    }
-    private static checkLengthOrThrow(array: Array, leng: number, errMsg: string): Array {
-        if (array.length != leng) throw new Error(errMsg)
-        return array
+        return User.database.prepare(`SELECT * FROM ${User.table_name} WHERE ${condition};`).all(...args)
     }
     static findById(id: string): User {
-        return new User(checkLengthOrThrow(User.findAllBeansByCondition('id = ?', id), 1, `找不到用户 ID 为 ${id} 的用户`)[0])
+        const beans = User.findAllBeansByCondition('id = ?', id)
+        if (beans.length == 0)
+            throw new Error(`找不到用户 ID 为 ${id} 的用户`)
+        else if (beans.length > 1)
+            console.error(chalk.red(`警告: 查询 id = ${id} 时, 查询到多个相同用户 ID 的用户`))
+        return new User(beans[0])
     }
     static findByUserName(userName: string): User {
-        return new User(checkLengthOrThrow(User.findAllBeansByCondition('username = ?', userName), 1, `找不到用户名为 ${userName} 的用户`)[0])
+        const beans = User.findAllBeansByCondition('username = ?', userName)
+        if (beans.length == 0)
+            throw new Error(`找不到用户名为 ${userName} 的用户`)
+        else if (beans.length > 1)
+            console.error(chalk.red(`警告: 查询 username = ${userName} 时, 查询到多个相同用户名的用户`))
+        return new User(beans[0])
     }
     
     declare bean: UserBean
