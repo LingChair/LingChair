@@ -49,7 +49,7 @@ export default class User {
                     avatar,
                     "{}"
                 ).lastInsertRowid
-            )
+            )[0]
         )
     }
     
