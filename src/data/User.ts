@@ -30,6 +30,21 @@ export default class User {
        return db
     }
     
+    static createWithUserNameChecked(userName: string | null, nickName: string, avatar: Buffer | null): User {
+        try {
+            User.findByUserName(userName)
+            throw new Error(`用户名 ${userName} 已存在`)
+        } catch (e) {
+            if (e.message.indexOf("找不到") == -1)
+                return User.create(
+                    userName,
+                    nickName,
+                    avatar
+                )
+            throw e
+        }
+    }
+    
     static create(userName: string | null, nickName: string, avatar: Buffer | null): User {
         return new User(
             User.findAllBeansByCondition(
