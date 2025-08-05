@@ -17,9 +17,9 @@ export default class User {
     private static init(): DatabaseSync {
         const db: DatabaseSync = new DatabaseSync(path.join(config.data_path, 'Users.db'))
         db.exec(`
-            CREATE TABLE IF NOT EXISTS ${TABEL_NAME} (
+            CREATE TABLE IF NOT EXISTS ${User.table_name} (
                 /* 序号 */ count INTEGER PRIMARY KEY AUTOINCREMENT,
-                /* 用户 ID, 哈希 */ id TEXT
+                /* 用户 ID, 哈希 */ id TEXT,
                 /* 注册时间, 时间戳 */ registered_time INT8 NOT NULL,
                 /* 用戶名, 可選 */ username TEXT,
                 /* 昵称 */ nickname TEXT NOT NULL,
@@ -34,10 +34,17 @@ export default class User {
         return new User(
             User.findAllByCondition(
                 'count = ?', 
-                database.prepare(`INSERT INTO ${User.table_name} (id, username, registered_time, nickname, avatar, settings) VALUES (?, ?, ?, ?, ?)`).run(
+                User.database.prepare(`INSERT INTO ${User.table_name} (
+                    id,
+                    registered_time,
+                    username,
+                    nickname,
+                    avatar,
+                    settings
+                ) VALUES (?, ?, ?, ?, ?, ?)`).run(
                     crypto.randomUUID(),
-                    userName,
                     Date.now(),
+                    userName,
                     nickName,
                     avatar,
                     "{}"
@@ -47,7 +54,7 @@ export default class User {
     }
     
     private static findAllByCondition(condition: string, ...args: unknown[]): UserBean[] {
-        return database.prepare(`SELECT * FROM ${User.table_name} WHERE ${condition}`).all(...args)
+        return User.database.prepare(`SELECT * FROM ${User.table_name} WHERE ${condition}`).all(...args)
     }
     private static checkLengthOrThrow(array: Array, leng: number, errMsg: string): Array {
         if (array.length != leng) throw new Error(errMsg)
