@@ -113,14 +113,36 @@ export default class User {
         this.setAttr("avatar", avatar)
     }
     
-    /* getSettings(): Settings {
-        
+    getSettings(): User.Settings {
+        return new Settings(JSON.parse(this.bean.settings))
     }
     
     static Settings = class {
+        declare bean: User.SettingsBean
+        declare user: User
+        constructor(user: User, bean: User.SettingsBean) {
+            this.bean = bean
+            this.user = user
+            for (const i of [
+                
+            ]) {
+                this["set" + i.substring(0, 1).toUpperCase() + i.substring(1)] = (v: unknown) => {
+                    this.set(i, v)
+                }
+            }
+        }
+        
+        set(key: string, value: unknown) {
+            this.bean[key] = value
+        }
+        get(key: string) {
+            return this.bean[key]
+        }
+        apply() {
+            this.user.setAttr("settings", JSON.stringify(this.bean))
+        }
+    }
+    static SettingsBean = class {
         
     }
-    static SettingsBean = interface {
-        
-    } */
 }
