@@ -1,5 +1,5 @@
 import { DatabaseSync } from "node:sqlite"
-import { Buffer } from "node:buffer"
+// import { Buffer } from "node:buffer"
 import path from 'node:path'
 
 import config from '../config.ts'
@@ -25,40 +25,58 @@ export default class Chat {
        return db
     }
     
-    private static findAllByCondition(condition: string, ...args: unknown[]): UserBean[] {
-        return database.prepare(`SELECT count, id FROM ${User.table_name} WHERE ${condition}`).all(...args)
+    private static findAllByCondition(condition: string, ...args: unknown[]): ChatBean[] {
+        return database.prepare(`SELECT * FROM ${Chat.table_name} WHERE ${condition}`).all(...args)
     }
     
-    
+    static findById(id: string): Chat {
+        const beans = Chat.findAllBeansByCondition('id = ?', id)
+        if (beans.length == 0)
+            throw new Error(`找不到 id 为 ${id} 的 Chat`)
+        else if (beans.length > 1)
+            console.error(chalk.red(`警告: 查询 id = ${id} 时, 查询到多个相同 ID 的 Chat`))
+        return new Chat(beans[0])
+    }
     
     declare bean: ChatBean
     constructor(bean: ChatBean) {
         this.bean = bean
     }
     private setAttr(key: string, value: unknown): void {
-        User.database.prepare(`UPDATE ${User.table_name} SET ${key} = ? WHERE id = ?`).run(value, this.bean.id)
+        User.database.prepare(`UPDATE ${Chat.table_name} SET ${key} = ? WHERE id = ?`).run(value, this.bean.id)
         this.bean[key] = value
     }
-    getUserName(): string {
-        return this.bean.username
-    }
-    setUserName(userName: string): void {
-        this.setAttr("username", userName)
-    }
-    getNickName(): string {
-        return this.bean.nickname
-    }
-    setNickName(nickName: string): void {
-        this.setAttr("nickname", nickName)
-    }
-    getAvatar(): Uint8Array {
-        return this.bean.avatar
-    }
-    setAvatar(avatar: Buffer): void {
-        this.setAttr("avatar", avatar)
+    
+    getSettings(): Chat.Settings {
+        return new Settings(JSON.parse(this.bean.settings))
     }
     
-    getContacts() {
+    static Settings = class {
+        declare bean: Chat.SettingsBean
+        declare chat: Chat
+        constructor(chat: Chat, bean: Chat.SettingsBean) {
+            this.bean = bean
+            this.chat = chat
+            for (const i of [
+                
+            ]) {
+                this["set" + i.substring(0, 1).toUpperCase() + i.substring(1)] = (v: unknown) => {
+                    this.set(i, v)
+                }
+            }
+        }
+        
+        set(key: string, value: unknown) {
+            this.bean[key] = value
+        }
+        get(key: string) {
+            return this.bean[key]
+        }
+        apply() {
+            this.chat.setAttr("settings", JSON.stringify(this.bean))
+        }
+    }
+    static SettingsBean = class {
         
     }
 }
