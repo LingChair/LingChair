@@ -5,6 +5,7 @@
     },
     "imports": {
         "chalk": "npm:chalk@5.4.1",
-        "file-type": "npm:file-type@21.0.0"
+        "file-type": "npm:file-type@21.0.0",
+        "webpack": "npm:webpack@5.101.2"
     }
 }
