@@ -1,4 +1,6 @@
 import http from 'node:http'
 import https from 'node:https'
 
-export type HttpServerLike = http.Server | https.Server
+type HttpServerLike = http.Server | https.Server
+
+export default HttpServerLike
