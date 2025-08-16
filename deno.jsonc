@@ -8,6 +8,6 @@
         "file-type": "npm:file-type@21.0.0",
         "webpack": "npm:webpack@5.101.2",
         "express": "npm:express@5.1.0",
-        "socket.io": "npm:socket.io4.8.1"
+        "socket.io": "npm:socket.io@4.8.1"
     }
 }
