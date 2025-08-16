@@ -3,9 +3,9 @@ import UnknownFunction from '../types/UnknownFunction.ts'
 export default abstract class BaseApi {
     abstract getName(): string
     constructor() {
-        this.init()
+        this.onInit()
     }
-    abstract init(): void
+    abstract onInit(): void
     registerEvent(name: string, func: UnknownFunction) {
         
     }
