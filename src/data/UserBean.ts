@@ -1,8 +1,8 @@
-export default interface UserBean {
-    count: number,
-    username: string,
-    registered_time: number,
-    nickname: string,
-    avatar: Uint8Array,
-    settings: string,
+export default class UserBean {
+    declare count: number
+    declare username: string
+    declare registered_time: number
+    declare nickname: string
+    declare avatar: Uint8Array
+    declare settings: string
 }
