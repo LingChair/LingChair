@@ -2,3 +2,5 @@
 thewhitesilk_config.json
 # **默认**数据目录
 thewhitesilk_data/
+
+deno.lock
