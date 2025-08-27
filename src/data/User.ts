@@ -8,6 +8,8 @@ import chalk from 'chalk'
 import config from '../config.ts'
 import UserBean from './UserBean.ts'
 
+import FileManager from './FileManager.ts'
+
 /**
  * User.ts - Wrapper and manager
  * Wrap with UserBean to directly update database
@@ -25,7 +27,7 @@ export default class User {
                 /* 注册时间, 时间戳 */ registered_time INT8 NOT NULL,
                 /* 用戶名, 可選 */ username TEXT,
                 /* 昵称 */ nickname TEXT NOT NULL,
-                /* 头像, 可选 */ avatar BLOB,
+                /* 头像, 可选 */ avatar_file_hash TEXT,
                 /* 设置 */ settings TEXT NOT NULL
             );
        `)
@@ -43,7 +45,7 @@ export default class User {
     }
     
     static create(userName: string | null, nickName: string, avatar: Buffer | null): User {
-        return new User(
+        const user = new User(
             User.findAllBeansByCondition(
                 'count = ?', 
                 User.database.prepare(`INSERT INTO ${User.table_name} (
@@ -51,18 +53,20 @@ export default class User {
                     registered_time,
                     username,
                     nickname,
-                    avatar,
+                    avatar_file_hash,
                     settings
                 ) VALUES (?, ?, ?, ?, ?, ?);`).run(
                     crypto.randomUUID(),
                     Date.now(),
                     userName,
                     nickName,
-                    avatar,
+                    null,
                     "{}"
                 ).lastInsertRowid
             )[0]
         )
+        avatar && user.setAvatar(avatar)
+        return user
     }
     
     private static findAllBeansByCondition(condition: string, ...args: unknown[]): UserBean[] {
@@ -94,7 +98,7 @@ export default class User {
         User.database.prepare(`UPDATE ${User.table_name} SET ${key} = ? WHERE count = ?`).run(value, this.bean.count)
         this.bean[key] = value
     }
-    getUserName(): string {
+    getUserName(): string | null {
         return this.bean.username
     }
     setUserName(userName: string): void {
@@ -106,11 +110,11 @@ export default class User {
     setNickName(nickName: string): void {
         this.setAttr("nickname", nickName)
     }
-    getAvatar(): Uint8Array {
-        return this.bean.avatar
+    getAvatar(): Buffer | null {
+        return FileManager.findByHash(this.bean.avatar_file_hash)?.readSync()
     }
     setAvatar(avatar: Buffer): void {
-        this.setAttr("avatar", avatar)
+        this.setAttr("avatar_file_hash", FileManager.uploadFile(`avatar_user_${this.bean.count}`, avatar).getHash())
     }
     
     getSettings(): User.Settings {

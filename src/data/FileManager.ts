@@ -2,7 +2,7 @@ import { DatabaseSync } from "node:sqlite"
 import { Buffer } from "node:buffer"
 import path from 'node:path'
 import crypto from 'node:crypto'
-import fs from 'node:fs/promises'
+import fs_sync from 'node:fs'
 
 import { fileTypeFromBuffer } from 'file-type'
 
@@ -12,13 +12,19 @@ export default class FileManager {
         declare name: string
         declare hash: string
         declare mime: string
-        declare chatid: string
+        declare chatid: string | null
+        declare upload_time: number
+        declare last_used_time: number
     }
     
     static File = class {
         declare bean: FileManager.FileBean
         constructor(bean: FileManager.FileBean) {
             this.bean = bean
+        }
+        private setAttr(key: string, value: unknown): void {
+            FileManager.database.prepare(`UPDATE ${FileManager.table_name} SET ${key} = ? WHERE count = ?`).run(value, this.bean.count)
+            this.bean[key] = value
         }
         getMime(): string {
             return this.bean.mime
@@ -37,11 +43,18 @@ export default class FileManager {
                 this.bean.hash
             )
         }
-        getChatId(): string {
+        getChatId(): string | null {
             return this.bean.chatid
         }
-        async readAsync(): Buffer {
-            return await fs.readFile(this.getFilePath())
+        getUploadTime(): number {
+            return this.bean.upload_time
+        }
+        getLastUsedTime(): number {
+            return this.bean.last_used_time
+        }
+        readSync(): Buffer {
+            this.setAttr("last_used_time", Date.now())
+            return fs_sync.readFileSync(this.getFilePath())
         }
     }
 
@@ -55,7 +68,7 @@ export default class FileManager {
                 /* 文件名称 */ name TEXT NOT NULL,
                 /* 文件哈希 */ hash TEXT NOT NULL,
                 /* MIME 类型 */ mime TEXT NOT NULL,
-                /* 来源 Chat */ chatid TEXT NOT NULL,
+                /* 来源 Chat, 可為空 */ chatid TEXT,
                 /* 上传时间 */ upload_time INT8 NOT NULL,
                 /* 最后使用时间 */ last_used_time INT8 NOT NULL
             );
@@ -63,10 +76,16 @@ export default class FileManager {
        return db
     }
     
-    static async uploadFile(fileName: string, data: Buffer, chatId: string) {
+    static uploadFile(fileName: string, data: Buffer, chatId: string | null) {
         const hash = crypto.createHash('sha256').update(data).digest('hex')
+        try {
+            return FileManager.findByHash(hash)
+        } catch(_e) {
+            // Do nothing...
+        }
+        
         const mime = fileTypeFromBuffer(data)
-        await fs.writeFile(
+        fs_sync.writeFileSync(
             path.join(
                 config.data_path, 
                 "files",
