@@ -48,7 +48,7 @@ export default class Chat {
     }
     
     getSettings(): Chat.Settings {
-        return new Settings(JSON.parse(this.bean.settings))
+        return new Chat.Settings(this, JSON.parse(this.bean.settings))
     }
     
     static Settings = class {

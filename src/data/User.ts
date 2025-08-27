@@ -114,7 +114,7 @@ export default class User {
     }
     
     getSettings(): User.Settings {
-        return new Settings(JSON.parse(this.bean.settings))
+        return new User.Settings(this, JSON.parse(this.bean.settings))
     }
     
     static Settings = class {
