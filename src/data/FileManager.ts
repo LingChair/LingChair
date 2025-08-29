@@ -3,6 +3,7 @@ import { Buffer } from "node:buffer"
 import path from 'node:path'
 import crypto from 'node:crypto'
 import fs_sync from 'node:fs'
+import chalk from "chalk"
 import { fileTypeFromBuffer } from 'file-type'
 
 import config from "../config.ts"
@@ -114,7 +115,7 @@ export default class FileManager {
                     fileName,
                     hash,
                     mime,
-                    chatId,
+                    chatId || null,
                     Date.now(),
                     -1
                 ).lastInsertRowid
