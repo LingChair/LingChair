@@ -1,10 +1,11 @@
 import ApiManager from "./api/ApiManager.ts"
 import express from 'express'
-import SocketIo from 'socket.io'
+import * as SocketIo from 'socket.io'
 import HttpServerLike from "./types/HttpServerLike.ts"
 import config from './config.ts'
 import http from 'node:http'
 import https from 'node:https'
+import web_packer from './web_packer.ts'
 
 const app = express()
 const httpServer: HttpServerLike = (
@@ -21,3 +22,9 @@ ApiManager.initEvents()
 ApiManager.initAllApis()
 
 httpServer.listen(config.server.listen)
+
+web_packer?.run((err, status) => {
+    if (err) throw err
+    console.log("前端頁面已編譯完成")
+    web_packer?.close(() => {})
+})

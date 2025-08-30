@@ -1,6 +1,6 @@
 import HttpServerLike from '../types/HttpServerLike.ts'
 import UserApi from "./UserApi.ts"
-import SocketIo from "socket.io"
+import * as SocketIo from "socket.io"
 import ApiCallbackMessage from "../types/ApiCallbackMessage.ts"
 import EventCallbackFunction from "../types/EventCallbackFunction.ts"
 
