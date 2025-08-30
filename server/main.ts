@@ -1,4 +1,5 @@
 import ApiManager from "./api/ApiManager.ts"
+// @ts-types="npm:@types/express"
 import express from 'express'
 import * as SocketIo from 'socket.io'
 import HttpServerLike from "./types/HttpServerLike.ts"
