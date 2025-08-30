@@ -5,9 +5,17 @@ import HttpServerLike from "./types/HttpServerLike.ts"
 import config from './config.ts'
 import http from 'node:http'
 import https from 'node:https'
-import web_packer from './web_packer.ts'
+import transform from './compiler/transform.ts'
 
 const app = express()
+app.use((req, res, next) => {
+    const url = req.originalUrl || req.url
+    if (/\.(j|t)sx?/.test(url))
+        res.setHeader('Content-Type', 'application/javascript')
+    next()
+})
+app.use('/', express.static(config.data_path + '/page_compiled'))
+
 const httpServer: HttpServerLike = (
     ((config.server.use == 'http') && http.createServer(app)) || 
     ((config.server.use == 'https') && https.createServer(config.server.https, app)) || 
@@ -23,8 +31,4 @@ ApiManager.initAllApis()
 
 httpServer.listen(config.server.listen)
 
-web_packer?.run((err, status) => {
-    if (err) throw err
-    console.log("前端頁面已編譯完成")
-    web_packer?.close(() => {})
-})
+transform('./client', config.data_path + '/page_compiled')

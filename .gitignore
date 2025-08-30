@@ -4,3 +4,4 @@ thewhitesilk_config.json
 thewhitesilk_data/
 
 deno.lock
+node_modules/
