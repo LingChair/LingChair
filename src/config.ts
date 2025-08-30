@@ -1,8 +1,30 @@
 import fs from 'node:fs/promises'
 import chalk from 'chalk'
 
+const default_data_path = "./thewhitesilk_data"
 let config = {
-    data_path: "./thewhitesilk_data"
+    data_path: default_data_path,
+    server: {
+        use: "http",
+        /**
+         * used in server.listen()
+         */
+        listen: {
+            port: 3601,
+            host: "::",
+            /**
+             * setting ipv6Only to true will disable dual-stack support, i.e., binding to host :: won't make 0.0.0.0 be bound.
+             */
+            ipv6Only: false,
+        },
+        /**
+         * used in https.createServer()
+         */
+        https: {
+            key: default_data_path + '/key.pem',
+            cert: default_data_path + '/cert.pem',
+        },
+    },
 }
 
 try {
