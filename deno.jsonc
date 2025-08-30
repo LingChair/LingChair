@@ -1,7 +1,7 @@
 {
     "tasks": {
-        "main": "deno run --allow-read --allow-write server/main.ts",
-        "test": "deno run --allow-read --allow-write server/main_test.ts"
+        "main": "deno run --allow-read --allow-write --allow-env --allow-net server/main.ts",
+        "test": "deno run --allow-read --allow-write --allow-env --allow-net server/main_test.ts"
     },
     "imports": {
         "chalk": "npm:chalk@5.4.1",
