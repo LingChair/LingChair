@@ -5,6 +5,14 @@ export default class UserApi extends BaseApi {
         return "User"
     }
     override onInit(): void {
-
+        this.registerEvent("", () => {
+            return {
+                msg: "",
+                code: 200,
+                data: {
+                    
+                }
+            }
+        })
     }
 }
