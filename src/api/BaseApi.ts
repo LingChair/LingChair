@@ -1,4 +1,4 @@
-import UnknownFunction from '../types/UnknownFunction.ts'
+import EventCallbackFunction from "../types/EventCallbackFunction.ts"
 import ApiManager from "./ApiManager.ts";
 
 export default abstract class BaseApi {
@@ -7,8 +7,7 @@ export default abstract class BaseApi {
         this.onInit()
     }
     abstract onInit(): void
-    registerEvent(name: string, func: UnknownFunction) {
-        const io = ApiManager.getSocketIoServer()
-        
+    registerEvent(name: string, func: EventCallbackFunction) {
+        ApiManager.addEventListener(this.getName() + "." + name, func)
     }
 }
