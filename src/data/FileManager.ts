@@ -18,14 +18,16 @@ class FileBean {
     declare last_used_time: number
 }
 
+type FileBeanKey = keyof FileBean
+
 class File {
     declare bean: FileBean
     constructor(bean: FileBean) {
         this.bean = bean
     }
-    private setAttr(key: string, value: SQLInputValue) {
+    private setAttr(key: FileBeanKey, value: SQLInputValue) {
         FileManager.database.prepare(`UPDATE ${FileManager.table_name} SET ${key} = ? WHERE count = ?`).run(value, this.bean.count)
-        this.bean[key] = value
+        this.bean[key] = value as never
     }
     getMime() {
         return this.bean.mime
