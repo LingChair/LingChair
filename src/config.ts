@@ -6,7 +6,7 @@ let config = {
 }
 
 try {
-    config = JSON.parse(await fs.readFile('thewhitesilk_config.json'))
+    config = JSON.parse(await fs.readFile('thewhitesilk_config.json', 'utf-8'))
 } catch (_e) {
     console.log(chalk.yellow("配置文件貌似不存在, 正在创建..."))
     await fs.writeFile('thewhitesilk_config.json', JSON.stringify(config))
