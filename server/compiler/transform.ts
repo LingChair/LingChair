@@ -24,13 +24,14 @@ async function compileJs(path: string) {
     console.log(`编译: ${path}`)
 }
 
-export default function(source: string, output: string) {
+export default async function(source: string, output: string) {
+    const t = Date.now()
     io.copyDir(source, output)
-    io.listFiles(output, {
+    for (const v of io.listFiles(output, {
         recursive: true,
         fullPath: true,
-    }).forEach(function (v) {
+    })) 
         if (/\.(t|j)sx?$/.test(v))
-            compileJs(v)
-    })
+            await compileJs(v)
+    return (Date.now() - t) / 1000
 }
