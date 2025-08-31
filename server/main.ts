@@ -11,7 +11,7 @@ import transform from './compiler/transform.ts'
 const app = express()
 app.use((req, res, next) => {
     const url = req.originalUrl || req.url
-    if (/\.(j|t)sx?/.test(url))
+    if (/\.(j|t)sx?$/.test(url))
         res.setHeader('Content-Type', 'application/javascript')
     next()
 })
