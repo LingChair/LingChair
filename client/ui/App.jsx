@@ -32,18 +32,6 @@ export default function App() {
                 nickName: "Maya Fey",
             },
         ],
-        测试分组114514: [
-            {
-                userId: 0,
-                avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
-                nickName: "麻油衣酱",
-            },
-            {
-                userId: 0,
-                avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
-                nickName: "Maya Fey",
-            },
-        ],
     })
     const [navigationItemSelected, setNavigationItemSelected] = React.useState('Recents')
 
@@ -161,45 +149,6 @@ export default function App() {
                             avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
                             Test
                         </Message>
-                        <Message
-                            direction="right"
-                            nickName="Fey"
-                            avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
-                            Test
-                        </Message>
-                        <Message
-                            nickName="Fey"
-                            avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
-                            Test
-                        </Message>
-                        <Message
-                            direction="right"
-                            nickName="Fey"
-                            avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
-                            Test
-                        </Message>
-                        <Message
-                            nickName="Fey"
-                            avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
-                            Test
-                        </Message>
-                        <Message
-                            direction="right"
-                            nickName="Fey"
-                            avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
-                            Test
-                        </Message>
-                        <Message
-                            nickName="Fey"
-                            avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
-                            Test
-                        </Message>
-                        <Message
-                            direction="right"
-                            nickName="Fey"
-                            avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
-                            Test
-                        </Message>
                     </MessageContainer>
                     {
                         // 输入框
@@ -224,17 +173,6 @@ export default function App() {
                             marginRight: '7px',
                         }}></mdui-button-icon>
                     </div>
-                    {/* <mdui-top-app-bar style={{
-                        position: 'sticky',
-                        bottom: '0',
-                    }}>
-                        <mdui-button-icon icon="menu"></mdui-button-icon>
-                        <mdui-top-app-bar-title>Title</mdui-top-app-bar-title>
-                        <div style={{
-                            flexGrow: 1,
-                        }}></div>
-                        <mdui-button-icon icon="more_vert"></mdui-button-icon>
-                    </mdui-top-app-bar> */}
                 </div>
             </div>
         </div>
