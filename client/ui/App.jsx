@@ -18,57 +18,9 @@ export default function App() {
             nickName: "Maya Fey",
             content: "我是绫里真宵, 是一名灵媒师~"
         },
-        {
-            userId: 0,
-            avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
-            nickName: "麻油衣酱",
-            content: "成步堂君, 我又坐牢了（"
-        },
-        {
-            userId: 0,
-            avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
-            nickName: "Maya Fey",
-            content: "我是绫里真宵, 是一名灵媒师~"
-        },
-        {
-            userId: 0,
-            avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
-            nickName: "麻油衣酱",
-            content: "成步堂君, 我又坐牢了（"
-        },
-        {
-            userId: 0,
-            avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
-            nickName: "Maya Fey",
-            content: "我是绫里真宵, 是一名灵媒师~"
-        },
-        {
-            userId: 0,
-            avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
-            nickName: "麻油衣酱",
-            content: "成步堂君, 我又坐牢了（"
-        },
-        {
-            userId: 0,
-            avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
-            nickName: "Maya Fey",
-            content: "我是绫里真宵, 是一名灵媒师~"
-        },
-        {
-            userId: 0,
-            avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
-            nickName: "麻油衣酱",
-            content: "成步堂君, 我又坐牢了（"
-        },
-        {
-            userId: 0,
-            avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
-            nickName: "Maya Fey",
-            content: "我是绫里真宵, 是一名灵媒师~"
-        },
     ])
     const [contactsMap, setContactsMap] = React.useState({
-        默认分组: [
+        所有: [
             {
                 userId: 0,
                 avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
@@ -78,7 +30,7 @@ export default function App() {
                 userId: 0,
                 avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
                 nickName: "Maya Fey",
-            }
+            },
         ],
         测试分组114514: [
             {
@@ -90,7 +42,7 @@ export default function App() {
                 userId: 0,
                 avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
                 nickName: "Maya Fey",
-            }
+            },
         ],
     })
     const [navigationItemSelected, setNavigationItemSelected] = React.useState('Recents')
@@ -134,6 +86,7 @@ export default function App() {
                     {
                         recentsList.map((v) =>
                             <RecentsListItem
+                                key={v.userId}
                                 nickName={v.nickName}
                                 avatar={v.avatar}
                                 content={v.content} />
@@ -149,20 +102,23 @@ export default function App() {
                     overflowY: 'auto',
                     paddingRight: '10px'
                 }}>
-                    {
-                        Object.keys(contactsMap).map((v) =>
-                            <>
-                                <mdui-list-subheader>{v}</mdui-list-subheader>
-                                {
-                                    contactsMap[v].map((v2) =>
-                                        <ContactsListItem
-                                            nickName={v2.nickName}
-                                            avatar={v2.avatar} />
-                                    )
-                                }
-                            </>
-                        )
-                    }
+                    <mdui-collapse accordion value={Object.keys(contactsMap)[0]}>
+                        { 
+                            Object.keys(contactsMap).map((v) =>
+                                <mdui-collapse-item key={v} value={v}>
+                                    <mdui-list-subheader slot="header">{v}</mdui-list-subheader>
+                                    {
+                                        contactsMap[v].map((v2) =>
+                                            <ContactsListItem
+                                                key={v2.userId}
+                                                nickName={v2.nickName}
+                                                avatar={v2.avatar} />
+                                        )
+                                    }
+                                </mdui-collapse-item>
+                            )
+                        }
+                    </mdui-collapse>
                 </mdui-list>
             }
             {
@@ -193,10 +149,13 @@ export default function App() {
                     <mdui-button-icon icon="more_vert"></mdui-button-icon>
                 </mdui-top-app-bar>
                 <div>
-                    <MessageContainer style={{
-                        height: '100%',
-                        paddingBottom: '20px',
+                    <div style={{
+                        display: "flex",
+                        justifyContent: "center",
                     }}>
+                        <mdui-button variant="text">加載更多</mdui-button>
+                    </div>
+                    <MessageContainer>
                         <Message
                             nickName="Fey"
                             avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
