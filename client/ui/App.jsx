@@ -65,11 +65,11 @@ export default function App() {
             }
             {
                 // 最近聊天
-                (navigationItemSelected == "Recents") &&
                 <mdui-list style={{
                     width: "35%",
                     overflowY: 'auto',
-                    paddingRight: '10px'
+                    paddingRight: '10px',
+                    display: navigationItemSelected == "Recents" ? null : 'none'
                 }}>
                     {
                         recentsList.map((v) =>
@@ -84,11 +84,11 @@ export default function App() {
             }
             {
                 // 联系人列表
-                (navigationItemSelected == "Contacts") &&
                 <mdui-list style={{
                     width: "35%",
                     overflowY: 'auto',
-                    paddingRight: '10px'
+                    paddingRight: '10px',
+                    display: navigationItemSelected == "Contacts" ? null : 'none'
                 }}>
                     <mdui-collapse accordion value={Object.keys(contactsMap)[0]}>
                         { 
@@ -136,7 +136,11 @@ export default function App() {
                     <mdui-top-app-bar-title>Title</mdui-top-app-bar-title>
                     <mdui-button-icon icon="more_vert"></mdui-button-icon>
                 </mdui-top-app-bar>
-                <div>
+                <div style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    height: "100%",
+                }}>
                     <div style={{
                         display: "flex",
                         justifyContent: "center",

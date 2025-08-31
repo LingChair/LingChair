@@ -9,7 +9,8 @@ export default function MessageContainer({ children, style, ...props } = {}) {
             flexDirection: 'column',
             justifyContent: 'flex-end',
             alignItems: 'center',
-            marginBottom: '10px',
+            marginBottom: '20px',
+            height: "100%",
             ...style,
         }}
         {...props}>
