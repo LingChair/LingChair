@@ -1,4 +1,3 @@
-import CryptoJS from "./types/CryptoJS.d.ts"
 const dataIsEmpty = !localStorage.tws_data || localStorage.tws_data == ''
 
 const aes = {
@@ -20,6 +19,7 @@ declare global {
     interface Window {
         data: {
             apply: () => void
+            access_token?: string
         }
     }
 }
