@@ -1,12 +1,15 @@
-import Message from "./chat/Message.jsx"
-import MessageContainer from "./chat/MessageContainer.jsx"
+import Client from "../api/Client.ts";
+import data from "../Data.ts";
+import ChatFragment from "./chat/ChatFragment.jsx"
+import LoginDialog from "./dialog/LoginDialog.jsx"
 import ContactsListItem from "./main/ContactsListItem.jsx"
 import RecentsListItem from "./main/RecentsListItem.jsx"
+import snackbar from "./snackbar.js";
 import useEventListener from './useEventListener.js'
 
 export default function App() {
     const [recentsList, setRecentsList] = React.useState([
-        {
+        /* {
             userId: 0,
             avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
             nickName: "麻油衣酱",
@@ -17,11 +20,11 @@ export default function App() {
             avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
             nickName: "Maya Fey",
             content: "我是绫里真宵, 是一名灵媒师~"
-        },
+        }, */
     ])
     const [contactsMap, setContactsMap] = React.useState({
         所有: [
-            {
+            /* {
                 userId: 0,
                 avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
                 nickName: "麻油衣酱",
@@ -30,7 +33,7 @@ export default function App() {
                 userId: 0,
                 avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
                 nickName: "Maya Fey",
-            },
+            }, */
         ],
     })
     const [navigationItemSelected, setNavigationItemSelected] = React.useState('Recents')
@@ -40,6 +43,25 @@ export default function App() {
         setNavigationItemSelected(event.target.value)
     })
 
+    const [
+        loginDialogRef,
+        inputAccountRef,
+        inputPasswordRef,
+        registerButtonRef,
+        loginButtonRef
+    ] = [React.useRef(null), React.useRef(null), React.useRef(null), React.useRef(null), React.useRef(null)]
+
+    React.useEffect(async () => {
+        Client.connect()
+        const re = await Client.invoke("User.auth", {
+            access_token: data.access_token,
+        })
+        if (re.code == 401)
+            loginDialogRef.current.show()
+        else if (re.code != 200)
+            snackbar("驗證失敗: " + re.msg)
+    })
+
     return (
         <div style={{
             display: "flex",
@@ -47,6 +69,12 @@ export default function App() {
             width: 'calc(var(--whitesilk-window-width) - 80px)',
             height: 'var(--whitesilk-window-height)',
         }}>
+            <LoginDialog
+                ref={loginDialogRef}
+                inputAccountRef={inputAccountRef}
+                inputPasswordRef={inputPasswordRef}
+                registerButtonRef={registerButtonRef}
+                loginButtonRef={loginButtonRef} />
             {
                 // 移动端用 页面调试
                 // 換個地方弄
@@ -91,7 +119,7 @@ export default function App() {
                     display: navigationItemSelected == "Contacts" ? null : 'none'
                 }}>
                     <mdui-collapse accordion value={Object.keys(contactsMap)[0]}>
-                        { 
+                        {
                             Object.keys(contactsMap).map((v) =>
                                 <mdui-collapse-item key={v} value={v}>
                                     <mdui-list-subheader slot="header">{v}</mdui-list-subheader>
@@ -122,63 +150,7 @@ export default function App() {
             {
                 // 聊天页面
             }
-            <div style={{
-                width: '100%',
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                overflowY: 'auto',
-            }}>
-                <mdui-top-app-bar style={{
-                    position: 'sticky',
-                }}>
-                    <mdui-button-icon icon="menu"></mdui-button-icon>
-                    <mdui-top-app-bar-title>Title</mdui-top-app-bar-title>
-                    <mdui-button-icon icon="more_vert"></mdui-button-icon>
-                </mdui-top-app-bar>
-                <div style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    height: "100%",
-                }}>
-                    <div style={{
-                        display: "flex",
-                        justifyContent: "center",
-                    }}>
-                        <mdui-button variant="text">加載更多</mdui-button>
-                    </div>
-                    <MessageContainer>
-                        <Message
-                            nickName="Fey"
-                            avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
-                            Test
-                        </Message>
-                    </MessageContainer>
-                    {
-                        // 输入框
-                    }
-                    <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        paddingBottom: '0.1rem',
-                        paddingTop: '0.1rem',
-                        height: '4rem',
-                        position: 'sticky',
-                        bottom: '0',
-                        backgroundColor: 'rgb(var(--mdui-color-background))',
-                    }}>
-                        <mdui-text-field variant="outlined" placeholder="喵呜~" style={{
-                            marginRight: '10px',
-                        }}></mdui-text-field>
-                        <mdui-button-icon slot="end-icon" icon="more_vert" style={{
-                            marginRight: '6px',
-                        }}></mdui-button-icon>
-                        <mdui-button-icon icon="send" style={{
-                            marginRight: '7px',
-                        }}></mdui-button-icon>
-                    </div>
-                </div>
-            </div>
+            <ChatFragment />
         </div>
     )
 }
