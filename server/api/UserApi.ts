@@ -1,11 +1,11 @@
-import BaseApi from "./BaseApi.ts";
+import BaseApi from "./BaseApi.ts"
 
 export default class UserApi extends BaseApi {
     override getName(): string {
         return "User"
     }
     override onInit(): void {
-        this.registerEvent("", () => {
+        this.registerEvent("User.auth", () => {
             return {
                 msg: "",
                 code: 200,

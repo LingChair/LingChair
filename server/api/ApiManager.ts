@@ -1,14 +1,15 @@
 import HttpServerLike from '../types/HttpServerLike.ts'
 import UserApi from "./UserApi.ts"
 import * as SocketIo from "socket.io"
-import ApiCallbackMessage from "../types/ApiCallbackMessage.ts"
+import ApiCallbackMessage from "./ApiCallbackMessage.ts"
 import EventCallbackFunction from "../types/EventCallbackFunction.ts"
+import BaseApi from "./BaseApi.ts"
 
 export default class ApiManager {
     static httpServer: HttpServerLike
     static socketIoServer: SocketIo.Server
-    static event_listeners: { [key: string] : EventCallbackFunction } = {}
-    static apis_instance: {}
+    static event_listeners: { [key: string]: EventCallbackFunction } = {}
+    static apis_instance: { [key: string]: BaseApi } = {}
     static initServer(httpServer: HttpServerLike, socketIoServer: SocketIo.Server) {
         this.httpServer = httpServer
         this.socketIoServer = socketIoServer
@@ -30,13 +31,17 @@ export default class ApiManager {
     static initEvents() {
         const io = this.socketIoServer
         io.on('connection', (socket) => {
-            socket.on("The_White_Silk", (name: string, args: {}, callback: (ret: ApiCallbackMessage) => void) => {
-                if (name == null || args == null) return callback({
-                    msg: "Invalid request.",
-                    code: 400
-                })
+            socket.on("The_White_Silk", (name: string, args: { [key: string]: unknown }, callback: (ret: ApiCallbackMessage) => void) => {
+                try {
+                    if (name == null || args == null) return callback({
+                        msg: "Invalid request.",
+                        code: 400
+                    })
 
-                return callback(this.event_listeners[name]?.(args))
+                    return callback(this.event_listeners[name]?.(args))
+                } catch (e) {
+                    console.error(e)
+                }
             })
         })
     }

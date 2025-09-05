@@ -1,4 +1,4 @@
-import ApiCallbackMessage from "./ApiCallbackMessage.ts"
+import ApiCallbackMessage from "../api/ApiCallbackMessage.ts"
 
 type EventCallbackFunction = (args: {}) => ApiCallbackMessage
 
