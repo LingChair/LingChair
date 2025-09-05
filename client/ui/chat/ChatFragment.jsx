@@ -1,3 +1,64 @@
-export default function ChatFragment() {
+import Message from "./Message.jsx"
+import MessageContainer from "./MessageContainer.jsx"
 
+export default function ChatFragment() {
+    return (
+        <div style={{
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            overflowY: 'auto',
+        }}>
+            <mdui-top-app-bar style={{
+                position: 'sticky',
+            }}>
+                <mdui-button-icon icon="menu"></mdui-button-icon>
+                <mdui-top-app-bar-title>Title</mdui-top-app-bar-title>
+                <mdui-button-icon icon="more_vert"></mdui-button-icon>
+            </mdui-top-app-bar>
+            <div style={{
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+            }}>
+                <div style={{
+                    display: "flex",
+                    justifyContent: "center",
+                }}>
+                    <mdui-button variant="text">加載更多</mdui-button>
+                </div>
+                <MessageContainer>
+                    <Message
+                        nickName="Fey"
+                        avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
+                        Test
+                    </Message>
+                </MessageContainer>
+                {
+                    // 输入框
+                }
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    paddingBottom: '0.1rem',
+                    paddingTop: '0.1rem',
+                    height: '4rem',
+                    position: 'sticky',
+                    bottom: '0',
+                    backgroundColor: 'rgb(var(--mdui-color-background))',
+                }}>
+                    <mdui-text-field variant="outlined" placeholder="喵呜~" style={{
+                        marginRight: '10px',
+                    }}></mdui-text-field>
+                    <mdui-button-icon slot="end-icon" icon="more_vert" style={{
+                        marginRight: '6px',
+                    }}></mdui-button-icon>
+                    <mdui-button-icon icon="send" style={{
+                        marginRight: '7px',
+                    }}></mdui-button-icon>
+                </div>
+            </div>
+        </div>
+    )
 }
