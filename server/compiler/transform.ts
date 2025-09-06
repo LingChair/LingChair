@@ -1,3 +1,4 @@
+// @ts-types="npm:@types/babel__core"
 import babel from '@babel/core'
 import fs from 'node:fs/promises'
 import io from './io.js'
@@ -23,8 +24,8 @@ async function compileJs(path: string) {
         },
         sourceMaps: true,
     })
-    await fs.writeFile(path, result.code + '\n' + `//@ sourceMappingURL=${io.getName(path)}.map`)
-    await fs.writeFile(path + '.map', JSON.stringify(result.map))
+    await fs.writeFile(path, result!.code + '\n' + `//@ sourceMappingURL=${io.getName(path)}.map`)
+    await fs.writeFile(path + '.map', JSON.stringify(result!.map))
     console.log(`编译: ${path}`)
 }
 
@@ -37,6 +38,9 @@ export default async function(source: string, output: string) {
         fullPath: true,
     })) 
         if (/\.(t|j)sx?$/.test(v) && !/\.(min|static)\.(t|j)sx?$/.test(v))
-            await compileJs(v)
+            if (/\.d\.ts$/.test(v))
+                await fs.writeFile(v, '')
+            else
+                await compileJs(v)
     return (Date.now() - t) / 1000
 }
