@@ -11,7 +11,7 @@ import { React } from '../Imports.ts'
 
 export default function App() {
     const [recentsList, setRecentsList] = React.useState([
-        /* {
+         {
             userId: 0,
             avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
             nickName: "麻油衣酱",
@@ -22,11 +22,11 @@ export default function App() {
             avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
             nickName: "Maya Fey",
             content: "我是绫里真宵, 是一名灵媒师~"
-        }, */
+        }, 
     ])
     const [contactsMap, setContactsMap] = React.useState({
         所有: [
-            /* {
+             {
                 userId: 0,
                 avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
                 nickName: "麻油衣酱",
@@ -35,7 +35,7 @@ export default function App() {
                 userId: 0,
                 avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
                 nickName: "Maya Fey",
-            }, */
+            }, 
         ],
     })
     const [navigationItemSelected, setNavigationItemSelected] = React.useState('Recents')
@@ -100,7 +100,6 @@ export default function App() {
                 {
                     // 最近聊天
                     <mdui-list style={{
-                        width: "35%",
                         overflowY: 'auto',
                         paddingRight: '10px',
                         display: navigationItemSelected == "Recents" ? null : 'none'
@@ -119,7 +118,6 @@ export default function App() {
                 {
                     // 联系人列表
                     <mdui-list style={{
-                        width: "35%",
                         overflowY: 'auto',
                         paddingRight: '10px',
                         display: navigationItemSelected == "Contacts" ? null : 'none'
@@ -144,16 +142,6 @@ export default function App() {
                     </mdui-list>
                 }
             </div>
-            {
-                // 分割线
-            }
-            {/* <div style={{
-                // 我们删除了 body 的padding 因此不需要再 calc 了
-                height: 'var(--whitesilk-window-height)',
-                marginRight: '10px',
-            }}>
-                <mdui-divider vertical></mdui-divider>
-            </div> */}
             {
                 // 聊天页面
             }

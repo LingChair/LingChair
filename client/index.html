@@ -13,9 +13,8 @@
     <link rel="stylesheet" href="https://unpkg.com/mdui@2/mdui.css" />
     <link rel="stylesheet" href="./static/material_icons.css" />
 
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://unpkg.com/split.js@1.6.5/dist/split.min.js"></script>
 
     <title>TheWhiteSilk</title>
 
@@ -79,6 +78,16 @@
             image-rendering: crisp-edges;
             -ms-interpolation-mode: nearest-neighbor;
         }
+
+        .gutter {
+            background-color: rgb(var(--mdui-color-surface-variant));;
+            background-repeat: no-repeat;
+            background-position: 50%;
+        }
+
+        .gutter.gutter-horizontal {
+            cursor: col-resize;
+        }
     </style>
 </head>
 
@@ -91,6 +100,7 @@
     </script>
     <script type="module">
         import App from './ui/App.jsx'
+        import { React, ReactDOM } from './Imports.ts'
         ReactDOM.createRoot(document.getElementById('app')).render(React.createElement(App, null))
 
         let onResize = () => {
@@ -100,6 +110,14 @@
         }
         window.addEventListener('resize', onResize)
         onResize()
+
+        window.addEventListener('load', () => {
+            Split(['#SideBar', '#ChatFragment'], {
+                sizes: [25, 75],
+                minSize: [200, 400],
+                gutterSize: 2,
+            })
+        })
     </script>
 </body>
 
