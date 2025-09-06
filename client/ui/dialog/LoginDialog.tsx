@@ -1,4 +1,13 @@
-import { React } from '../../Imports.ts'
+import { React, MduiDialog, MduiTextField, MduiButton } from '../../Imports.ts'
+import '../../mdui-jsx.d.ts'
+
+interface Refs {
+    inputAccountRef: React.MutableRefObject<MduiTextField | null>
+    inputPasswordRef: React.MutableRefObject<MduiTextField | null>
+    registerButtonRef: React.MutableRefObject<MduiButton | null>
+    loginButtonRef: React.MutableRefObject<MduiButton | null>
+    loginDialogRef: React.MutableRefObject<MduiDialog | null>
+}
 
 export default function LoginDialog({
     inputAccountRef,
@@ -6,7 +15,7 @@ export default function LoginDialog({
     registerButtonRef,
     loginButtonRef,
     loginDialogRef
-}) {
+}: Refs) {
     return (
         <mdui-dialog headline="登录" ref={loginDialogRef}>
 

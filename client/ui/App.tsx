@@ -1,70 +1,70 @@
 import Client from "../api/Client.ts"
 import data from "../Data.ts"
 import ChatFragment from "./chat/ChatFragment.jsx"
-import LoginDialog from "./dialog/LoginDialog.jsx"
+import LoginDialog from "./dialog/LoginDialog.tsx"
 import ContactsListItem from "./main/ContactsListItem.jsx"
 import RecentsListItem from "./main/RecentsListItem.jsx"
 import snackbar from "./snackbar.js"
 import useEventListener from './useEventListener.js'
 
-import { React } from '../Imports.ts'
+import { MduiDialog, React, MduiNavigationRail, MduiTextField, MduiButton } from '../Imports.ts'
+import User from "../api/client_data/User.ts"
+import RecentChat from "../api/client_data/RecentChat.ts"
 
 export default function App() {
     const [recentsList, setRecentsList] = React.useState([
          {
-            userId: 0,
+            id: '0',
             avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
-            nickName: "麻油衣酱",
+            title: "麻油衣酱",
             content: "成步堂君, 我又坐牢了（"
         },
         {
-            userId: 0,
+            id: '0',
             avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
-            nickName: "Maya Fey",
+            title: "Maya Fey",
             content: "我是绫里真宵, 是一名灵媒师~"
         }, 
-    ])
+    ] as RecentChat[])
     const [contactsMap, setContactsMap] = React.useState({
         所有: [
              {
-                userId: 0,
+                id: '0',
                 avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
-                nickName: "麻油衣酱",
+                nickname: "麻油衣酱",
             },
             {
-                userId: 0,
+                id: '0',
                 avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
-                nickName: "Maya Fey",
+                nickname: "Maya Fey",
             }, 
         ],
-    })
+    } as unknown as { [key: string]: User[] })
     const [navigationItemSelected, setNavigationItemSelected] = React.useState('Recents')
 
     const navigationRailRef = React.useRef(null)
     useEventListener(navigationRailRef, 'change', (event) => {
-        setNavigationItemSelected(event.target.value)
+        setNavigationItemSelected((event.target as HTMLElement as MduiNavigationRail).value as string)
     })
 
-    const [
-        loginDialogRef,
-        inputAccountRef,
-        inputPasswordRef,
-        registerButtonRef,
-        loginButtonRef
-    ] = [React.useRef(null), React.useRef(null), React.useRef(null), React.useRef(null), React.useRef(null)]
+    const loginDialogRef: React.MutableRefObject<MduiDialog | null> = React.useRef(null)
+    const inputAccountRef: React.MutableRefObject<MduiTextField | null> = React.useRef(null)
+    const inputPasswordRef: React.MutableRefObject<MduiTextField | null> = React.useRef(null)
+    const registerButtonRef: React.MutableRefObject<MduiButton | null> = React.useRef(null)
+    const loginButtonRef: React.MutableRefObject<MduiButton | null> = React.useRef(null)
 
     React.useEffect(() => {
-        ; (async () => {
+        // deno-lint-ignore no-window-prefix no-window
+        window.addEventListener('load', async () => {
             Client.connect()
             const re = await Client.invoke("User.auth", {
                 access_token: data.access_token,
             })
             if (re.code == 401)
-                loginDialogRef.current.show()
+                loginDialogRef.current!.open = true
             else if (re.code != 200)
                 snackbar("驗證失敗: " + re.msg)
-        })()
-        return () => { }
+        })
     }, [])
 
     return (
@@ -107,8 +107,8 @@ export default function App() {
                         {
                             recentsList.map((v) =>
                                 <RecentsListItem
-                                    key={v.userId}
-                                    nickName={v.nickName}
+                                    key={v.id}
+                                    nickName={v.title}
                                     avatar={v.avatar}
                                     content={v.content} />
                             )
@@ -130,8 +130,8 @@ export default function App() {
                                         {
                                             contactsMap[v].map((v2) =>
                                                 <ContactsListItem
-                                                    key={v2.userId}
-                                                    nickName={v2.nickName}
+                                                    key={v2.id}
+                                                    nickName={v2.nickname}
                                                     avatar={v2.avatar} />
                                             )
                                         }
