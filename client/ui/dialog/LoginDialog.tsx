@@ -1,5 +1,4 @@
 import { React, MduiDialog, MduiTextField, MduiButton } from '../../Imports.ts'
-import '../../mdui-jsx.d.ts'
 
 interface Refs {
     inputAccountRef: React.MutableRefObject<MduiTextField | null>
