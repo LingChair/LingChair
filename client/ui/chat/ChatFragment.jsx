@@ -47,7 +47,9 @@ export default function ChatFragment({ ...props } = {}) {
                     paddingTop: '0.1rem',
                     height: '4rem',
                     position: 'sticky',
-                    bottom: '0',
+                    bottom: '2px',
+                    marginLeft: '5px',
+                    marginRight: '4px',
                     backgroundColor: 'rgb(var(--mdui-color-background))',
                 }}>
                     <mdui-text-field variant="outlined" placeholder="喵呜~" autosize max-rows="1" style={{
@@ -61,6 +63,6 @@ export default function ChatFragment({ ...props } = {}) {
                     }}></mdui-button-icon>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
