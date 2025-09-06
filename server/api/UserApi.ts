@@ -5,7 +5,7 @@ export default class UserApi extends BaseApi {
         return "User"
     }
     override onInit(): void {
-        this.registerEvent("User.auth", () => {
+        this.registerEvent("User.auth", (args) => {
             return {
                 msg: "",
                 code: 200,
