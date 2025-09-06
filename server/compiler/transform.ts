@@ -11,7 +11,11 @@ async function compileJs(path: string) {
                 },
             ],
             "@babel/preset-react",
-            "@babel/preset-typescript",
+            [
+                "@babel/preset-typescript", {
+                    allowDeclareFields: true,
+                },
+            ],
         ],
         targets: {
             chrome: "53",
