@@ -1,12 +1,14 @@
+import { React } from '../../Imports.ts'
+
 export default function LoginDialog({
     inputAccountRef,
     inputPasswordRef,
     registerButtonRef,
     loginButtonRef,
-    ...prop
+    loginDialogRef
 }) {
     return (
-        <mdui-dialog headline="登录" {...prop}>
+        <mdui-dialog headline="登录" ref={loginDialogRef}>
 
             <mdui-text-field label="账号" ref={inputAccountRef}></mdui-text-field>
             <div style={{

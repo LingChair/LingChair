@@ -1,3 +1,5 @@
+import { React } from '../../Imports.ts'
+
 /**
  * 消息容器
  * @returns { React.JSX.Element }

@@ -1,8 +1,10 @@
+import { CryptoES } from './Imports.ts'
+
 const dataIsEmpty = !localStorage.tws_data || localStorage.tws_data == ''
 
 const aes = {
-    enc: (m: string, k: string) => CryptoJS.AES.encrypt(m, k).toString(),
-    dec: (m: string, k: string) => CryptoJS.AES.decrypt(m, k).toString(CryptoJS.enc.Utf8),
+    enc: (m: string, k: string) => CryptoES.AES.encrypt(m, k).toString(CryptoES.enc.Utf8),
+    dec: (m: string, k: string) => CryptoES.AES.decrypt(m, k).toString(CryptoES.enc.Utf8),
 }
 
 const key = location.host + '_TWS_姐姐'

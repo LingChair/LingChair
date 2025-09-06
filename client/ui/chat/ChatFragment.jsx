@@ -1,7 +1,9 @@
 import Message from "./Message.jsx"
 import MessageContainer from "./MessageContainer.jsx"
 
-export default function ChatFragment() {
+import { React } from '../../Imports.ts'
+
+export default function ChatFragment({ ...props } = {}) {
     return (
         <div style={{
             width: '100%',
@@ -9,7 +11,7 @@ export default function ChatFragment() {
             display: 'flex',
             flexDirection: 'column',
             overflowY: 'auto',
-        }}>
+        }} {...props}>
             <mdui-top-app-bar style={{
                 position: 'sticky',
             }}>
@@ -48,7 +50,7 @@ export default function ChatFragment() {
                     bottom: '0',
                     backgroundColor: 'rgb(var(--mdui-color-background))',
                 }}>
-                    <mdui-text-field variant="outlined" placeholder="喵呜~" style={{
+                    <mdui-text-field variant="outlined" placeholder="喵呜~" autosize max-rows="1" style={{
                         marginRight: '10px',
                     }}></mdui-text-field>
                     <mdui-button-icon slot="end-icon" icon="more_vert" style={{

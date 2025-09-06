@@ -1,5 +1,7 @@
 import Avatar from "../Avatar.jsx"
 
+import { React } from '../../Imports.ts'
+
 /**
  * 一条消息
  * @param { Object } param

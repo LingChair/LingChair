@@ -1,11 +1,13 @@
-import Client from "../api/Client.ts";
-import data from "../Data.ts";
+import Client from "../api/Client.ts"
+import data from "../Data.ts"
 import ChatFragment from "./chat/ChatFragment.jsx"
 import LoginDialog from "./dialog/LoginDialog.jsx"
 import ContactsListItem from "./main/ContactsListItem.jsx"
 import RecentsListItem from "./main/RecentsListItem.jsx"
-import snackbar from "./snackbar.js";
+import snackbar from "./snackbar.js"
 import useEventListener from './useEventListener.js'
+
+import { React } from '../Imports.ts'
 
 export default function App() {
     const [recentsList, setRecentsList] = React.useState([
@@ -51,16 +53,19 @@ export default function App() {
         loginButtonRef
     ] = [React.useRef(null), React.useRef(null), React.useRef(null), React.useRef(null), React.useRef(null)]
 
-    React.useEffect(async () => {
-        Client.connect()
-        const re = await Client.invoke("User.auth", {
-            access_token: data.access_token,
-        })
-        if (re.code == 401)
-            loginDialogRef.current.show()
-        else if (re.code != 200)
-            snackbar("驗證失敗: " + re.msg)
-    })
+    React.useEffect(() => {
+        ; (async () => {
+            Client.connect()
+            const re = await Client.invoke("User.auth", {
+                access_token: data.access_token,
+            })
+            if (re.code == 401)
+                loginDialogRef.current.show()
+            else if (re.code != 200)
+                snackbar("驗證失敗: " + re.msg)
+        })()
+        return () => { }
+    }, [])
 
     return (
         <div style={{
@@ -70,7 +75,7 @@ export default function App() {
             height: 'var(--whitesilk-window-height)',
         }}>
             <LoginDialog
-                ref={loginDialogRef}
+                loginDialogRef={loginDialogRef}
                 inputAccountRef={inputAccountRef}
                 inputPasswordRef={inputPasswordRef}
                 registerButtonRef={registerButtonRef}
@@ -91,66 +96,68 @@ export default function App() {
             {
                 // 侧边列表
             }
-            {
-                // 最近聊天
-                <mdui-list style={{
-                    width: "35%",
-                    overflowY: 'auto',
-                    paddingRight: '10px',
-                    display: navigationItemSelected == "Recents" ? null : 'none'
-                }}>
-                    {
-                        recentsList.map((v) =>
-                            <RecentsListItem
-                                key={v.userId}
-                                nickName={v.nickName}
-                                avatar={v.avatar}
-                                content={v.content} />
-                        )
-                    }
-                </mdui-list>
-            }
-            {
-                // 联系人列表
-                <mdui-list style={{
-                    width: "35%",
-                    overflowY: 'auto',
-                    paddingRight: '10px',
-                    display: navigationItemSelected == "Contacts" ? null : 'none'
-                }}>
-                    <mdui-collapse accordion value={Object.keys(contactsMap)[0]}>
+            <div id="SideBar">
+                {
+                    // 最近聊天
+                    <mdui-list style={{
+                        width: "35%",
+                        overflowY: 'auto',
+                        paddingRight: '10px',
+                        display: navigationItemSelected == "Recents" ? null : 'none'
+                    }}>
                         {
-                            Object.keys(contactsMap).map((v) =>
-                                <mdui-collapse-item key={v} value={v}>
-                                    <mdui-list-subheader slot="header">{v}</mdui-list-subheader>
-                                    {
-                                        contactsMap[v].map((v2) =>
-                                            <ContactsListItem
-                                                key={v2.userId}
-                                                nickName={v2.nickName}
-                                                avatar={v2.avatar} />
-                                        )
-                                    }
-                                </mdui-collapse-item>
+                            recentsList.map((v) =>
+                                <RecentsListItem
+                                    key={v.userId}
+                                    nickName={v.nickName}
+                                    avatar={v.avatar}
+                                    content={v.content} />
                             )
                         }
-                    </mdui-collapse>
-                </mdui-list>
-            }
+                    </mdui-list>
+                }
+                {
+                    // 联系人列表
+                    <mdui-list style={{
+                        width: "35%",
+                        overflowY: 'auto',
+                        paddingRight: '10px',
+                        display: navigationItemSelected == "Contacts" ? null : 'none'
+                    }}>
+                        <mdui-collapse accordion value={Object.keys(contactsMap)[0]}>
+                            {
+                                Object.keys(contactsMap).map((v) =>
+                                    <mdui-collapse-item key={v} value={v}>
+                                        <mdui-list-subheader slot="header">{v}</mdui-list-subheader>
+                                        {
+                                            contactsMap[v].map((v2) =>
+                                                <ContactsListItem
+                                                    key={v2.userId}
+                                                    nickName={v2.nickName}
+                                                    avatar={v2.avatar} />
+                                            )
+                                        }
+                                    </mdui-collapse-item>
+                                )
+                            }
+                        </mdui-collapse>
+                    </mdui-list>
+                }
+            </div>
             {
                 // 分割线
             }
-            <div style={{
+            {/* <div style={{
                 // 我们删除了 body 的padding 因此不需要再 calc 了
                 height: 'var(--whitesilk-window-height)',
                 marginRight: '10px',
             }}>
                 <mdui-divider vertical></mdui-divider>
-            </div>
+            </div> */}
             {
                 // 聊天页面
             }
-            <ChatFragment />
+            <ChatFragment id="ChatFragment" />
         </div>
     )
 }

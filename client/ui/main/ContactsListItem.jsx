@@ -1,5 +1,7 @@
 import Avatar from "../Avatar.jsx"
 
+import { React } from '../../Imports.ts'
+
 export default function ContactsListItem({ nickName, avatar }) {
     return (
         <mdui-list-item rounded style={{
