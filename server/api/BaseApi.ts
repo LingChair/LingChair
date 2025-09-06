@@ -1,4 +1,4 @@
-import EventCallbackFunction from "../types/EventCallbackFunction.ts"
+import EventCallbackFunction from "../typedef/EventCallbackFunction.ts"
 import ApiManager from "./ApiManager.ts"
 import { CallMethod } from './ApiDeclare.ts'
 
@@ -8,7 +8,7 @@ export default abstract class BaseApi {
         this.onInit()
     }
     abstract onInit(): void
-    checkArgsMissing(args: {}, names: []) {
+    checkArgsMissing(args: { [key: string]: unknown }, names: []) {
         for (const k of names)
             if (!(k in args))
                 return true

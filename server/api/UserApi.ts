@@ -8,10 +8,7 @@ export default class UserApi extends BaseApi {
         this.registerEvent("User.auth", (args) => {
             return {
                 msg: "",
-                code: 200,
-                data: {
-                    
-                }
+                code: 401,
             }
         })
     }

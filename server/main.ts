@@ -2,7 +2,7 @@ import ApiManager from "./api/ApiManager.ts"
 // @ts-types="npm:@types/express"
 import express from 'express'
 import * as SocketIo from 'socket.io'
-import HttpServerLike from "./types/HttpServerLike.ts"
+import HttpServerLike from "./typedef/HttpServerLike.ts"
 import config from './config.ts'
 import http from 'node:http'
 import https from 'node:https'

@@ -1,8 +1,8 @@
-import HttpServerLike from '../types/HttpServerLike.ts'
+import HttpServerLike from '../typedef/HttpServerLike.ts'
 import UserApi from "./UserApi.ts"
 import * as SocketIo from "socket.io"
 import ApiCallbackMessage from "./ApiCallbackMessage.ts"
-import EventCallbackFunction from "../types/EventCallbackFunction.ts"
+import EventCallbackFunction from "../typedef/EventCallbackFunction.ts"
 import BaseApi from "./BaseApi.ts"
 
 export default class ApiManager {
@@ -41,6 +41,12 @@ export default class ApiManager {
                     return callback(this.event_listeners[name]?.(args))
                 } catch (e) {
                     console.error(e)
+                    try {
+                        callback({
+                            code: 500,
+                            msg: "錯誤: " + e
+                        })
+                    } catch(_e) {}
                 }
             })
         })
