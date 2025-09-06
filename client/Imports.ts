@@ -1,5 +1,6 @@
-import * as React from 'https://esm.sh/react@18.3.1'
-import * as ReactDOM from 'https://esm.sh/react-dom@18.3.1'
+// @ts-types="./typedef/react@18.3.18.d.ts"
+import * as React from './static/react-esm-18.3.1.static.js'
+import * as ReactDOM from './static/react-dom-esm-18.3.1.static.js'
 import * as CryptoES from './static/crypto-es-3.1.0.static.mjs'
 
 import type { Dialog } from 'https://unpkg.com/mdui@2.1.4/components/dialog/index.d.ts'

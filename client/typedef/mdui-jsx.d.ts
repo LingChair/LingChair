@@ -1,4 +1,4 @@
-import React from 'react';
+import { React } from '../Imports.ts'
 import { JQ } from '@mdui/jq';
 
 type HTMLElementProps = React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
