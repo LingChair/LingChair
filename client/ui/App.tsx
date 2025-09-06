@@ -80,11 +80,6 @@ export default function App() {
                 inputPasswordRef={inputPasswordRef}
                 registerButtonRef={registerButtonRef}
                 loginButtonRef={loginButtonRef} />
-            {
-                // 移动端用 页面调试
-                // 換個地方弄
-                // (new URL(location.href).searchParams.get('debug') == 'true') && <script src="https://unpkg.com/eruda/eruda.js"></script>
-            }
             <mdui-navigation-rail contained value="Recents" ref={navigationRailRef}>
                 <mdui-button-icon icon="menu" slot="top"></mdui-button-icon>
 

@@ -30,12 +30,13 @@ async function compileJs(path: string) {
 
 export default async function(source: string, output: string) {
     const t = Date.now()
+    io.remove(output)
     io.copyDir(source, output)
     for (const v of io.listFiles(output, {
         recursive: true,
         fullPath: true,
     })) 
-        if (/\.(t|j)sx?$/.test(v))
+        if (/\.(t|j)sx?$/.test(v) && !/\.(min|static)\.(t|j)sx?$/.test(v))
             await compileJs(v)
     return (Date.now() - t) / 1000
 }

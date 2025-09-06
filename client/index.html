@@ -7,14 +7,14 @@
     <meta name="renderer" content="webkit" />
 
     <!-- UI -->
-    <script src="https://unpkg.com/mdui@2/mdui.global.js">
+    <script src="./static/mdui-2.1.4.global.min.js">
     </script>
     <link rel="icon" href="icon.ico" />
-    <link rel="stylesheet" href="https://unpkg.com/mdui@2/mdui.css" />
+    <link rel="stylesheet" href="./static/mdui-2.1.4.css" />
     <link rel="stylesheet" href="./static/material_icons.css" />
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://unpkg.com/split.js@1.6.5/dist/split.min.js"></script>
+    <script src="./static/jquery-3.7.1.min.js"></script>
+    <script src="./static/splitjs-1.6.5.min.js"></script>
 
     <title>TheWhiteSilk</title>
 
@@ -94,9 +94,23 @@
 <body>
     <div id="app"></div>
     <mdui-snackbar close-on-outside-click id="public_snackbar"></mdui-snackbar>
+    
+    <mdui-dialog close-on-overlay-click id="ErrorDialog">
+        <span slot="headline">错误</span>
+        <span slot="description" id="ErrorDialog_Message"></span>
+    </mdui-dialog>
 
     <script nomodule>
         alert('很抱歉, 此应用无法在较旧的浏览器运行, 请使用基于 Chromium 89+ 的浏览器(内核)使用 :(')
+    </script>
+    <script>
+        new URL(location.href).searchParams.get('debug') == 'true' && window.addEventListener('error', ({ message, filename, lineno, colno, error }) => {
+            const m = $("#ErrorDialog_Message")
+            const d = $("#ErrorDialog").get(0)
+            const s = d.open
+            d.open = true
+            m.html((s ? `${m.html()}<br/><br/>` : '') + `${message} (${filename || 'unknown'}:${lineno}:${colno})`)
+        })
     </script>
     <script type="module">
         import App from './ui/App.tsx'
