@@ -11,6 +11,24 @@ import { MduiDialog, React, MduiNavigationRail, MduiTextField, MduiButton } from
 import User from "../api/client_data/User.ts"
 import RecentChat from "../api/client_data/RecentChat.ts"
 
+import '../typedef/mdui-jsx.d.ts'
+
+declare function Split(r: unknown, s: unknown): {
+    setSizes?: undefined;
+    getSizes?: undefined;
+    collapse?: undefined;
+    destroy?: undefined;
+    parent?: undefined;
+    pairs?: undefined;
+} | {
+    setSizes: (e: unknown) => void;
+    getSizes: () => unknown;
+    collapse: (e: unknown) => void;
+    destroy: (e: unknown, t: unknown) => void;
+    parent: unknown;
+    pairs: unknown[];
+}
+
 export default function App() {
     const [recentsList, setRecentsList] = React.useState([
          {
@@ -54,8 +72,13 @@ export default function App() {
     const loginButtonRef: React.MutableRefObject<MduiButton | null> = React.useRef(null)
 
     React.useEffect(() => {
-        // deno-lint-ignore no-window-prefix no-window
-        window.addEventListener('load', async () => {
+        ;(async () => {
+            Split(['#SideBar', '#ChatFragment'], {
+                sizes: [25, 75],
+                minSize: [200, 400],
+                gutterSize: 2,
+            })
+
             Client.connect()
             const re = await Client.invoke("User.auth", {
                 access_token: data.access_token,
@@ -64,7 +87,7 @@ export default function App() {
                 loginDialogRef.current!.open = true
             else if (re.code != 200)
                 snackbar("驗證失敗: " + re.msg)
-        })
+        })()
     }, [])
 
     return (
@@ -97,7 +120,7 @@ export default function App() {
                     <mdui-list style={{
                         overflowY: 'auto',
                         paddingRight: '10px',
-                        display: navigationItemSelected == "Recents" ? null : 'none'
+                        display: navigationItemSelected == "Recents" ? undefined : 'none'
                     }}>
                         {
                             recentsList.map((v) =>
@@ -115,7 +138,7 @@ export default function App() {
                     <mdui-list style={{
                         overflowY: 'auto',
                         paddingRight: '10px',
-                        display: navigationItemSelected == "Contacts" ? null : 'none'
+                        display: navigationItemSelected == "Contacts" ? undefined : 'none'
                     }}>
                         <mdui-collapse accordion value={Object.keys(contactsMap)[0]}>
                             {

@@ -124,14 +124,6 @@
         }
         window.addEventListener('resize', onResize)
         onResize()
-
-        window.addEventListener('load', () => {
-            Split(['#SideBar', '#ChatFragment'], {
-                sizes: [25, 75],
-                minSize: [200, 400],
-                gutterSize: 2,
-            })
-        })
     </script>
 </body>
 
