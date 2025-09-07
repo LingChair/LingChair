@@ -9,11 +9,11 @@ import User from "../api/client_data/User.ts"
 import RecentChat from "../api/client_data/RecentChat.ts"
 
 import * as React from 'react'
-import * as CryptoES from 'crypto-es'
 import { Button, Dialog, NavigationRail, TextField } from "mdui"
 import Split from 'split.js'
 import 'mdui/jsx.zh-cn.d.ts'
 import { checkApiSuccessOrSncakbar } from "./snackbar.ts";
+import RegisterDialog from "./dialog/RegisterDialog.tsx";
 
 declare global {
     namespace React {
@@ -27,7 +27,7 @@ declare global {
 
 export default function App() {
     const [recentsList, setRecentsList] = React.useState([
-         {
+        {
             id: '0',
             avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
             title: "麻油衣酱",
@@ -38,11 +38,11 @@ export default function App() {
             avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
             title: "Maya Fey",
             content: "我是绫里真宵, 是一名灵媒师~"
-        }, 
+        },
     ] as RecentChat[])
     const [contactsMap, setContactsMap] = React.useState({
         所有: [
-             {
+            {
                 id: '0',
                 avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
                 nickname: "麻油衣酱",
@@ -51,7 +51,7 @@ export default function App() {
                 id: '0',
                 avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
                 nickname: "Maya Fey",
-            }, 
+            },
         ],
     } as unknown as { [key: string]: User[] })
     const [navigationItemSelected, setNavigationItemSelected] = React.useState('Recents')
@@ -62,25 +62,16 @@ export default function App() {
     })
 
     const loginDialogRef: React.MutableRefObject<Dialog | null> = React.useRef(null)
-    const inputAccountRef: React.MutableRefObject<TextField | null> = React.useRef(null)
-    const inputPasswordRef: React.MutableRefObject<TextField | null> = React.useRef(null)
-    const registerButtonRef: React.MutableRefObject<Button | null> = React.useRef(null)
-    const loginButtonRef: React.MutableRefObject<Button | null> = React.useRef(null)
+    const loginInputAccountRef: React.MutableRefObject<TextField | null> = React.useRef(null)
+    const loginInputPasswordRef: React.MutableRefObject<TextField | null> = React.useRef(null)
 
-    useEventListener(loginButtonRef as React.MutableRefObject<Button>, 'click', async () => {
-        const account = inputAccountRef.current!.value
-        const password = inputPasswordRef.current!.value
-
-        const re = await Client.invoke("User.login", {
-            account: account,
-            password: CryptoES.SHA256(password),
-        })
-        
-        if (checkApiSuccessOrSncakbar(re, "登錄失敗")) return
-    })
+    const registerDialogRef: React.MutableRefObject<Dialog | null> = React.useRef(null)
+    const registerInputUserNameRef: React.MutableRefObject<TextField | null> = React.useRef(null)
+    const registerInputNickNameRef: React.MutableRefObject<TextField | null> = React.useRef(null)
+    const registerInputPasswordRef: React.MutableRefObject<TextField | null> = React.useRef(null)
 
     React.useEffect(() => {
-        ;(async () => {
+        ; (async () => {
             Split(['#SideBar', '#ChatFragment'], {
                 sizes: [25, 75],
                 minSize: [200, 400],
@@ -89,7 +80,7 @@ export default function App() {
 
             Client.connect()
             const re = await Client.invoke("User.auth", {
-                access_token: data.access_token,
+                access_token: data.access_token || '',
             })
             if (re.code == 401)
                 loginDialogRef.current!.open = true
@@ -107,10 +98,18 @@ export default function App() {
         }}>
             <LoginDialog
                 loginDialogRef={loginDialogRef}
-                inputAccountRef={inputAccountRef}
-                inputPasswordRef={inputPasswordRef}
-                registerButtonRef={registerButtonRef}
-                loginButtonRef={loginButtonRef} />
+                loginInputAccountRef={loginInputAccountRef}
+                loginInputPasswordRef={loginInputPasswordRef}
+                registerDialogRef={registerDialogRef} />
+
+            <RegisterDialog
+                registerDialogRef={registerDialogRef}
+                registerInputUserNameRef={registerInputUserNameRef}
+                registerInputNickNameRef={registerInputNickNameRef}
+                registerInputPasswordRef={registerInputPasswordRef}
+                loginInputAccountRef={loginInputAccountRef}
+                loginInputPasswordRef={loginInputPasswordRef} />
+
             <mdui-navigation-rail contained value="Recents" ref={navigationRailRef}>
                 <mdui-button-icon icon="menu" slot="top"></mdui-button-icon>
 
