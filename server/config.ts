@@ -8,6 +8,8 @@ const prefix = isCompilingClient ? '.' : ''
 const default_data_path = "./thewhitesilk_data"
 let config = {
     data_path: default_data_path,
+    salt: "TWS_Demo",
+    aes_key: "01234567890123456",
     server: {
         use: "http",
         /**
