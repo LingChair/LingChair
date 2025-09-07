@@ -1,0 +1,53 @@
+import { Buffer } from "node:buffer";
+import config from "../config.ts"
+import User from "../data/User.ts"
+import crypto from 'node:crypto'
+
+interface Token {
+    author: string
+    auth: string
+    made_time: number
+    expired_time: number
+}
+
+function normalizeKey(key: string, keyLength = 32) {
+    const hash = crypto.createHash('sha256')
+    hash.update(key)
+    const keyBuffer = hash.digest()
+    return keyLength ? keyBuffer.slice(0, keyLength) : keyBuffer
+}
+
+export default class TokenManager {
+    // TODO: 單令牌 -》 單 + 刷新 with 多設備管理
+    static makeAuth(user: User) {
+        return crypto.createHash("sha256").update(user.bean.id + user.getPassword() + config.salt).digest().toString('hex')
+    }
+    static encode(token: Token) {
+        return crypto.createCipheriv("aes-256-gcm", normalizeKey(config.aes_key), '01234567890123456').update(
+            JSON.stringify(token)
+        ).toString('hex')
+    }
+    static decode(token: string) {
+        return JSON.parse(crypto.createDecipheriv("aes-256-gcm", normalizeKey(config.aes_key), '01234567890123456').update(
+            Buffer.from(token, 'hex')
+        ).toString()) as Token
+    }
+
+    static make(user: User, time: number = Date.now()) {
+        return this.encode({
+            author: user.bean.id,
+            auth: this.makeAuth(user),
+            made_time: time,
+            expired_time: time + (1 * 1000 * 60 * 60 * 24),
+        })
+    }
+    static makeNewer(user: User, token: string) {
+        if (this.check(user, token))
+            return this.make(user, Date.now() + (1 * 1000 * 60 * 60 * 24))
+    }
+    static check(user: User, token: string) {
+        const tk = this.decode(token)
+
+        return this.makeAuth(user) == tk.auth
+    }
+}
