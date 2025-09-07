@@ -1,4 +1,4 @@
-import { io, Socket } from 'https://unpkg.com/socket.io-client@4.8.1/dist/socket.io.esm.min.js'
+import { io, Socket } from 'socket.io-client'
 import { CallMethod, ClientEvent } from './ApiDeclare.ts'
 import ApiCallbackMessage from './ApiCallbackMessage.ts'
 
@@ -10,7 +10,9 @@ class Client {
     static connect() {
         this.socket?.disconnect()
         this.socket && delete this.socket
-        this.socket = io()
+        this.socket = io({
+            transports: ['websocket']
+        })
         this.socket!.on("The_White_Silk", (name: string, data: UnknownObject, callback: (ret: UnknownObject) => void) => {
             try {
                 if (name == null || data == null) return
