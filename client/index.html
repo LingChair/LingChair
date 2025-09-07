@@ -7,88 +7,12 @@
     <meta name="renderer" content="webkit" />
 
     <!-- UI -->
-    <script src="./static/mdui-2.1.4.global.min.js">
-    </script>
     <link rel="icon" href="icon.ico" />
-    <link rel="stylesheet" href="./static/mdui-2.1.4.css" />
     <link rel="stylesheet" href="./static/material_icons.css" />
-
-    <script src="./static/jquery-3.7.1.min.js"></script>
-    <script src="./static/splitjs-1.6.5.min.js"></script>
 
     <title>TheWhiteSilk</title>
 
-    <style>
-        /* 滑条*/
-        .no-scroll-bar::-webkit-scrollbar {
-            width: 0px !important;
-        }
-
-        /* https://blog.csdn.net/qq_39347364/article/details/111996581*/
-        *::-webkit-scrollbar {
-            width: 7px;
-            height: 10px;
-        }
-
-        *::-webkit-scrollbar-track {
-            width: 6px;
-            background: rgba(#101F1C, 0.1);
-            -webkit-border-radius: 2em;
-            -moz-border-radius: 2em;
-            border-radius: 2em;
-        }
-
-        *::-webkit-scrollbar-thumb {
-            background-color: rgba(144, 147, 153, .5);
-            background-clip: padding-box;
-            min-height: 28px;
-            -webkit-border-radius: 2em;
-            -moz-border-radius: 2em;
-            border-radius: 2em;
-            transition: background-color .3s;
-            cursor: pointer;
-        }
-
-        *::-webkit-scrollbar-thumb:hover {
-            background-color: rgba(144, 147, 153, .3);
-        }
-
-        /* 使用系统字体 在部分系统表现很好*/
-        /* 我们至今仍未能知道桌面端浏览器字体的秘密*/
-        *:not(.material-icons, .mdui-icon, mdui-icon, .fa, .google-symbols) {
-            font-family: -apple-system, system-ui, -webkit-system-font !important;
-        }
-
-        body {
-            display: flex;
-            margin: 0 0 0 0;
-            height: 100%;
-        }
-        
-        html {
-            margin: 0 0 0 0;
-            height: 100%;
-        }
-
-        /* 防止小尺寸图片模糊*/
-        * {
-            image-rendering: -moz-crisp-edges;
-            image-rendering: -o-crisp-edges;
-            image-rendering: -webkit-optimize-contrast;
-            image-rendering: crisp-edges;
-            -ms-interpolation-mode: nearest-neighbor;
-        }
-
-        .gutter {
-            background-color: rgb(var(--mdui-color-surface-variant));;
-            background-repeat: no-repeat;
-            background-position: 50%;
-        }
-
-        .gutter.gutter-horizontal {
-            cursor: col-resize;
-        }
-    </style>
+    <link rel="stylesheet" href="./style.css" />
 </head>
 
 <body>
@@ -103,28 +27,7 @@
     <script nomodule>
         alert('很抱歉, 此应用无法在较旧的浏览器运行, 请使用基于 Chromium 89+ 的浏览器(内核)使用 :(')
     </script>
-    <script>
-        new URL(location.href).searchParams.get('debug') == 'true' && window.addEventListener('error', ({ message, filename, lineno, colno, error }) => {
-            const m = $("#ErrorDialog_Message")
-            const d = $("#ErrorDialog").get(0)
-            const s = d.open
-            d.open = true
-            m.html((s ? `${m.html()}<br/><br/>` : '') + `${message} (${filename || 'unknown'}:${lineno}:${colno})`)
-        })
-    </script>
-    <script type="module">
-        import App from './ui/App.tsx'
-        import { React, ReactDOM } from './Imports.ts'
-        ReactDOM.createRoot(document.getElementById('app')).render(React.createElement(App, null))
-
-        let onResize = () => {
-            document.body.style.setProperty('--whitesilk-widget-message-maxwidth', mdui.breakpoint().down('md') ? "80%" : "70%")
-            document.body.style.setProperty('--whitesilk-window-width', window.innerWidth + 'px')
-            document.body.style.setProperty('--whitesilk-window-height', window.innerHeight + 'px')
-        }
-        window.addEventListener('resize', onResize)
-        onResize()
-    </script>
+    <script type="module" src="./index.ts"></script>
 </body>
 
 </html>

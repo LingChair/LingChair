@@ -3,7 +3,7 @@
  * @param { Event } event 
  */
 
-import { React } from "../Imports.ts"
+import * as React from 'react'
 
 /**
  * 绑定事件

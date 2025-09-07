@@ -8,7 +8,6 @@ import http from 'node:http'
 import https from 'node:https'
 import readline from 'node:readline'
 import process from "node:process"
-import transform from './compiler/transform.ts'
 import chalk from "chalk"
 
 const app = express()
@@ -34,18 +33,13 @@ ApiManager.initEvents()
 ApiManager.initAllApis()
 
 httpServer.listen(config.server.listen)
-console.log(chalk.green("API & Web 服務已經開始運作"))
-
-console.log(chalk.green("Web 頁面已編譯完成, 用時 " + await transform('./client', config.data_path + '/page_compiled') + "s"))
-
 console.log(chalk.yellow("===== TheWhiteSilk Server ====="))
-console.log(chalk.yellow("b - 重新編譯 Web 頁面"))
+console.log(chalk.green("API & Web 服務已經開始運作"))
 
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
 })
 rl.on('line', async (text) => {
-    if (text == "b")
-        console.log(chalk.green("Web 頁面已編譯完成, 用時 " + await transform('./client', config.data_path + '/page_compiled') + "s"))
+    
 })

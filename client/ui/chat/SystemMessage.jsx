@@ -1,5 +1,3 @@
-import { React } from '../../Imports.ts'
-
 /**
  * 一条系统提示消息
  * @returns { React.JSX.Element }

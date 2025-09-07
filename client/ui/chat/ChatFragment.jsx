@@ -1,7 +1,7 @@
 import Message from "./Message.jsx"
 import MessageContainer from "./MessageContainer.jsx"
 
-import { React } from '../../Imports.ts'
+import * as React from 'react'
 
 export default function ChatFragment({ ...props } = {}) {
     return (

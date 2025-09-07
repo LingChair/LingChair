@@ -1,9 +1,9 @@
-import { CryptoES } from './Imports.ts'
+import * as CryptoES from 'crypto-es'
 
 const dataIsEmpty = !localStorage.tws_data || localStorage.tws_data == ''
 
 const aes = {
-    enc: (m: string, k: string) => CryptoES.AES.encrypt(m, k).toString(CryptoES.Utf8),
+    enc: (m: string, k: string) => CryptoES.AES.encrypt(m, k).toString(CryptoES.HexFormatter),
     dec: (m: string, k: string) => CryptoES.AES.decrypt(m, k).toString(CryptoES.Utf8),
 }
 

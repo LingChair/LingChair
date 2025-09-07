@@ -1,5 +1,3 @@
-import { React } from '../Imports.ts'
-
 export default function Avatar({ src, text, icon = 'person', ...props } = {}) {
     return (
         src ? <mdui-avatar {...props}>

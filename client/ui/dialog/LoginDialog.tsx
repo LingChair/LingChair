@@ -1,11 +1,12 @@
-import { React, MduiDialog, MduiTextField, MduiButton } from '../../Imports.ts'
+import * as React from 'react'
+import { Button, Dialog, TextField } from "mdui";
 
 interface Refs {
-    inputAccountRef: React.MutableRefObject<MduiTextField | null>
-    inputPasswordRef: React.MutableRefObject<MduiTextField | null>
-    registerButtonRef: React.MutableRefObject<MduiButton | null>
-    loginButtonRef: React.MutableRefObject<MduiButton | null>
-    loginDialogRef: React.MutableRefObject<MduiDialog | null>
+    inputAccountRef: React.MutableRefObject<TextField | null>
+    inputPasswordRef: React.MutableRefObject<TextField | null>
+    registerButtonRef: React.MutableRefObject<Button | null>
+    loginButtonRef: React.MutableRefObject<Button | null>
+    loginDialogRef: React.MutableRefObject<Dialog | null>
 }
 
 export default function LoginDialog({

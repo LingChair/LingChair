@@ -1,5 +1,9 @@
 import fs from 'node:fs/promises'
 import chalk from 'chalk'
+import { cwd } from "node:process"
+
+const isCompilingClient = /client(\\|\/)?$/.test(cwd())
+const prefix = isCompilingClient ? '.' : ''
 
 const default_data_path = "./thewhitesilk_data"
 let config = {
@@ -28,12 +32,12 @@ let config = {
 }
 
 try {
-    config = JSON.parse(await fs.readFile('thewhitesilk_config.json', 'utf-8'))
+    config = JSON.parse(await fs.readFile(prefix + './thewhitesilk_config.json', 'utf-8'))
 } catch (_e) {
     console.log(chalk.yellow("配置文件貌似不存在, 正在创建..."))
-    await fs.writeFile('thewhitesilk_config.json', JSON.stringify(config))
+    await fs.writeFile(prefix + './thewhitesilk_config.json', JSON.stringify(config))
 }
 
-await fs.mkdir(config.data_path, { recursive: true })
+await fs.mkdir(prefix + config.data_path, { recursive: true })
 
 export default config

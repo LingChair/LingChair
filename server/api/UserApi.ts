@@ -11,5 +11,16 @@ export default class UserApi extends BaseApi {
                 code: 401,
             }
         })
+        this.registerEvent("User.login", (args) => {
+            if (this.checkArgsMissing(args, ['account', 'password'])) return {
+                msg: "",
+                code: 400,
+            }
+
+            return {
+                msg: "",
+                code: 501,
+            }
+        })
     }
 }

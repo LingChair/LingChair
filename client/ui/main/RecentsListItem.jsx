@@ -1,7 +1,5 @@
 import Avatar from "../Avatar.jsx"
 
-import { React } from '../../Imports.ts'
-
 export default function RecentsListItem({ nickName, avatar, content }) {
     return (
         <mdui-list-item rounded style={{

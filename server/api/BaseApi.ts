@@ -8,7 +8,7 @@ export default abstract class BaseApi {
         this.onInit()
     }
     abstract onInit(): void
-    checkArgsMissing(args: { [key: string]: unknown }, names: []) {
+    checkArgsMissing(args: { [key: string]: unknown }, names: string[]) {
         for (const k of names)
             if (!(k in args))
                 return true

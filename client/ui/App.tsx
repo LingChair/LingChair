@@ -4,29 +4,24 @@ import ChatFragment from "./chat/ChatFragment.jsx"
 import LoginDialog from "./dialog/LoginDialog.tsx"
 import ContactsListItem from "./main/ContactsListItem.jsx"
 import RecentsListItem from "./main/RecentsListItem.jsx"
-import snackbar from "./snackbar.js"
 import useEventListener from './useEventListener.js'
-
-import { MduiDialog, React, MduiNavigationRail, MduiTextField, MduiButton } from '../Imports.ts'
 import User from "../api/client_data/User.ts"
 import RecentChat from "../api/client_data/RecentChat.ts"
 
-import '../typedef/mdui-jsx.d.ts'
+import * as React from 'react'
+import * as CryptoES from 'crypto-es'
+import { Button, Dialog, NavigationRail, snackbar, TextField } from "mdui"
+import Split from 'split.js'
+import 'mdui/jsx.zh-cn.d.ts'
 
-declare function Split(r: unknown, s: unknown): {
-    setSizes?: undefined;
-    getSizes?: undefined;
-    collapse?: undefined;
-    destroy?: undefined;
-    parent?: undefined;
-    pairs?: undefined;
-} | {
-    setSizes: (e: unknown) => void;
-    getSizes: () => unknown;
-    collapse: (e: unknown) => void;
-    destroy: (e: unknown, t: unknown) => void;
-    parent: unknown;
-    pairs: unknown[];
+declare global {
+    namespace React {
+        namespace JSX {
+            interface IntrinsicAttributes {
+                id?: string
+            }
+        }
+    }
 }
 
 export default function App() {
@@ -62,14 +57,28 @@ export default function App() {
 
     const navigationRailRef = React.useRef(null)
     useEventListener(navigationRailRef, 'change', (event) => {
-        setNavigationItemSelected((event.target as HTMLElement as MduiNavigationRail).value as string)
+        setNavigationItemSelected((event.target as HTMLElement as NavigationRail).value as string)
     })
 
-    const loginDialogRef: React.MutableRefObject<MduiDialog | null> = React.useRef(null)
-    const inputAccountRef: React.MutableRefObject<MduiTextField | null> = React.useRef(null)
-    const inputPasswordRef: React.MutableRefObject<MduiTextField | null> = React.useRef(null)
-    const registerButtonRef: React.MutableRefObject<MduiButton | null> = React.useRef(null)
-    const loginButtonRef: React.MutableRefObject<MduiButton | null> = React.useRef(null)
+    const loginDialogRef: React.MutableRefObject<Dialog | null> = React.useRef(null)
+    const inputAccountRef: React.MutableRefObject<TextField | null> = React.useRef(null)
+    const inputPasswordRef: React.MutableRefObject<TextField | null> = React.useRef(null)
+    const registerButtonRef: React.MutableRefObject<Button | null> = React.useRef(null)
+    const loginButtonRef: React.MutableRefObject<Button | null> = React.useRef(null)
+
+    useEventListener(loginButtonRef, 'click', async () => {
+        const account = inputAccountRef.current!.value
+        const password = inputPasswordRef.current!.value
+
+        const re = await Client.invoke("User.login", {
+            account: account,
+            password: CryptoES.SHA256(password),
+        })
+        if (re.code != 200)
+            snackbar({
+                message: "登錄失敗: " + re.msg
+            })
+    })
 
     React.useEffect(() => {
         ;(async () => {
@@ -86,7 +95,9 @@ export default function App() {
             if (re.code == 401)
                 loginDialogRef.current!.open = true
             else if (re.code != 200)
-                snackbar("驗證失敗: " + re.msg)
+                snackbar({
+                    message: "驗證失敗: " + re.msg
+                })
         })()
     }, [])
 
