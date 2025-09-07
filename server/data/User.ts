@@ -9,6 +9,7 @@ import config from '../config.ts'
 import UserBean from './UserBean.ts'
 
 import FileManager from './FileManager.ts'
+import { SQLInputValue } from "node:sqlite";
 
 /**
  * User.ts - Wrapper and manager
@@ -35,7 +36,7 @@ export default class User {
     }
     
     static createWithUserNameChecked(userName: string | null, nickName: string, avatar: Buffer | null): User {
-        if (User.findAllBeansByCondition('username = ?', userName).length > 0)
+        if (userName && User.findAllBeansByCondition('username = ?', userName).length > 0)
             throw new Error(`用户名 ${userName} 已存在`)
          return User.create(
             userName,
@@ -69,8 +70,8 @@ export default class User {
         return user
     }
     
-    private static findAllBeansByCondition(condition: string, ...args: unknown[]): UserBean[] {
-        return User.database.prepare(`SELECT * FROM ${User.table_name} WHERE ${condition};`).all(...args)
+    private static findAllBeansByCondition(condition: string, ...args: SQLInputValue[]): UserBean[] {
+        return User.database.prepare(`SELECT * FROM ${User.table_name} WHERE ${condition};`).all(...args) as unknown as UserBean[]
     }
     static findById(id: string): User {
         const beans = User.findAllBeansByCondition('id = ?', id)
@@ -117,7 +118,7 @@ export default class User {
         this.setAttr("avatar_file_hash", FileManager.uploadFile(`avatar_user_${this.bean.count}`, avatar).getHash())
     }
     
-    getSettings(): User.Settings {
+    getSettings() {
         return new User.Settings(this, JSON.parse(this.bean.settings))
     }
     
