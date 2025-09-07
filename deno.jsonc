@@ -1,7 +1,7 @@
 {
     "tasks": {
-        "server": "deno task build && deno run --allow-read --allow-write --allow-env --allow-net --allow-sys ./server/main.ts",
-        "debug": "deno task build && deno run --watch --allow-read --allow-write --allow-env --allow-net --allow-sys ./server/main.ts",
+        "server": "deno task build && deno run --allow-read --allow-write --allow-env --allow-net --allow-sys --allow-run=deno ./server/main.ts",
+        "debug": "deno task build && deno run --watch --allow-read --allow-write --allow-env --allow-net --allow-sys --allow-run=deno ./server/main.ts",
         "build": "cd ./client && deno task build"
     },
     "imports": {
