@@ -4,7 +4,7 @@ import ChatFragment from "./chat/ChatFragment.jsx"
 import LoginDialog from "./dialog/LoginDialog.tsx"
 import ContactsListItem from "./main/ContactsListItem.jsx"
 import RecentsListItem from "./main/RecentsListItem.jsx"
-import useEventListener from './useEventListener.js'
+import useEventListener from './useEventListener.ts'
 import User from "../api/client_data/User.ts"
 import RecentChat from "../api/client_data/RecentChat.ts"
 
@@ -55,8 +55,8 @@ export default function App() {
     } as unknown as { [key: string]: User[] })
     const [navigationItemSelected, setNavigationItemSelected] = React.useState('Recents')
 
-    const navigationRailRef = React.useRef(null)
-    useEventListener(navigationRailRef, 'change', (event) => {
+    const navigationRailRef: React.MutableRefObject<NavigationRail | null> = React.useRef(null)
+    useEventListener(navigationRailRef as React.MutableRefObject<NavigationRail>, 'change', (event) => {
         setNavigationItemSelected((event.target as HTMLElement as NavigationRail).value as string)
     })
 
@@ -66,7 +66,7 @@ export default function App() {
     const registerButtonRef: React.MutableRefObject<Button | null> = React.useRef(null)
     const loginButtonRef: React.MutableRefObject<Button | null> = React.useRef(null)
 
-    useEventListener(loginButtonRef, 'click', async () => {
+    useEventListener(loginButtonRef as React.MutableRefObject<Button>, 'click', async () => {
         const account = inputAccountRef.current!.value
         const password = inputPasswordRef.current!.value
 
