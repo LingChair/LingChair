@@ -1,25 +1,94 @@
+import User from "../data/User.ts";
 import BaseApi from "./BaseApi.ts"
+import TokenManager from "./TokenManager.ts";
 
 export default class UserApi extends BaseApi {
     override getName(): string {
         return "User"
     }
     override onInit(): void {
+        // 驗證
         this.registerEvent("User.auth", (args) => {
-            return {
-                msg: "",
-                code: 401,
+            if (this.checkArgsMissing(args, ['access_token'])) return {
+                msg: "參數缺失",
+                code: 400,
+            }
+            try {
+                const access_token = TokenManager.decode(args.access_token as string)
+
+                if (access_token.expired_time > Date.now()) return {
+                    msg: "登錄令牌失效",
+                    code: 401,
+                }
+
+                return {
+                    msg: "成功",
+                    code: 200,
+                }
+            } catch (e) {
+                const err = e as Error
+                if (err.message.indexOf("JSON") != -1)
+                    return {
+                        msg: "無效的登錄令牌",
+                        code: 401,
+                    }
+                else
+                    throw e
             }
         })
+        // 登錄
         this.registerEvent("User.login", (args) => {
             if (this.checkArgsMissing(args, ['account', 'password'])) return {
-                msg: "",
+                msg: "參數缺失",
+                code: 400,
+            }
+            if (this.checkArgsEmpty(args, ['account', 'password'])) return {
+                msg: "參數不得為空",
                 code: 400,
             }
 
+            const user = (User.findByUserName(args.account as string) || User.findById(args.account as string)) as User
+            if (user == null) return {
+                msg: "賬號或密碼錯誤",
+                code: 400,
+            }
+
+            if (user.getPassword() == args.password) return {
+                msg: "成功",
+                code: 200,
+                data: {
+                    access_token: TokenManager.make(user)
+                },
+            }
+
             return {
-                msg: "",
-                code: 501,
+                msg: "賬號或密碼錯誤",
+                code: 400,
+            }
+        })
+        // 注冊
+        this.registerEvent("User.register", (args) => {
+            if (this.checkArgsMissing(args, ['nickname', 'password'])) return {
+                msg: "參數缺失",
+                code: 400,
+            }
+            if (this.checkArgsEmpty(args, ['nickname', 'password'])) return {
+                msg: "參數不得為空",
+                code: 400,
+            }
+
+            const username: string | null = args.username as string
+            const nickname: string = args.nickname as string
+            const password: string = args.password as string
+
+            const user = User.createWithUserNameChecked(username, password, nickname, null)
+
+            return {
+                msg: "成功",
+                code: 200,
+                data: {
+                    userid: user.bean.id
+                },
             }
         })
     }
