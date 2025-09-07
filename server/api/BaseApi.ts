@@ -14,6 +14,12 @@ export default abstract class BaseApi {
                 return true
         return false
     }
+    checkArgsEmpty(args: { [key: string]: unknown }, names: string[]) {
+        for (const k of names)
+            if (k in args && args[k] == '')
+                return true
+        return false
+    }
     registerEvent(name: CallMethod, func: EventCallbackFunction) {
         if (!name.startsWith(this.getName() + ".")) throw Error("注冊的事件應該與接口集合命名空間相匹配: " + name)
         ApiManager.addEventListener(name, func)
