@@ -3,7 +3,8 @@ import 'mdui'
 import { $ } from "mdui/jq"
 import { breakpoint, Dialog } from "mdui"
 
-import * as ReactDOM from 'react-dom'
+import * as React from 'react'
+import { createRoot } from 'react-dom/client'
 
 // deno-lint-ignore no-window no-window-prefix
 new URL(location.href).searchParams.get('debug') == 'true' && window.addEventListener('error', ({ message, filename, lineno, colno, error }) => {
@@ -16,7 +17,7 @@ new URL(location.href).searchParams.get('debug') == 'true' && window.addEventLis
 
 import App from './ui/App.tsx'
 
-ReactDOM.createRoot(document.getElementById('app')).render(React.createElement(App, null))
+createRoot(document.getElementById('app') as HTMLElement).render(React.createElement(App, null))
 
 const onResize = () => {
     document.body.style.setProperty('--whitesilk-widget-message-maxwidth', breakpoint().down('md') ? "80%" : "70%")
