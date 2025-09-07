@@ -5,8 +5,8 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "command": "deno task debug",
-            "name": "Run deno task debug",
+            "command": "deno task server",
+            "name": "Run server",
             "request": "launch",
             "type": "node-terminal",
         },
