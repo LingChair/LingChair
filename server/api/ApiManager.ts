@@ -4,6 +4,7 @@ import * as SocketIo from "socket.io"
 import ApiCallbackMessage from "./ApiCallbackMessage.ts"
 import EventCallbackFunction from "../typedef/EventCallbackFunction.ts"
 import BaseApi from "./BaseApi.ts"
+import DataWrongError from "./DataWrongError.ts";
 
 export default class ApiManager {
     static httpServer: HttpServerLike
@@ -40,11 +41,11 @@ export default class ApiManager {
 
                     return callback(this.event_listeners[name]?.(args))
                 } catch (e) {
-                    console.error(e)
+                    const err = e as Error
                     try {
                         callback({
-                            code: 500,
-                            msg: "錯誤: " + e
+                            code: err instanceof DataWrongError ? 400 : 500,
+                            msg: "錯誤: " + err.message
                         })
                     } catch(_e) {}
                 }
