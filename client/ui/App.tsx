@@ -10,9 +10,10 @@ import RecentChat from "../api/client_data/RecentChat.ts"
 
 import * as React from 'react'
 import * as CryptoES from 'crypto-es'
-import { Button, Dialog, NavigationRail, snackbar, TextField } from "mdui"
+import { Button, Dialog, NavigationRail, TextField } from "mdui"
 import Split from 'split.js'
 import 'mdui/jsx.zh-cn.d.ts'
+import { checkApiSuccessOrSncakbar } from "./snackbar.ts";
 
 declare global {
     namespace React {
@@ -74,10 +75,8 @@ export default function App() {
             account: account,
             password: CryptoES.SHA256(password),
         })
-        if (re.code != 200)
-            snackbar({
-                message: "登錄失敗: " + re.msg
-            })
+        
+        if (checkApiSuccessOrSncakbar(re, "登錄失敗")) return
     })
 
     React.useEffect(() => {
@@ -95,9 +94,7 @@ export default function App() {
             if (re.code == 401)
                 loginDialogRef.current!.open = true
             else if (re.code != 200)
-                snackbar({
-                    message: "驗證失敗: " + re.msg
-                })
+                if (checkApiSuccessOrSncakbar(re, "驗證失敗")) return
         })()
     }, [])
 
