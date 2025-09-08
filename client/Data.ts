@@ -1,12 +1,13 @@
-import * as CryptoES from 'crypto-es'
+// @ts-types="npm:@types/crypto-js"
+import * as CryptoJS from 'crypto-js'
 
 const dataIsEmpty = !localStorage.tws_data || localStorage.tws_data == ''
 
 const aes = {
-    enc: (m: string, k: string) => CryptoES.AES.encrypt(m, k).toString(CryptoES.HexFormatter),
-    dec: (m: string, k: string) => CryptoES.AES.decrypt(m, k).toString(CryptoES.Utf8),
+    enc: (data: string, key: string) => CryptoJS.AES.encrypt(data, key).toString(),
+    dec: (data: string, key: string) => CryptoJS.AES.decrypt(data, key).toString(CryptoJS.enc.Utf8),
 }
-
+window.aes = aes
 const key = location.host + '_TWS_姐姐'
 
 if (dataIsEmpty) localStorage.tws_data = aes.enc('{}', key)
@@ -20,25 +21,23 @@ const _data_cached = JSON.parse(_dec)
 declare global {
     interface Window {
         data: {
-            apply: () => void
             access_token?: string
         }
     }
 }
 
 // deno-lint-ignore no-window
-(window.data == null) && (window.data = new Proxy({
-    apply() {
-        localStorage.tws_data = aes.enc(JSON.stringify(_data_cached), key)
-    }
-}, {
+(window.data == null) && (window.data = new Proxy({}, {
     get(_obj, k) {
+        if (k == '_cached') return _data_cached
+        if (k == 'apply') return () => localStorage.tws_data = aes.enc(JSON.stringify(_data_cached), key)
         return _data_cached[k]
     },
     set(_obj, k, v) {
+        if (k == '_cached') return false
         _data_cached[k] = v
         return true
-    },
+    }
 }))
 
 // deno-lint-ignore no-window
