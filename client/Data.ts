@@ -28,7 +28,9 @@ declare global {
 }
 
 // deno-lint-ignore no-window
-(window.data == null) && (window.data = new Proxy({}, {
+(window.data == null) && (window.data = new Proxy({
+    apply() {}
+}, {
     get(_obj, k) {
         if (k == '_cached') return _data_cached
         if (k == 'apply') return () => localStorage.tws_data = aes.enc(JSON.stringify(_data_cached), key)
