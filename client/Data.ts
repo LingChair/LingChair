@@ -7,7 +7,7 @@ const aes = {
     enc: (data: string, key: string) => CryptoJS.AES.encrypt(data, key).toString(),
     dec: (data: string, key: string) => CryptoJS.AES.decrypt(data, key).toString(CryptoJS.enc.Utf8),
 }
-window.aes = aes
+
 const key = location.host + '_TWS_姐姐'
 
 if (dataIsEmpty) localStorage.tws_data = aes.enc('{}', key)
