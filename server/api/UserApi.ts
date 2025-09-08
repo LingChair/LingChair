@@ -1,3 +1,4 @@
+import { Buffer } from "node:buffer";
 import User from "../data/User.ts";
 import BaseApi from "./BaseApi.ts"
 import TokenManager from "./TokenManager.ts";
@@ -15,7 +16,7 @@ export default class UserApi extends BaseApi {
             }
             try {
                 const access_token = TokenManager.decode(args.access_token as string)
-                console.log(access_token)
+                
                 if (access_token.expired_time < Date.now()) return {
                     msg: "登錄令牌失效",
                     code: 401,
@@ -89,6 +90,31 @@ export default class UserApi extends BaseApi {
                 data: {
                     userid: user.bean.id
                 },
+            }
+        })
+        // 更新頭像
+        this.registerEvent("User.setAvatar", (args) => {
+            if (this.checkArgsMissing(args, ['avatar', 'token'])) return {
+                msg: "參數缺失",
+                code: 400,
+            }
+            if (!(args.avatar instanceof Buffer)) return {
+                msg: "參數不合法",
+                code: 400,
+            }
+            const token = TokenManager.decode(args.token as string)
+            if (!this.checkToken(token)) return {
+                code: 401,
+                msg: "令牌無效",
+            }
+
+            const avatar: Buffer = args.avatar as Buffer
+            const user = User.findById(token.author)
+            user!.setAvatar(avatar)
+
+            return {
+                msg: "成功",
+                code: 200,
             }
         })
     }
