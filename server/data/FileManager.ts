@@ -55,6 +55,9 @@ class File {
     getLastUsedTime() {
         return this.bean.last_used_time
     }
+    getHash() {
+        return this.bean.hash
+    }
     readSync() {
         this.setAttr("last_used_time", Date.now())
         return fs_sync.readFileSync(this.getFilePath())
