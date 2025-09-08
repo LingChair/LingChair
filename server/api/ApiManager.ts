@@ -35,7 +35,7 @@ export default class ApiManager {
         io.on('connection', (socket) => {
             socket.on("The_White_Silk", (name: string, args: { [key: string]: unknown }, callback_: (ret: ApiCallbackMessage) => void) => {
                 function callback(ret: ApiCallbackMessage) {
-                    console.log(chalk.blue('[發]') + ` ${socket.request.socket.remoteAddress} <- ${ret.code == 200 ? ret.msg : chalk.red(ret.msg)} [${ret.code}]${ ret.data ? (' <extras: ' + JSON.stringify(ret.data) + '>') : ''}`)
+                    console.log(chalk.blue('[發]') + ` ${socket.request.socket.remoteAddress} <- ${ret.code == 200 ? chalk.green(ret.msg) : chalk.red(ret.msg)} [${ret.code}]${ ret.data ? (' <extras: ' + JSON.stringify(ret.data) + '>') : ''}`)
                     return callback_(ret)
                 }
                 try {
@@ -43,11 +43,12 @@ export default class ApiManager {
                         msg: "Invalid request.",
                         code: 400
                     })
-                    console.log(chalk.red('[收]') + ` ${socket.request.socket.remoteAddress} -> ${chalk.green(name)} <args: ${JSON.stringify(args)}>`)
+                    console.log(chalk.red('[收]') + ` ${socket.request.socket.remoteAddress} -> ${chalk.yellow(name)} <args: ${JSON.stringify(args)}>`)
 
                     return callback(this.event_listeners[name]?.(args))
                 } catch (e) {
                     const err = e as Error
+                    console.log(chalk.yellow('[壞]') + ` ${err.message} (${err.stack})`)
                     try {
                         callback({
                             code: err instanceof DataWrongError ? 400 : 500,
