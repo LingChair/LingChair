@@ -15,8 +15,8 @@ export default class UserApi extends BaseApi {
             }
             try {
                 const access_token = TokenManager.decode(args.access_token as string)
-
-                if (access_token.expired_time > Date.now()) return {
+                console.log(access_token)
+                if (access_token.expired_time < Date.now()) return {
                     msg: "登錄令牌失效",
                     code: 401,
                 }
