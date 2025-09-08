@@ -7,4 +7,6 @@ export default class UserBean {
     declare nickname: string
     declare avatar_file_hash: string | null
     declare settings: string
+
+    [key: string]: unknown
 }

@@ -4,6 +4,8 @@ import path from 'node:path'
 
 import config from '../config.ts'
 import ChatBean from './ChatBean.ts'
+import { SQLInputValue } from "node:sqlite"
+import chalk from "chalk"
 
 /**
  * Chat.ts - Wrapper and manager
@@ -25,12 +27,12 @@ export default class Chat {
        return db
     }
     
-    private static findAllByCondition(condition: string, ...args: unknown[]): ChatBean[] {
-        return database.prepare(`SELECT * FROM ${Chat.table_name} WHERE ${condition}`).all(...args)
+    private static findAllBeansByCondition(condition: string, ...args: SQLInputValue[]): ChatBean[] {
+        return this.database.prepare(`SELECT * FROM ${Chat.table_name} WHERE ${condition}`).all(...args) as unknown as ChatBean[]
     }
     
     static findById(id: string): Chat {
-        const beans = Chat.findAllBeansByCondition('id = ?', id)
+        const beans = this.findAllBeansByCondition('id = ?', id)
         if (beans.length == 0)
             throw new Error(`找不到 id 为 ${id} 的 Chat`)
         else if (beans.length > 1)
@@ -42,41 +44,8 @@ export default class Chat {
     constructor(bean: ChatBean) {
         this.bean = bean
     }
-    private setAttr(key: string, value: unknown): void {
-        User.database.prepare(`UPDATE ${Chat.table_name} SET ${key} = ? WHERE id = ?`).run(value, this.bean.id)
+    private setAttr(key: string, value: SQLInputValue): void {
+        Chat.database.prepare(`UPDATE ${Chat.table_name} SET ${key} = ? WHERE id = ?`).run(value, this.bean.id)
         this.bean[key] = value
-    }
-    
-    getSettings(): Chat.Settings {
-        return new Chat.Settings(this, JSON.parse(this.bean.settings))
-    }
-    
-    static Settings = class {
-        declare bean: Chat.SettingsBean
-        declare chat: Chat
-        constructor(chat: Chat, bean: Chat.SettingsBean) {
-            this.bean = bean
-            this.chat = chat
-            for (const i of [
-                
-            ]) {
-                this["set" + i.substring(0, 1).toUpperCase() + i.substring(1)] = (v: unknown) => {
-                    this.set(i, v)
-                }
-            }
-        }
-        
-        set(key: string, value: unknown) {
-            this.bean[key] = value
-        }
-        get(key: string) {
-            return this.bean[key]
-        }
-        apply() {
-            this.chat.setAttr("settings", JSON.stringify(this.bean))
-        }
-    }
-    static SettingsBean = class {
-        
     }
 }

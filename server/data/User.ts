@@ -12,6 +12,8 @@ import FileManager from './FileManager.ts'
 import { SQLInputValue } from "node:sqlite";
 import DataWrongError from "../api/DataWrongError.ts";
 
+type UserBeanKey = keyof UserBean
+
 /**
  * User.ts - Wrapper and manager
  * Wrap with UserBean to directly update database
@@ -100,7 +102,7 @@ export default class User {
         this.bean = bean
     }
     /* 一切的基础都是 count ID */
-    private setAttr(key: string, value: unknown) {
+    private setAttr(key: string, value: SQLInputValue) {
         User.database.prepare(`UPDATE ${User.table_name} SET ${key} = ? WHERE count = ?`).run(value, this.bean.count)
         this.bean[key] = value
     }
@@ -123,42 +125,9 @@ export default class User {
         this.setAttr("password", password)
     }
     getAvatar(): Buffer | null {
-        return FileManager.findByHash(this.bean.avatar_file_hash)?.readSync()
+        return this.bean.avatar_file_hash != null ? FileManager.findByHash(this.bean.avatar_file_hash)?.readSync() : null
     }
-    setAvatar(avatar: Buffer) {
-        this.setAttr("avatar_file_hash", FileManager.uploadFile(`avatar_user_${this.bean.count}`, avatar).getHash())
-    }
-    
-    getSettings() {
-        return new User.Settings(this, JSON.parse(this.bean.settings))
-    }
-    
-    static Settings = class {
-        declare bean: User.SettingsBean
-        declare user: User
-        constructor(user: User, bean: User.SettingsBean) {
-            this.bean = bean
-            this.user = user
-            for (const i of [
-                
-            ]) {
-                this["set" + i.substring(0, 1).toUpperCase() + i.substring(1)] = (v: unknown) => {
-                    this.set(i, v)
-                }
-            }
-        }
-        
-        set(key: string, value: unknown) {
-            this.bean[key] = value
-        }
-        get(key: string) {
-            return this.bean[key]
-        }
-        apply() {
-            this.user.setAttr("settings", JSON.stringify(this.bean))
-        }
-    }
-    static SettingsBean = class {
-        
+    async setAvatar(avatar: Buffer) {
+        this.setAttr("avatar_file_hash", (await FileManager.uploadFile(`avatar_user_${this.bean.count}`, avatar)).getHash())
     }
 }
