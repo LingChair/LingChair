@@ -4,6 +4,8 @@ import MessageContainer from "./MessageContainer.jsx"
 import * as React from 'react'
 
 export default function ChatFragment({ ...props } = {}) {
+    const messageList = React.useState([])
+
     return (
         <div style={{
             width: '100%',
@@ -31,11 +33,6 @@ export default function ChatFragment({ ...props } = {}) {
                     <mdui-button variant="text">加載更多</mdui-button>
                 </div>
                 <MessageContainer>
-                    <Message
-                        nickName="Fey"
-                        avatar="https://www.court-records.net/mugshot/aa6-004-maya.png">
-                        Test
-                    </Message>
                 </MessageContainer>
                 {
                     // 输入框
