@@ -35,6 +35,7 @@ export default function LoginDialog({
         if (checkApiSuccessOrSncakbar(re, "登錄失敗")) return
 
         data.access_token = re.data!.access_token as string
+        data.apply()
         location.reload()
     })
     return (
