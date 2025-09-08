@@ -4,7 +4,7 @@ import useEventListener from "../useEventListener.ts"
 import { checkApiSuccessOrSncakbar } from "../snackbar.ts"
 import Client from "../../api/Client.ts"
 
-import * as CryptoES from 'crypto-es'
+import * as CryptoJS from 'crypto-js'
 import data from "../../Data.ts";
 
 interface Refs {
@@ -29,7 +29,7 @@ export default function LoginDialog({
 
         const re = await Client.invoke("User.login", {
             account: account,
-            password: CryptoES.SHA256(password).toString(CryptoES.Hex),
+            password: CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex),
         })
 
         if (checkApiSuccessOrSncakbar(re, "登錄失敗")) return

@@ -4,7 +4,7 @@ import useEventListener from "../useEventListener.ts";
 import Client from "../../api/Client.ts";
 import { checkApiSuccessOrSncakbar, snackbar } from "../snackbar.ts";
 
-import * as CryptoES from 'crypto-es'
+import * as CryptoES from 'crypto-js'
 
 interface Refs {
     loginInputAccountRef: React.MutableRefObject<TextField | null>
@@ -31,7 +31,7 @@ export default function RegisterDialog({
         const re = await Client.invoke("User.register", {
             username: username,
             nickname: registerInputNickNameRef.current!.value,
-            password: CryptoES.SHA256(registerInputPasswordRef.current!.value).toString(CryptoES.Hex),
+            password: CryptoJS.SHA256(registerInputPasswordRef.current!.value).toString(CryptoJS.enc.Hex),
         })
 
         if (checkApiSuccessOrSncakbar(re, "注冊失敗")) return
