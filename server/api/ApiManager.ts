@@ -5,6 +5,7 @@ import ApiCallbackMessage from "./ApiCallbackMessage.ts"
 import EventCallbackFunction from "../typedef/EventCallbackFunction.ts"
 import BaseApi from "./BaseApi.ts"
 import DataWrongError from "./DataWrongError.ts";
+import chalk from "chalk";
 
 export default class ApiManager {
     static httpServer: HttpServerLike
@@ -32,12 +33,17 @@ export default class ApiManager {
     static initEvents() {
         const io = this.socketIoServer
         io.on('connection', (socket) => {
-            socket.on("The_White_Silk", (name: string, args: { [key: string]: unknown }, callback: (ret: ApiCallbackMessage) => void) => {
+            socket.on("The_White_Silk", (name: string, args: { [key: string]: unknown }, callback_: (ret: ApiCallbackMessage) => void) => {
+                function callback(ret: ApiCallbackMessage) {
+                    console.log(chalk.blue('[發]') + ` ${socket.request.socket.remoteAddress} <- ${ret.code == 200 ? ret.msg : chalk.red(ret.msg)} [${ret.code}]${ ret.data ? (' <extras: ' + JSON.stringify(ret.data) + '>') : ''}`)
+                    return callback_(ret)
+                }
                 try {
                     if (name == null || args == null) return callback({
                         msg: "Invalid request.",
                         code: 400
                     })
+                    console.log(chalk.red('[收]') + ` ${socket.request.socket.remoteAddress} -> ${chalk.green(name)} <args: ${JSON.stringify(args)}>`)
 
                     return callback(this.event_listeners[name]?.(args))
                 } catch (e) {
