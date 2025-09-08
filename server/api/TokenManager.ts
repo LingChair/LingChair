@@ -1,14 +1,8 @@
-import { Buffer } from "node:buffer";
+import { Buffer } from "node:buffer"
 import config from "../config.ts"
 import User from "../data/User.ts"
 import crypto from 'node:crypto'
-
-interface Token {
-    author: string
-    auth: string
-    made_time: number
-    expired_time: number
-}
+import Token from "./Token.ts"
 
 function normalizeKey(key: string, keyLength = 32) {
     const hash = crypto.createHash('sha256')
