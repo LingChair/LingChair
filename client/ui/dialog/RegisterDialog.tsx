@@ -4,7 +4,7 @@ import useEventListener from "../useEventListener.ts";
 import Client from "../../api/Client.ts";
 import { checkApiSuccessOrSncakbar, snackbar } from "../snackbar.ts";
 
-import * as CryptoES from 'crypto-js'
+import * as CryptoJS from 'crypto-js'
 
 interface Refs {
     loginInputAccountRef: React.MutableRefObject<TextField | null>
