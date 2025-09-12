@@ -1,4 +1,4 @@
-import Avatar from "../Avatar.jsx"
+import Avatar from "../Avatar.tsx"
 
 export default function RecentsListItem({ nickName, avatar, content }) {
     return (
