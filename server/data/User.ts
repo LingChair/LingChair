@@ -124,8 +124,8 @@ export default class User {
     setPassword(password: string) {
         this.setAttr("password", password)
     }
-    getAvatar(): Buffer | null {
-        return this.bean.avatar_file_hash != null ? FileManager.findByHash(this.bean.avatar_file_hash)?.readSync() : null
+    getAvatarFileHash() {
+        return this.bean.avatar_file_hash
     }
     async setAvatar(avatar: Buffer) {
         this.setAttr("avatar_file_hash", (await FileManager.uploadFile(`avatar_user_${this.bean.count}`, avatar)).getHash())
