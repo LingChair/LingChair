@@ -1,7 +1,6 @@
 export default class User {
     declare id: string
-    declare count: number
-    declare username: string | null
+    declare username?: string
     declare nickname: string
-    declare avatar: string | null
+    declare avatar?: string
 }
