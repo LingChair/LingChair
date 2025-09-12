@@ -92,6 +92,11 @@ export default class UserApi extends BaseApi {
                 },
             }
         })
+        /*
+         * ================================================
+         *                    個人資料
+         * ================================================
+         */
         // 更新頭像
         this.registerEvent("User.setAvatar", (args) => {
             if (this.checkArgsMissing(args, ['avatar', 'token'])) return {
@@ -117,5 +122,79 @@ export default class UserApi extends BaseApi {
                 code: 200,
             }
         })
+        // 更新昵稱
+        this.registerEvent("User.setNickName", (args) => {
+            if (this.checkArgsMissing(args, ['nickname', 'token'])) return {
+                msg: "參數缺失",
+                code: 400,
+            }
+            
+            const token = TokenManager.decode(args.token as string)
+            if (!this.checkToken(token)) return {
+                code: 401,
+                msg: "令牌無效",
+            }
+
+            const user = User.findById(token.author)
+            user!.setNickName(args.nickname as string)
+
+            return {
+                msg: "成功",
+                code: 200,
+            }
+        })
+        // 更新用戶名
+        this.registerEvent("User.setUserName", (args) => {
+            if (this.checkArgsMissing(args, ['username', 'token'])) return {
+                msg: "參數缺失",
+                code: 400,
+            }
+            
+            const token = TokenManager.decode(args.token as string)
+            if (!this.checkToken(token)) return {
+                code: 401,
+                msg: "令牌無效",
+            }
+
+            const user = User.findById(token.author)
+            user!.setUserName(args.username as string)
+
+            return {
+                msg: "成功",
+                code: 200,
+            }
+        })
+        // 獲取用戶信息
+        this.registerEvent("User.getMyInfo", (args) => {
+            if (this.checkArgsMissing(args, ['token'])) return {
+                msg: "參數缺失",
+                code: 400,
+            }
+
+            const token = TokenManager.decode(args.token as string)
+            if (!this.checkToken(token)) return {
+                code: 401,
+                msg: "令牌無效",
+            }
+
+            const user = User.findById(token.author)
+
+            return {
+                msg: "成功",
+                code: 200,
+                data: {
+                    username: user!.getUserName(),
+                    nickname: user!.getNickName(),
+                    avatar: user!.getAvatarFileHash() ? "uploaded_files/" + user!.getAvatarFileHash() : null,
+                    id: token.author,
+                }
+            }
+        })
+        /*
+         * ================================================
+         *                    公開資料
+         * ================================================
+         */
+        
     }
 }
