@@ -10,6 +10,8 @@ import readline from 'node:readline'
 import process from "node:process"
 import chalk from "chalk"
 import child_process from "node:child_process"
+import FileManager from "./data/FileManager.ts"
+import path from "node:path"
 
 const app = express()
 app.use((req, res, next) => {
@@ -19,6 +21,23 @@ app.use((req, res, next) => {
     next()
 })
 app.use('/', express.static(config.data_path + '/page_compiled'))
+app.use('/uploaded_files/:hash', (req, res) => {
+    const hash = req.params.hash as string
+    if (hash == null) {
+        res.sendStatus(404)
+        res.send("404 Not Found")
+        return
+    }
+    const file = FileManager.findByHash(hash)
+    if (file == null) {
+        res.sendStatus(404)
+        res.send("404 Not Found")
+        return
+    }
+
+    res.setHeader('Content-Type', file!.getMime())
+    res.sendFile(path.resolve(file!.getFilePath()))
+})
 
 const httpServer: HttpServerLike = (
     ((config.server.use == 'http') && http.createServer(app)) ||
