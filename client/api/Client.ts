@@ -1,10 +1,12 @@
 import { io, Socket } from 'socket.io-client'
 import { CallMethod, ClientEvent } from './ApiDeclare.ts'
 import ApiCallbackMessage from './ApiCallbackMessage.ts'
+import User from "./client_data/User.ts"
 
 type UnknownObject = { [key: string]: unknown }
 
 class Client {
+    static myUserProfile?: User
     static socket?: Socket
     static events: { [key: string]: (data: UnknownObject) => UnknownObject } = {}
     static connect() {
@@ -27,15 +29,25 @@ class Client {
         if (this.socket == null) throw new Error("客戶端未與伺服器端建立連接！")
         return new Promise((resolve, reject) => {
             this.socket!.timeout(timeout).emit("The_White_Silk", method, args, (err: string, res: ApiCallbackMessage) => {
-                if (err) return reject(err) 
+                if (err) return reject(err)
                 resolve(res)
             })
         })
     }
+    static async auth(token: string, timeout: number = 5000) {
+        const re = await this.invoke("User.auth", {
+            access_token: token
+        }, timeout)
+        if (re.code == 200)
+            this.myUserProfile = (await Client.invoke("User.getMyInfo", {
+                token: token
+            })).data as unknown as User
+        return re
+    }
     static on(eventName: ClientEvent, func: (data: UnknownObject) => UnknownObject) {
         this.events[eventName] = func
     }
-    static off(eventName: ClientEvent){
+    static off(eventName: ClientEvent) {
         delete this.events[eventName]
     }
 }
