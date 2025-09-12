@@ -2,6 +2,7 @@ import { DatabaseSync, SQLInputValue } from "node:sqlite"
 import { Buffer } from "node:buffer"
 import path from 'node:path'
 import crypto from 'node:crypto'
+import fs from 'node:fs/promises'
 import fs_sync from 'node:fs'
 import chalk from "chalk"
 import { fileTypeFromBuffer } from 'file-type'
@@ -39,7 +40,7 @@ class File {
         const hash = this.bean.hash
         return path.join(
             config.data_path,
-            "files",
+            "uploaded_files",
             hash.substring(0, 1),
             hash.substring(2, 3),
             hash.substring(3, 4),
@@ -88,20 +89,21 @@ export default class FileManager {
 
     static async uploadFile(fileName: string, data: Buffer, chatId?: string) {
         const hash = crypto.createHash('sha256').update(data).digest('hex')
-        try {
-            return FileManager.findByHash(hash)
-        } catch (_e) {
-            // Do nothing...
-        }
+        const file = FileManager.findByHash(hash)
+        if (file) return file
 
         const mime = (await fileTypeFromBuffer(data))?.mime || 'application/octet-stream'
-        fs_sync.writeFileSync(
+        const folder = path.join(
+            config.data_path,
+            "uploaded_files",
+            hash.substring(0, 1),
+            hash.substring(2, 3),
+            hash.substring(3, 4)
+        )
+        await fs.mkdir(folder, { recursive: true })
+        await fs.writeFile(
             path.join(
-                config.data_path,
-                "files",
-                hash.substring(0, 1),
-                hash.substring(2, 3),
-                hash.substring(3, 4),
+                folder,
                 hash
             ),
             data
@@ -131,10 +133,10 @@ export default class FileManager {
     private static findAllBeansByCondition(condition: string, ...args: SQLInputValue[]): FileBean[] {
         return FileManager.database.prepare(`SELECT * FROM ${FileManager.table_name} WHERE ${condition};`).all(...args) as unknown as FileBean[]
     }
-    static findByHash(hash: string): File {
+    static findByHash(hash: string): File | null {
         const beans = FileManager.findAllBeansByCondition('hash = ?', hash)
         if (beans.length == 0)
-            throw new Error(`找不到 hash 为 ${hash} 的文件`)
+            return null
         else if (beans.length > 1)
             console.error(chalk.red(`警告: 查询 hash = ${hash} 时, 查询到多个相同 Hash 的文件`))
         return new FileManager.File(beans[0])
