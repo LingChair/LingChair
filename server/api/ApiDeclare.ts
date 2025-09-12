@@ -3,7 +3,10 @@ export type CallMethod =
     "User.register" |
     "User.login" |
 
+    "User.setNickName" |
+    "User.setUserName" |
     "User.setAvatar" |
+    "User.getMyInfo" |
 
     "Chat.sendMessage" |
     "Chat.getMessageHistory"
