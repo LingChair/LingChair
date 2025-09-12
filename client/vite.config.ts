@@ -8,7 +8,7 @@ import config from '../server/config.ts'
 export default defineConfig({
     plugins: [deno(), react()],
     build: {
-        sourcemap: "inline",
+        sourcemap: true,
         outDir: "." + config.data_path + '/page_compiled',
     },
 })
