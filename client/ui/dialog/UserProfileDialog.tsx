@@ -34,7 +34,8 @@ export default function UserProfileDialog({
 
         if (checkApiSuccessOrSncakbar(re, "修改失敗")) return
         snackbar({
-            message: "修改成功 (刷新頁面以更新)"
+            message: "修改成功 (刷新頁面以更新)",
+            placement: "top",
         })
     })
 
