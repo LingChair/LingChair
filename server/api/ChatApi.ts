@@ -6,6 +6,13 @@ export default class UserApi extends BaseApi {
         return "Chat"
     }
     override onInit(): void {
+        this.registerEvent("Chat.getInfo", (args) => {
+            
+            return {
+                code: 501,
+                msg: "未實現",
+            }
+        })
         this.registerEvent("Chat.sendMessage", (args) => {
 
             return {
