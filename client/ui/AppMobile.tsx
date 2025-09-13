@@ -60,7 +60,7 @@ export default function AppMobile() {
     } as unknown as { [key: string]: User[] })
     const [navigationItemSelected, setNavigationItemSelected] = React.useState('Recents')
 
-    const navigationBarRef: React.MutableRefObject<NavigationRail | null> = React.useRef(null)
+    const navigationBarRef: React.MutableRefObject<NavigationBar | null> = React.useRef(null)
     useEventListener(navigationBarRef, 'change', (event) => {
         setNavigationItemSelected((event.target as HTMLElement as NavigationBar).value as string)
     })
