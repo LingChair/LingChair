@@ -6,6 +6,7 @@ import config from '../config.ts'
 import ChatBean from './ChatBean.ts'
 import { SQLInputValue } from "node:sqlite"
 import chalk from "chalk"
+import User from "./User.ts"
 
 /**
  * Chat.ts - Wrapper and manager
@@ -20,7 +21,11 @@ export default class Chat {
         db.exec(`
             CREATE TABLE IF NOT EXISTS ${Chat.table_name} (
                 /* 序号 */ count INTEGER PRIMARY KEY AUTOINCREMENT,
-                /* Chat ID, 哈希 */ id TEXT,
+                /* Chat ID */ id TEXT NOT NULL,
+                /* 標題 (群組) */ title TEXT,
+                /* 頭像 (群組) */ avatar BLOB,
+                /* UserIdA (私信) */ user_a_id TEXT
+                /* UserIdB (私信) */ user_b_id TEXT,
                 /* 设置 */ settings TEXT NOT NULL
             );
        `)
@@ -31,13 +36,33 @@ export default class Chat {
         return this.database.prepare(`SELECT * FROM ${Chat.table_name} WHERE ${condition}`).all(...args) as unknown as ChatBean[]
     }
     
-    static findById(id: string): Chat {
+    static findById(id: string) {
         const beans = this.findAllBeansByCondition('id = ?', id)
         if (beans.length == 0)
-            throw new Error(`找不到 id 为 ${id} 的 Chat`)
+            return null
         else if (beans.length > 1)
             console.error(chalk.red(`警告: 查询 id = ${id} 时, 查询到多个相同 ID 的 Chat`))
         return new Chat(beans[0])
+    }
+
+    static create(chatId: string) {
+        const chat = new Chat(
+            Chat.findAllBeansByCondition(
+                'count = ?', 
+                Chat.database.prepare(`INSERT INTO ${Chat.table_name} (
+                    id,
+                    settings
+                ) VALUES (?, ?);`).run(
+                    chatId,
+                    "{}"
+                ).lastInsertRowid
+            )[0]
+        )
+        return chat
+    }
+
+    static createFromTwoUsers(userA: User, userB: User) {
+        return this.create([userA.bean.id, userB.bean.id].sort().join('-'))
     }
     
     declare bean: ChatBean
