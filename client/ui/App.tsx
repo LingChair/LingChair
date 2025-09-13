@@ -1,6 +1,6 @@
 import Client from "../api/Client.ts"
 import data from "../Data.ts"
-import ChatFragment from "./chat/ChatFragment.jsx"
+import ChatFragment from "./chat/ChatFragment.tsx"
 import ContactsListItem from "./main/ContactsListItem.jsx"
 import RecentsListItem from "./main/RecentsListItem.jsx"
 import useEventListener from './useEventListener.ts'
@@ -9,7 +9,7 @@ import RecentChat from "../api/client_data/RecentChat.ts"
 import Avatar from "./Avatar.tsx"
 
 import * as React from 'react'
-import { Button, ButtonIcon, Dialog, NavigationRail, TextField } from "mdui"
+import { Dialog, NavigationRail, TextField } from "mdui"
 import Split from 'split.js'
 import 'mdui/jsx.zh-cn.d.ts'
 import { checkApiSuccessOrSncakbar } from "./snackbar.ts"
