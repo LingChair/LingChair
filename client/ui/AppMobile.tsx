@@ -100,7 +100,7 @@ export default function AppMobile() {
         <div style={{
             display: "flex",
             position: 'relative',
-            width: '100%',
+            width: 'var(--whitesilk-window-width)',
             height: 'var(--whitesilk-window-height)',
         }}>
             <LoginDialog
@@ -121,61 +121,65 @@ export default function AppMobile() {
                 userProfileDialogRef={userProfileDialogRef}
                 user={myUserProfileCache} />
             
-            <mdui-navigation-bar label-visibility="selected" value="Recents" ref={navigationBarRef}>
+            <mdui-navigation-bar scroll-target="#SideBar" label-visibility="selected" value="Recents" ref={navigationBarRef}>
                 <mdui-navigation-bar-item icon="watch_later--outlined" value="Recents">最近</mdui-navigation-bar-item>
                 <mdui-navigation-bar-item icon="contacts--outlined" value="Contacts">聯絡人</mdui-navigation-bar-item>
             </mdui-navigation-bar>
             
-            {
-                // 最近聊天
-                <mdui-list style={{
-                    height: 'calc(var(--whitesilk-window-height) - 80px)',
-                    overflowY: 'auto',
-                    marginLeft: '10px',
-                    marginRight: '10px',
-                    width: '100%',
-                    display: navigationItemSelected == "Recents" ? undefined : 'none'
-                }}>
-                    {
-                        recentsList.map((v) =>
-                            <RecentsListItem
-                                key={v.id}
-                                nickName={v.title}
-                                avatar={v.avatar}
-                                content={v.content} />
-                        )
-                    }
-                </mdui-list>
-            }
-            {
-                // 联系人列表
-                <mdui-list style={{
-                    height: 'calc(var(--whitesilk-window-height) - 80px)',
-                    overflowY: 'auto',
-                    marginLeft: '10px',
-                    marginRight: '10px',
-                    width: '100%',
-                    display: navigationItemSelected == "Contacts" ? undefined : 'none'
-                }}>
-                    <mdui-collapse accordion value={Object.keys(contactsMap)[0]}>
+            <div style={{
+                display: 'flex',
+                height: 'calc(100% - 80px)',
+                width: '100%',
+            }} id="SideBar">
+                {
+                    // 最近聊天
+                    <mdui-list style={{
+                        overflowY: 'auto',
+                        marginLeft: '10px',
+                        marginRight: '10px',
+                        width: '100%',
+                        display: navigationItemSelected == "Recents" ? undefined : 'none'
+                    }}>
                         {
-                            Object.keys(contactsMap).map((v) =>
-                                <mdui-collapse-item key={v} value={v}>
-                                    <mdui-list-subheader slot="header">{v}</mdui-list-subheader>
-                                    {
-                                        contactsMap[v].map((v2) =>
-                                            <ContactsListItem
-                                                key={v2.id}
-                                                nickName={v2.nickname}
-                                                avatar={v2.avatar} />
-                                        )
-                                    }
-                                </mdui-collapse-item>
+                            recentsList.map((v) =>
+                                <RecentsListItem
+                                    key={v.id}
+                                    nickName={v.title}
+                                    avatar={v.avatar}
+                                    content={v.content} />
                             )
                         }
-                    </mdui-collapse>
-                </mdui-list>
-            }
+                    </mdui-list>
+                }
+                {
+                    // 联系人列表
+                    <mdui-list style={{
+                        overflowY: 'auto',
+                        marginLeft: '10px',
+                        marginRight: '10px',
+                        width: '100%',
+                        display: navigationItemSelected == "Contacts" ? undefined : 'none'
+                    }}>
+                        <mdui-collapse accordion value={Object.keys(contactsMap)[0]}>
+                            {
+                                Object.keys(contactsMap).map((v) =>
+                                    <mdui-collapse-item key={v} value={v}>
+                                        <mdui-list-subheader slot="header">{v}</mdui-list-subheader>
+                                        {
+                                            contactsMap[v].map((v2) =>
+                                                <ContactsListItem
+                                                    key={v2.id}
+                                                    nickName={v2.nickname}
+                                                    avatar={v2.avatar} />
+                                            )
+                                        }
+                                    </mdui-collapse-item>
+                                )
+                            }
+                        </mdui-collapse>
+                    </mdui-list>
+                }
+            </div>
         </div>
     )
 }
