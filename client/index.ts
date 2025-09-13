@@ -6,8 +6,10 @@ import { breakpoint, Dialog } from "mdui"
 import * as React from 'react'
 import ReactDOM from 'react-dom/client'
 
+const urlParams = new URL(location.href).searchParams
+
 // deno-lint-ignore no-window no-window-prefix
-new URL(location.href).searchParams.get('debug') == 'true' && window.addEventListener('error', ({ message, filename, lineno, colno, error }) => {
+urlParams.get('debug') == 'true' && window.addEventListener('error', ({ message, filename, lineno, colno, error }) => {
     const m = $("#ErrorDialog_Message")
     const d = $("#ErrorDialog").get(0) as Dialog
     const s = d.open
@@ -16,8 +18,8 @@ new URL(location.href).searchParams.get('debug') == 'true' && window.addEventLis
 })
 
 import App from './ui/App.tsx'
-
-ReactDOM.createRoot(document.getElementById('app') as HTMLElement).render(React.createElement(App, null))
+import AppMobile from './ui/AppMobile.tsx'
+ReactDOM.createRoot(document.getElementById('app') as HTMLElement).render(React.createElement(urlParams.get('mobile') == 'true' ? AppMobile : App, null))
 
 const onResize = () => {
     document.body.style.setProperty('--whitesilk-widget-message-maxwidth', breakpoint().down('md') ? "80%" : "70%")
