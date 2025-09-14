@@ -21,6 +21,7 @@ export default class Chat {
         db.exec(`
             CREATE TABLE IF NOT EXISTS ${Chat.table_name} (
                 /* 序号 */ count INTEGER PRIMARY KEY AUTOINCREMENT,
+                /* 類型 */ type TEXT NOT NULL,
                 /* Chat ID */ id TEXT NOT NULL,
                 /* 標題 (群組) */ title TEXT,
                 /* 頭像 (群組) */ avatar BLOB,
@@ -32,7 +33,7 @@ export default class Chat {
        return db
     }
     
-    private static findAllBeansByCondition(condition: string, ...args: SQLInputValue[]): ChatBean[] {
+    protected static findAllBeansByCondition(condition: string, ...args: SQLInputValue[]): ChatBean[] {
         return this.database.prepare(`SELECT * FROM ${Chat.table_name} WHERE ${condition}`).all(...args) as unknown as ChatBean[]
     }
     
@@ -45,15 +46,25 @@ export default class Chat {
         return new Chat(beans[0])
     }
 
-    static create(chatId: string) {
+    static create(chatId: string, type: 'private' | 'group') {
         const chat = new Chat(
             Chat.findAllBeansByCondition(
                 'count = ?', 
                 Chat.database.prepare(`INSERT INTO ${Chat.table_name} (
+                    type,
                     id,
-                    settings
+                    title,
+                    avatar,
+                    user_a_id,
+                    user_b_id,
+                    settings,
                 ) VALUES (?, ?);`).run(
+                    type,
                     chatId,
+                    null,
+                    null,
+                    null,
+                    null,
                     "{}"
                 ).lastInsertRowid
             )[0]
@@ -61,10 +72,6 @@ export default class Chat {
         return chat
     }
 
-    static createFromTwoUsers(userA: User, userB: User) {
-        return this.create([userA.bean.id, userB.bean.id].sort().join('-'))
-    }
-    
     declare bean: ChatBean
     constructor(bean: ChatBean) {
         this.bean = bean
