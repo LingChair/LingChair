@@ -106,7 +106,7 @@ export default class User {
         User.database.prepare(`UPDATE ${User.table_name} SET ${key} = ? WHERE count = ?`).run(value, this.bean.count)
         this.bean[key] = value
     }
-    getUserName(): string | null {
+    getUserName() {
         return this.bean.username
     }
     setUserName(userName: string) {
