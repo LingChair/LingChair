@@ -1,8 +1,6 @@
 import Client from "../api/Client.ts"
 import data from "../Data.ts"
 import ChatFragment from "./chat/ChatFragment.tsx"
-import ContactsListItem from "./main/ContactsListItem.jsx"
-import RecentsListItem from "./main/RecentsListItem.jsx"
 import useEventListener from './useEventListener.ts'
 import User from "../api/client_data/User.ts"
 import RecentChat from "../api/client_data/RecentChat.ts"
@@ -17,6 +15,8 @@ import { checkApiSuccessOrSncakbar } from "./snackbar.ts"
 import RegisterDialog from "./dialog/RegisterDialog.tsx"
 import LoginDialog from "./dialog/LoginDialog.tsx"
 import UserProfileDialog from "./dialog/UserProfileDialog.tsx"
+import ContactsList from "./main/ContactsList.tsx";
+import RecentsList from "./main/RecentsList.tsx";
 
 declare global {
     namespace React {
@@ -143,47 +143,15 @@ export default function App() {
             <div id="SideBar">
                 {
                     // 最近聊天
-                    <mdui-list style={{
-                        overflowY: 'auto',
-                        paddingRight: '10px',
-                        display: navigationItemSelected == "Recents" ? undefined : 'none'
-                    }}>
-                        {
-                            recentsList.map((v) =>
-                                <RecentsListItem
-                                    key={v.id}
-                                    nickName={v.title}
-                                    avatar={v.avatar}
-                                    content={v.content} />
-                            )
-                        }
-                    </mdui-list>
+                    <RecentsList
+                        display={navigationItemSelected == "Recents"}
+                        recentsList={recentsList} />
                 }
                 {
                     // 联系人列表
-                    <mdui-list style={{
-                        overflowY: 'auto',
-                        paddingRight: '10px',
-                        display: navigationItemSelected == "Contacts" ? undefined : 'none'
-                    }}>
-                        <mdui-collapse accordion value={Object.keys(contactsMap)[0]}>
-                            {
-                                Object.keys(contactsMap).map((v) =>
-                                    <mdui-collapse-item key={v} value={v}>
-                                        <mdui-list-subheader slot="header">{v}</mdui-list-subheader>
-                                        {
-                                            contactsMap[v].map((v2) =>
-                                                <ContactsListItem
-                                                    key={v2.id}
-                                                    nickName={v2.nickname}
-                                                    avatar={v2.avatar} />
-                                            )
-                                        }
-                                    </mdui-collapse-item>
-                                )
-                            }
-                        </mdui-collapse>
-                    </mdui-list>
+                    <ContactsList
+                        display={navigationItemSelected == "Contacts"}
+                        contactsMap={contactsMap} />
                 }
             </div>
             {
