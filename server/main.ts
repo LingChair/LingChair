@@ -14,12 +14,6 @@ import FileManager from "./data/FileManager.ts"
 import path from "node:path"
 
 const app = express()
-app.use((req, res, next) => {
-    const url = req.originalUrl || req.url
-    if (/\.m?(j|t)sx?$/.test(url))
-        res.setHeader('Content-Type', 'application/javascript')
-    next()
-})
 app.use('/', express.static(config.data_path + '/page_compiled'))
 app.use('/uploaded_files/:hash', (req, res) => {
     const hash = req.params.hash as string
