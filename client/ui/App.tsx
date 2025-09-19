@@ -82,6 +82,10 @@ export default function App() {
 
     const [myUserProfileCache, setMyUserProfileCache]: [User, React.Dispatch<React.SetStateAction<User>>] = React.useState(null as unknown as User)
 
+    const [isShowChatFragment, setIsShowChatFragment] = React.useState(false)
+
+    const [currentChatId, setCurrentChatId] = React.useState('')
+
     React.useEffect(() => {
         ; (async () => {
             Split(['#SideBar', '#ChatFragment'], {
@@ -144,12 +148,19 @@ export default function App() {
                 {
                     // 最近聊天
                     <RecentsList
+                        openChatFragment={(id) => {
+                            setIsShowChatFragment(true)
+
+                        }}
                         display={navigationItemSelected == "Recents"}
                         recentsList={recentsList} />
                 }
                 {
                     // 联系人列表
                     <ContactsList
+                        openChatFragment={(id) => {
+                            setIsShowChatFragment(true)
+                        }}
                         display={navigationItemSelected == "Contacts"}
                         contactsMap={contactsMap} />
                 }
@@ -157,7 +168,23 @@ export default function App() {
             {
                 // 聊天页面
             }
-            <ChatFragment id="ChatFragment" />
+            <div id="ChatFragment" style={{
+                display: "flex"
+            }}>
+                {
+                    !isShowChatFragment && <div style={{
+                        width: '100%',
+                        textAlign: 'center',
+                        alignSelf: 'center',
+                    }}>
+                        選擇聯絡人以開始對話...
+                    </div>
+                }
+                {
+                    isShowChatFragment && <ChatFragment
+                        target={currentChatId} />
+                }
+            </div>
         </div>
     )
 }
