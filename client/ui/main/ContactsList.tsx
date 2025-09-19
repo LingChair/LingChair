@@ -13,9 +13,8 @@ export default function ContactsList({
 }: Args) {
     return <mdui-list style={{
         overflowY: 'auto',
-        marginLeft: '10px',
-        marginRight: '10px',
-        width: '100%',
+        paddingLeft: '10px',
+        paddingRight: '10px',
         display: display ? undefined : 'none'
     }} {...props}>
 
