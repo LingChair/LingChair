@@ -1,11 +1,12 @@
 import HttpServerLike from '../typedef/HttpServerLike.ts'
 import UserApi from "./UserApi.ts"
+import ChatApi from "./ChatApi.ts"
 import * as SocketIo from "socket.io"
 import ApiCallbackMessage from "./ApiCallbackMessage.ts"
 import EventCallbackFunction from "../typedef/EventCallbackFunction.ts"
 import BaseApi from "./BaseApi.ts"
-import DataWrongError from "./DataWrongError.ts";
-import chalk from "chalk";
+import DataWrongError from "./DataWrongError.ts"
+import chalk from "chalk"
 
 export default class ApiManager {
     static httpServer: HttpServerLike
@@ -24,7 +25,8 @@ export default class ApiManager {
     }
     static initAllApis() {
         this.apis_instance = {
-            user: new UserApi()
+            user: new UserApi(),
+            chat: new ChatApi(),
         }
     }
     static addEventListener(name: string, func: EventCallbackFunction) {
@@ -45,7 +47,10 @@ export default class ApiManager {
                     })
                     console.log(chalk.red('[收]') + ` ${socket.request.socket.remoteAddress} -> ${chalk.yellow(name)} <args: ${JSON.stringify(args)}>`)
 
-                    return callback(this.event_listeners[name]?.(args))
+                    return callback(this.event_listeners[name]?.(args) || {
+                        code: 501,
+                        msg: "Not implmented",
+                    })
                 } catch (e) {
                     const err = e as Error
                     console.log(chalk.yellow('[壞]') + ` ${err.message} (${err.stack})`)
