@@ -195,6 +195,50 @@ export default class UserApi extends BaseApi {
                 }
             }
         })
+        // 獲取聯絡人列表
+        this.registerEvent("User.getMyContactGroups", (args) => {
+            if (this.checkArgsMissing(args, ['token'])) return {
+                msg: "參數缺失",
+                code: 400,
+            }
+
+            const token = TokenManager.decode(args.token as string)
+            if (!this.checkToken(token)) return {
+                code: 401,
+                msg: "令牌無效",
+            }
+
+            const user = User.findById(token.author)
+
+            return {
+                msg: "成功",
+                code: 200,
+                data: {
+                    contact_groups: user!.getContactGroups()
+                }
+            }
+        })
+        // 更新聯絡人列表
+        this.registerEvent("User.setMyContactGroups", (args) => {
+            if (this.checkArgsMissing(args, ['token', 'contact_groups'])) return {
+                msg: "參數缺失",
+                code: 400,
+            }
+
+            const token = TokenManager.decode(args.token as string)
+            if (!this.checkToken(token)) return {
+                code: 401,
+                msg: "令牌無效",
+            }
+
+            const user = User.findById(token.author)
+            user!.setContactGroups(args.contact_groups as { [key: string]: string[] })
+
+            return {
+                msg: "成功",
+                code: 200,
+            }
+        })
         /*
          * ================================================
          *                    公開資料

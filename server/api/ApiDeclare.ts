@@ -8,6 +8,9 @@ export type CallMethod =
     "User.setAvatar" |
     "User.getMyInfo" |
 
+    "User.getMyContactGroups" |
+    "User.setMyContactGroups" |
+
     "Chat.getInfo" |
     "Chat.sendMessage" |
     "Chat.getMessageHistory"
