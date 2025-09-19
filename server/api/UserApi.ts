@@ -22,6 +22,11 @@ export default class UserApi extends BaseApi {
                     code: 401,
                 }
 
+                if (!User.findById(access_token.author)) return {
+                    msg: "賬號不存在",
+                    code: 401,
+                }
+
                 return {
                     msg: "成功",
                     code: 200,
