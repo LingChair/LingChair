@@ -1,18 +1,42 @@
 import { Tab } from "mdui"
 import useEventListener from "../useEventListener.ts"
-import Message from "./Message.jsx"
+import Element_Message  from "./Message.jsx"
 import MessageContainer from "./MessageContainer.jsx"
 
 import * as React from 'react'
+import Client from "../../api/Client.ts"
+import Message from "../../api/client_data/Message.ts"
+import Chat from "../../api/client_data/Chat.ts"
+import data from "../../Data.ts"
+import { checkApiSuccessOrSncakbar } from "../snackbar.ts"
 
-export default function ChatFragment({ ...props } = {}) {
-    const messageList = React.useState([])
+interface Args extends React.HTMLAttributes<HTMLElement> {
+    target: string,
+}
+
+export default function ChatFragment({ target, ...props }: Args) {
+    const [messagesList, setMessagesList] = React.useState([] as Message[])
+    const [chatInfo, setChatInfo] = React.useState({
+        title: '加載中...'
+    } as Chat)
 
     const [tabItemSelected, setTabItemSelected] = React.useState('Chat')
     const tabRef: React.MutableRefObject<Tab | null> = React.useRef(null)
     useEventListener(tabRef, 'change', (event) => {
         setTabItemSelected((event.target as HTMLElement as Tab).value as string)
     })
+
+    React.useEffect(() => {
+        ;(async () => {
+            const re = await Client.invoke('Chat.getInfo', {
+                token: data.access_token,
+                target: target,
+            })
+            if (re.code != 200) 
+                return checkApiSuccessOrSncakbar(re, "對話錯誤")
+            setChatInfo(re.data as Chat)
+        })()
+    }, [target])
 
     return (
         <div style={{
@@ -28,7 +52,9 @@ export default function ChatFragment({ ...props } = {}) {
                 flexDirection: "column",
                 height: "100%",
             }}>
-                <mdui-tab value="Chat">Title</mdui-tab>
+                <mdui-tab value="Chat">{
+                    chatInfo.title
+                }</mdui-tab>
                 <mdui-tab value="Settings">設定</mdui-tab>
 
                 <mdui-tab-panel slot="panel" value="Chat" style={{

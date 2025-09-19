@@ -1,14 +1,16 @@
 import User from "../../api/client_data/User.ts"
-import ContactsListItem from "./ContactsListItem.jsx"
+import ContactsListItem from "./ContactsListItem.tsx"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     contactsMap: { [key: string]: User[] }
     display: boolean
+    openChatFragment: (id: string) => void
 }
 
 export default function ContactsList({
     contactsMap,
     display,
+    openChatFragment,
     ...props
 }: Args) {
     return <mdui-list style={{
@@ -19,6 +21,9 @@ export default function ContactsList({
     }} {...props}>
 
         <mdui-collapse accordion value={Object.keys(contactsMap)[0]}>
+            <mdui-list-item rounded style={{
+                width: '100%',
+            }} icon="person_add">添加聯絡人</mdui-list-item>
             {
                 Object.keys(contactsMap).map((v) =>
                     <mdui-collapse-item key={v} value={v}>
@@ -26,9 +31,9 @@ export default function ContactsList({
                         {
                             contactsMap[v].map((v2) =>
                                 <ContactsListItem
+                                    openChatFragment={openChatFragment}
                                     key={v2.id}
-                                    nickName={v2.nickname}
-                                    avatar={v2.avatar} />
+                                    contact={v2} />
                             )
                         }
                     </mdui-collapse-item>

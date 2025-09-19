@@ -1,13 +1,20 @@
+import RecentChat from "../../api/client_data/RecentChat.ts"
 import Avatar from "../Avatar.tsx"
 
-export default function RecentsListItem({ nickName, avatar, content }) {
+interface Args extends React.HTMLAttributes<HTMLElement> {
+    recentChat: RecentChat
+    openChatFragment: (id: string) => void
+}
+
+export default function RecentsListItem({ recentChat, openChatFragment }: Args) {
+    const { id, title, avatar, content } = recentChat
     return (
         <mdui-list-item rounded style={{
             marginTop: '3px',
             marginBottom: '3px',
-        }}>
-            {nickName}
-            <Avatar src={avatar} text={nickName} slot="icon" />
+        }} onClick={() => openChatFragment(id)}>
+            {title}
+            <Avatar src={avatar} text={title} slot="icon" />
             <span slot="description"
                 style={{
                     width: "100%",
