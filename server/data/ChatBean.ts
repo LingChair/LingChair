@@ -1,5 +1,5 @@
 export default class ChatBean {
-    declare type: "paivate" | "group"
+    declare type: "private" | "group"
     declare id: string
     declare title?: string
     declare avatar_file_hash?: string
