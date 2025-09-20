@@ -130,7 +130,7 @@ export default function App() {
                 loginInputPasswordRef={loginInputPasswordRef} />
 
             <UserProfileDialog
-                userProfileDialogRef={userProfileDialogRef}
+                userProfileDialogRef={userProfileDialogRef as any}
                 user={myUserProfileCache} />
 
             <mdui-navigation-rail contained value="Recents" ref={navigationRailRef}>
