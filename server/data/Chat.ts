@@ -30,13 +30,13 @@ export default class Chat {
                 /* 设置 */ settings TEXT NOT NULL
             );
        `)
-       return db
+        return db
     }
-    
+
     protected static findAllBeansByCondition(condition: string, ...args: SQLInputValue[]): ChatBean[] {
         return this.database.prepare(`SELECT * FROM ${Chat.table_name} WHERE ${condition}`).all(...args) as unknown as ChatBean[]
     }
-    
+
     static findById(id: string) {
         const beans = this.findAllBeansByCondition('id = ?', id)
         if (beans.length == 0)
@@ -49,7 +49,7 @@ export default class Chat {
     static create(chatId: string, type: 'private' | 'group') {
         const chat = new Chat(
             Chat.findAllBeansByCondition(
-                'count = ?', 
+                'count = ?',
                 Chat.database.prepare(`INSERT INTO ${Chat.table_name} (
                     type,
                     id,
@@ -79,5 +79,14 @@ export default class Chat {
     private setAttr(key: string, value: SQLInputValue): void {
         Chat.database.prepare(`UPDATE ${Chat.table_name} SET ${key} = ? WHERE id = ?`).run(value, this.bean.id)
         this.bean[key] = value
+    }
+
+    getTitleForPrivate(userMySelf: User) {
+        if (this.bean.user_a_id == userMySelf.bean.id)
+            return User.findById(this.bean?.user_b_id as string)?.getNickName() || "未知對話"
+        if (this.bean.user_b_id == userMySelf.bean.id)
+            return userMySelf.getNickName()
+
+        return "未知對話"
     }
 }

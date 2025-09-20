@@ -9,8 +9,11 @@ import config from '../config.ts'
 import UserBean from './UserBean.ts'
 
 import FileManager from './FileManager.ts'
-import { SQLInputValue } from "node:sqlite";
-import DataWrongError from "../api/DataWrongError.ts";
+import { SQLInputValue } from "node:sqlite"
+import DataWrongError from "../api/DataWrongError.ts"
+import ChatPrivate from "./ChatPrivate.ts"
+import Chat from "./Chat.ts"
+import ChatBean from "./ChatBean.ts";
 
 type UserBeanKey = keyof UserBean
 
@@ -77,6 +80,7 @@ export default class User {
             )[0]
         )
         avatar && user.setAvatar(avatar)
+        user.addContact(ChatPrivate.getChatIdByUsersId(user.bean.id, user.bean.id))
         return user
     }
 
@@ -115,12 +119,14 @@ export default class User {
     setUserName(userName: string) {
         this.setAttr("username", userName)
     }
-    addContact(userId) {
-        
+    addContact(chatId: string) {
+        const ls = this.getContactsList()
+        ls.push(chatId)
+        this.setAttr("contacts_list", JSON.stringify(ls))
     }
     getContactsList() {
         try {
-            return JSON.parse(this.bean.contacts_list)
+            return JSON.parse(this.bean.contacts_list) as string[]
         } catch (e) {
             console.log(chalk.yellow(`警告: 聯絡人組解析失敗: ${(e as Error).message}`))
             return [

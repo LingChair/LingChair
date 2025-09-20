@@ -29,20 +29,15 @@ export default class ChatApi extends BaseApi {
 
             // 私聊
             if (chat!.bean.type == 'private') {
-                const targetId = args.target as string
-                const target = User.findById(targetId)
                 const mine = User.findById(token.author) as User
-                if (target == null) return {
-                    code: 404,
-                    msg: "找不到用户",
-                }
 
                 return {
                     code: 200,
                     msg: "成功",
                     data: {
                         type: chat.bean.type,
-                        title: ChatPrivate.fromChat(chat).getTitleForPrivate(mine, target)
+                        title: chat.getTitleForPrivate(mine),
+                        avatar: chat.bean.avatar_file_hash ? "uploaded_files/" + chat.bean.avatar_file_hash : chat.bean.avatar_file_hash
                     }
                 }
             }

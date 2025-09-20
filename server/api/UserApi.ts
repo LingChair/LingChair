@@ -2,6 +2,8 @@ import { Buffer } from "node:buffer";
 import User from "../data/User.ts";
 import BaseApi from "./BaseApi.ts"
 import TokenManager from "./TokenManager.ts";
+import ChatPrivate from "../data/ChatPrivate.ts";
+import Chat from "../data/Chat.ts";
 
 export default class UserApi extends BaseApi {
     override getName(): string {
@@ -196,7 +198,7 @@ export default class UserApi extends BaseApi {
             }
         })
         // 獲取聯絡人列表
-        this.registerEvent("User.getMyContactGroups", (args) => {
+        this.registerEvent("User.getMyContacts", (args) => {
             if (this.checkArgsMissing(args, ['token'])) return {
                 msg: "參數缺失",
                 code: 400,
@@ -214,13 +216,15 @@ export default class UserApi extends BaseApi {
                 msg: "成功",
                 code: 200,
                 data: {
-                    contact_groups: user!.getContactGroups()
+                    contacts: user!.getContactsList().map((id) => {
+                        title: Chat.findById(id)?.bean.title
+                    })
                 }
             }
         })
-        // 更新聯絡人列表
-        this.registerEvent("User.setMyContactGroups", (args) => {
-            if (this.checkArgsMissing(args, ['token', 'contact_groups'])) return {
+        // 添加聯絡人
+        this.registerEvent("User.addContact", (args) => {
+            if (this.checkArgsMissing(args, ['token', 'contact_chat_id'])) return {
                 msg: "參數缺失",
                 code: 400,
             }
@@ -232,7 +236,7 @@ export default class UserApi extends BaseApi {
             }
 
             const user = User.findById(token.author)
-            user!.setContactGroups(args.contact_groups as { [key: string]: string[] })
+            user!.addContact(args.contact_chat_id as string)
 
             return {
                 msg: "成功",

@@ -3,17 +3,16 @@ import User from "../../api/client_data/User.ts"
 import ContactsListItem from "./ContactsListItem.tsx"
 import useEventListener from "../useEventListener.ts"
 import { ListItem, TextField } from "mdui"
+import useAsyncEffect from "../useAsyncEffect.ts"
+import Client from "../../api/Client.ts"
+import data from "../../Data.ts"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
-    contactsList: User[]
-    setContactsList: React.Dispatch<React.SetStateAction<User[]>>
     display: boolean
     openChatFragment: (id: string) => void
 }
 
 export default function ContactsList({
-    contactsList,
-    setContactsList,
     display,
     openChatFragment,
     ...props
@@ -21,9 +20,25 @@ export default function ContactsList({
     const searchRef = React.useRef<HTMLElement>(null)
     const [isMultiSelecting, setIsMultiSelecting] = React.useState(false)
     const [searchText, setSearchText] = React.useState('')
+    const [contactsList, setContactsList] = React.useState([
+        {
+            id: '1',
+            avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
+            nickname: "麻油衣酱",
+        },
+        {
+            id: '0',
+            avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
+            nickname: "Maya Fey",
+        },
+    ] as User[])
 
     useEventListener(searchRef, 'input', (e) => {
         setSearchText((e.target as unknown as TextField).value)
+    })
+
+    useAsyncEffect(async () => {
+        
     })
 
     return <mdui-list style={{
@@ -49,7 +64,7 @@ export default function ContactsList({
 
         {
             contactsList.filter((user) =>
-                searchText == '' || 
+                searchText == '' ||
                 user.nickname.includes(searchText) ||
                 user.id.includes(searchText) ||
                 user.username?.includes(searchText)
