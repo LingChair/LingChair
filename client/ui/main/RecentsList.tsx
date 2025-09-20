@@ -5,12 +5,14 @@ interface Args extends React.HTMLAttributes<HTMLElement> {
     recentsList: RecentChat[]
     setRecentsList: React.Dispatch<React.SetStateAction<RecentChat[]>>
     display: boolean
+    currentChatId: string
     openChatFragment: (id: string) => void
 }
 
 export default function RecentsList({
     recentsList,
     setRecentsList,
+    currentChatId,
     display,
     openChatFragment,
     ...props
@@ -24,7 +26,8 @@ export default function RecentsList({
         {
             recentsList.map((v) =>
                 <RecentsListItem
-                    openChatFragment={openChatFragment}
+                    active={currentChatId == v.id}
+                    openChatFragment={() => openChatFragment(v.id)}
                     key={v.id}
                     recentChat={v} />
             )

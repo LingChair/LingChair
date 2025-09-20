@@ -152,10 +152,11 @@ export default function App() {
                     // 最近聊天
                     <RecentsList
                         openChatFragment={(id) => {
+                            setCurrentChatId(id)
                             setIsShowChatFragment(true)
-
                         }}
                         display={navigationItemSelected == "Recents"}
+                        currentChatId={currentChatId}
                         recentsList={recentsList}
                         setRecentsList={setRecentsList} />
                 }

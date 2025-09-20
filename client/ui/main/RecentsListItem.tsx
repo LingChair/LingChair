@@ -4,15 +4,16 @@ import Avatar from "../Avatar.tsx"
 interface Args extends React.HTMLAttributes<HTMLElement> {
     recentChat: RecentChat
     openChatFragment: (id: string) => void
+    active?: boolean
 }
 
-export default function RecentsListItem({ recentChat, openChatFragment }: Args) {
+export default function RecentsListItem({ recentChat, openChatFragment, active }: Args) {
     const { id, title, avatar, content } = recentChat
     return (
         <mdui-list-item rounded style={{
             marginTop: '3px',
             marginBottom: '3px',
-        }} onClick={() => openChatFragment(id)}>
+        }} onClick={() => openChatFragment(id)} active={active}>
             {title}
             <Avatar src={avatar} text={title} slot="icon" />
             <span slot="description"
