@@ -10,7 +10,7 @@ import Avatar from "../Avatar.tsx"
 import User from "../../api/client_data/User.ts"
 
 interface Refs {
-    userProfileDialogRef: React.MutableRefObject<Dialog | null>
+    userProfileDialogRef: React.MutableRefObject<Dialog>
     user: User
 }
 
@@ -20,8 +20,8 @@ export default function UserProfileDialog({
 }: Refs) {
     const isMySelf = Client.myUserProfile?.id == user?.id
 
-    const editAvatarButtonRef: React.MutableRefObject<HTMLElement | null> = React.useRef(null)
-    const chooseAvatarFileRef: React.MutableRefObject<HTMLInputElement | null> = React.useRef(null)
+    const editAvatarButtonRef = React.useRef<HTMLElement>(null)
+    const chooseAvatarFileRef = React.useRef<HTMLInputElement>(null)
     useEventListener(editAvatarButtonRef, 'click', () => chooseAvatarFileRef.current!.click())
     useEventListener(chooseAvatarFileRef, 'change', async (_e) => {
         const file = chooseAvatarFileRef.current!.files?.[0] as File
