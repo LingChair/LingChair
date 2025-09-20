@@ -1,5 +1,8 @@
+import { TextField } from "mdui"
 import RecentChat from "../../api/client_data/RecentChat.ts"
+import useEventListener from "../useEventListener.ts"
 import RecentsListItem from "./RecentsListItem.tsx"
+import React from "react"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     recentsList: RecentChat[]
@@ -17,14 +20,31 @@ export default function RecentsList({
     openChatFragment,
     ...props
 }: Args) {
+    const searchRef = React.useRef<HTMLElement>(null)
+    const [searchText, setSearchText] = React.useState('')
+
+    useEventListener(searchRef, 'input', (e) => {
+        setSearchText((e.target as unknown as TextField).value)
+    })
+
     return <mdui-list style={{
         overflowY: 'auto',
         paddingRight: '10px',
         display: display ? undefined : 'none',
         height: '100%',
     }} {...props}>
+        <mdui-text-field icon="search" type="search" clearable ref={searchRef} variant="outlined" placeholder="搜索..." style={{
+            marginTop: '5px',
+            marginBottom: '13px',
+            paddingLeft: '10px',
+        }}></mdui-text-field>
         {
-            recentsList.map((v) =>
+            recentsList.filter((chat) =>
+                searchText == '' ||
+                chat.title.includes(searchText) ||
+                chat.id.includes(searchText) ||
+                chat.content?.includes(searchText)
+            ).map((v) =>
                 <RecentsListItem
                     active={currentChatId == v.id}
                     openChatFragment={() => openChatFragment(v.id)}
