@@ -1,14 +1,17 @@
+import React from "react"
 import User from "../../api/client_data/User.ts"
 import ContactsListItem from "./ContactsListItem.tsx"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
-    contactsMap: { [key: string]: User[] }
+    contactsList: User[]
+    setContactsList: React.Dispatch<React.SetStateAction<User[]>>
     display: boolean
     openChatFragment: (id: string) => void
 }
 
 export default function ContactsList({
-    contactsMap,
+    contactsList,
+    setContactsList,
     display,
     openChatFragment,
     ...props
@@ -17,28 +20,19 @@ export default function ContactsList({
         overflowY: 'auto',
         paddingLeft: '10px',
         paddingRight: '10px',
-        display: display ? undefined : 'none'
+        display: display ? undefined : 'none',
+        height: '100%',
     }} {...props}>
-
-        <mdui-collapse accordion value={Object.keys(contactsMap)[0]}>
-            <mdui-list-item rounded style={{
-                width: '100%',
-            }} icon="person_add">添加聯絡人</mdui-list-item>
-            {
-                Object.keys(contactsMap).map((v) =>
-                    <mdui-collapse-item key={v} value={v}>
-                        <mdui-list-subheader slot="header">{v}</mdui-list-subheader>
-                        {
-                            contactsMap[v].map((v2) =>
-                                <ContactsListItem
-                                    openChatFragment={openChatFragment}
-                                    key={v2.id}
-                                    contact={v2} />
-                            )
-                        }
-                    </mdui-collapse-item>
-                )
-            }
-        </mdui-collapse>
+        <mdui-list-item rounded style={{
+            width: '100%',
+        }} icon="person_add">添加聯絡人</mdui-list-item>
+        {
+            contactsList.map((v2) =>
+                <ContactsListItem
+                    openChatFragment={openChatFragment}
+                    key={v2.id}
+                    contact={v2} />
+            )
+        }
     </mdui-list>
 }

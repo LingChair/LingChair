@@ -93,6 +93,6 @@ export function checkApiSuccessOrSncakbar(re: ApiCallbackMessage, msg_ahead: str
 }
 
 export function snackbar(opinions: SnackbarOptions) {
-    opinions.autoCloseDelay == null && (opinions.autoCloseDelay = 2500)
+    opinions.autoCloseDelay == null && (opinions.autoCloseDelay = 3500)
     return mduiSnackbar(opinions)
 }

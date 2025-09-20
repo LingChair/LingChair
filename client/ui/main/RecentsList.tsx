@@ -3,12 +3,14 @@ import RecentsListItem from "./RecentsListItem.tsx"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     recentsList: RecentChat[]
+    setRecentsList: React.Dispatch<React.SetStateAction<RecentChat[]>>
     display: boolean
     openChatFragment: (id: string) => void
 }
 
 export default function RecentsList({
     recentsList,
+    setRecentsList,
     display,
     openChatFragment,
     ...props
@@ -16,7 +18,8 @@ export default function RecentsList({
     return <mdui-list style={{
         overflowY: 'auto',
         paddingRight: '10px',
-        display: display ? undefined : 'none'
+        display: display ? undefined : 'none',
+        height: '100%',
     }} {...props}>
         {
             recentsList.map((v) =>

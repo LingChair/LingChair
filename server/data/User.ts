@@ -62,7 +62,7 @@ export default class User {
                     username,
                     nickname,
                     avatar_file_hash,
-                    contact_groups,
+                    contacts_list,
                     settings
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?);`).run(
                     crypto.randomUUID(),
@@ -71,17 +71,12 @@ export default class User {
                     userName,
                     nickName,
                     null,
-                    '{}',
+                    '[]',
                     "{}"
                 ).lastInsertRowid
             )[0]
         )
         avatar && user.setAvatar(avatar)
-        user.setContactGroups({
-            默認: [
-                user.bean.id
-            ]
-        })
         return user
     }
 
@@ -120,20 +115,18 @@ export default class User {
     setUserName(userName: string) {
         this.setAttr("username", userName)
     }
-    getContactGroups() {
+    addContact(userId) {
+        
+    }
+    getContactsList() {
         try {
-            return JSON.parse(this.bean.contact_groups)
+            return JSON.parse(this.bean.contacts_list)
         } catch (e) {
             console.log(chalk.yellow(`警告: 聯絡人組解析失敗: ${(e as Error).message}`))
-            return {
-                默認: [
-                    this.bean.id
-                ]
-            }
+            return [
+                this.bean.id
+            ]
         }
-    }
-    setContactGroups(contactGroups: { [key: string]: string[] }) {
-        this.setAttr("contact_groups", JSON.stringify(contactGroups))
     }
     getNickName(): string {
         return this.bean.nickname

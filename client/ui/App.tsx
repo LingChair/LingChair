@@ -38,16 +38,16 @@ export default function App() {
             content: "成步堂君, 我又坐牢了（"
         },
         {
-            id: '0',
+            id: '1',
             avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
             title: "Maya Fey",
             content: "我是绫里真宵, 是一名灵媒师~"
         },
     ] as RecentChat[])
-    const [contactsMap, setContactsMap] = React.useState({
+    const [contactsList, setContactsList] = React.useState({
         所有: [
             {
-                id: '0',
+                id: '1',
                 avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
                 nickname: "麻油衣酱",
             },
@@ -57,7 +57,19 @@ export default function App() {
                 nickname: "Maya Fey",
             },
         ],
-    } as unknown as { [key: string]: User[] })
+        所2有: [
+            {
+                id: '1',
+                avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
+                nickname: "麻油衣酱",
+            },
+            {
+                id: '0',
+                avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
+                nickname: "Maya Fey",
+            },
+        ],
+    } as unknown as User[])
     const [navigationItemSelected, setNavigationItemSelected] = React.useState('Recents')
 
     const navigationRailRef: React.MutableRefObject<NavigationRail | null> = React.useRef(null)
@@ -140,8 +152,8 @@ export default function App() {
                     <Avatar src={myUserProfileCache?.avatar} text={myUserProfileCache?.nickname} avatarRef={openMyUserProfileDialogButtonRef} />
                 </mdui-button-icon>
 
-                <mdui-navigation-rail-item icon="watch_later--outlined" value="Recents"></mdui-navigation-rail-item>
-                <mdui-navigation-rail-item icon="contacts--outlined" value="Contacts"></mdui-navigation-rail-item>
+                <mdui-navigation-rail-item icon="watch_later--outlined" active-icon="watch_later--filled" value="Recents"></mdui-navigation-rail-item>
+                <mdui-navigation-rail-item icon="contacts--outlined" active-icon="contacts--filled" value="Contacts"></mdui-navigation-rail-item>
 
                 <mdui-button-icon icon="settings" slot="bottom"></mdui-button-icon>
             </mdui-navigation-rail>
@@ -157,7 +169,8 @@ export default function App() {
 
                         }}
                         display={navigationItemSelected == "Recents"}
-                        recentsList={recentsList} />
+                        recentsList={recentsList}
+                        setRecentsList={setRecentsList} />
                 }
                 {
                     // 联系人列表
@@ -166,7 +179,8 @@ export default function App() {
                             setIsShowChatFragment(true)
                         }}
                         display={navigationItemSelected == "Contacts"}
-                        contactsMap={contactsMap} />
+                        contactsList={contactsList}
+                        setContactsList={setContactsList} />
                 }
             </div>
             {
