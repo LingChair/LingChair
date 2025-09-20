@@ -172,7 +172,8 @@ export default function App() {
                 // 聊天页面
             }
             <div id="ChatFragment" style={{
-                display: "flex"
+                display: "flex",
+                width: '100%'
             }}>
                 {
                     !isShowChatFragment && <div style={{
