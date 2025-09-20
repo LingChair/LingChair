@@ -1,7 +1,7 @@
 export default class Chat {
     declare type: "paivate" | "group"
     declare id: string
-    declare title?: string
+    declare title: string
     declare avatar_file_hash?: string
     declare user_a_id?: string
     declare user_b_id?: string
