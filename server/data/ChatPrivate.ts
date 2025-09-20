@@ -14,14 +14,14 @@ export default class ChatPrivate extends Chat {
     static createForPrivate(userA: User, userB: User) {
         return this.create(this.getChatIdByUsersId(userA.bean.id, userB.bean.id), 'private')
     }
-    static findForPrivate(userA: User, userB: User) {
+    static findByUsersForPrivate(userA: User, userB: User) {
         return this.fromChat(this.findById(this.getChatIdByUsersId(userA.bean.id, userB.bean.id)) as Chat)
     }
     static findOrCreateForPrivate(userA: User, userB: User) {
-        let a = this.findForPrivate(userA, userB)
+        let a = this.findByUsersForPrivate(userA, userB)
         if (a == null) {
             this.createForPrivate(userA, userB)
-            a = this.findForPrivate(userA, userB) as ChatPrivate
+            a = this.findByUsersForPrivate(userA, userB) as ChatPrivate
         }
         return a
     }
