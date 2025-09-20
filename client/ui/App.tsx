@@ -15,8 +15,9 @@ import { checkApiSuccessOrSncakbar } from "./snackbar.ts"
 import RegisterDialog from "./dialog/RegisterDialog.tsx"
 import LoginDialog from "./dialog/LoginDialog.tsx"
 import UserProfileDialog from "./dialog/UserProfileDialog.tsx"
-import ContactsList from "./main/ContactsList.tsx";
-import RecentsList from "./main/RecentsList.tsx";
+import ContactsList from "./main/ContactsList.tsx"
+import RecentsList from "./main/RecentsList.tsx"
+import useAsyncEffect from "./useAsyncEffect.ts"
 
 declare global {
     namespace React {
@@ -56,7 +57,7 @@ export default function App() {
             nickname: "Maya Fey",
         },
     ] as User[])
-    
+
     const [navigationItemSelected, setNavigationItemSelected] = React.useState('Recents')
 
     const navigationRailRef = React.useRef<NavigationRail>(null)
@@ -85,29 +86,27 @@ export default function App() {
 
     const [currentChatId, setCurrentChatId] = React.useState('')
 
-    React.useEffect(() => {
-        ; (async () => {
-            const split = Split(['#SideBar', '#ChatFragment'], {
-                sizes: data.split_sizes ? data.split_sizes : [25, 75],
-                minSize: [200, 400],
-                gutterSize: 2,
-                onDragEnd: function () {
-                    data.split_sizes = split.getSizes()
-                    data.apply()
-                }
-            })
-
-            Client.connect()
-            const re = await Client.auth(data.access_token || "")
-            if (re.code == 401)
-                loginDialogRef.current!.open = true
-            else if (re.code != 200) {
-                if (checkApiSuccessOrSncakbar(re, "驗證失敗")) return
-            } else if (re.code == 200) {
-                setMyUserProfileCache(Client.myUserProfile as User)
+    useAsyncEffect(async () => {
+        const split = Split(['#SideBar', '#ChatFragment'], {
+            sizes: data.split_sizes ? data.split_sizes : [25, 75],
+            minSize: [200, 400],
+            gutterSize: 2,
+            onDragEnd: function () {
+                data.split_sizes = split.getSizes()
+                data.apply()
             }
-        })()
-    }, [])
+        })
+
+        Client.connect()
+        const re = await Client.auth(data.access_token || "")
+        if (re.code == 401)
+            loginDialogRef.current!.open = true
+        else if (re.code != 200) {
+            if (checkApiSuccessOrSncakbar(re, "驗證失敗")) return
+        } else if (re.code == 200) {
+            setMyUserProfileCache(Client.myUserProfile as User)
+        }
+    })
 
     return (
         <div style={{
@@ -166,9 +165,7 @@ export default function App() {
                         openChatFragment={(id) => {
                             setIsShowChatFragment(true)
                         }}
-                        display={navigationItemSelected == "Contacts"}
-                        contactsList={contactsList}
-                        setContactsList={setContactsList} />
+                        display={navigationItemSelected == "Contacts"} />
                 }
             </div>
             {

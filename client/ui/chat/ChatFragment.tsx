@@ -1,6 +1,6 @@
 import { Tab } from "mdui"
 import useEventListener from "../useEventListener.ts"
-import Element_Message  from "./Message.jsx"
+import Element_Message from "./Message.jsx"
 import MessageContainer from "./MessageContainer.jsx"
 
 import * as React from 'react'
@@ -9,6 +9,7 @@ import Message from "../../api/client_data/Message.ts"
 import Chat from "../../api/client_data/Chat.ts"
 import data from "../../Data.ts"
 import { checkApiSuccessOrSncakbar } from "../snackbar.ts"
+import useAsyncEffect from "../useAsyncEffect.ts"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     target: string,
@@ -26,16 +27,14 @@ export default function ChatFragment({ target, ...props }: Args) {
         setTabItemSelected(tabRef.current?.value || "Chat")
     })
 
-    React.useEffect(() => {
-        ;(async () => {
-            const re = await Client.invoke('Chat.getInfo', {
-                token: data.access_token,
-                target: target,
-            })
-            if (re.code != 200) 
-                return checkApiSuccessOrSncakbar(re, "對話錯誤")
-            setChatInfo(re.data as Chat)
-        })()
+    useAsyncEffect(async () => {
+        const re = await Client.invoke('Chat.getInfo', {
+            token: data.access_token,
+            target: target,
+        })
+        if (re.code != 200)
+            return checkApiSuccessOrSncakbar(re, "對話錯誤")
+        setChatInfo(re.data as Chat)
     }, [target])
 
     console.log(tabItemSelected)

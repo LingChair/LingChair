@@ -14,6 +14,7 @@ import LoginDialog from "./dialog/LoginDialog.tsx"
 import UserProfileDialog from "./dialog/UserProfileDialog.tsx"
 import ContactsList from "./main/ContactsList.tsx"
 import RecentsList from "./main/RecentsList.tsx"
+import useAsyncEffect from "./useAsyncEffect.ts"
 
 declare global {
     namespace React {
@@ -79,19 +80,17 @@ export default function AppMobile() {
 
     const [myUserProfileCache, setMyUserProfileCache]: [User, React.Dispatch<React.SetStateAction<User>>] = React.useState(null as unknown as User)
 
-    React.useEffect(() => {
-        ; (async () => {
-            Client.connect()
-            const re = await Client.auth(data.access_token || "")
-            if (re.code == 401)
-                loginDialogRef.current!.open = true
-            else if (re.code != 200) {
-                if (checkApiSuccessOrSncakbar(re, "驗證失敗")) return
-            } else if (re.code == 200) {
-                setMyUserProfileCache(Client.myUserProfile as User)
-            }
-        })()
-    }, [])
+    useAsyncEffect(async () => {
+        Client.connect()
+        const re = await Client.auth(data.access_token || "")
+        if (re.code == 401)
+            loginDialogRef.current!.open = true
+        else if (re.code != 200) {
+            if (checkApiSuccessOrSncakbar(re, "驗證失敗")) return
+        } else if (re.code == 200) {
+            setMyUserProfileCache(Client.myUserProfile as User)
+        }
+    })
 
     return (
         <div style={{
