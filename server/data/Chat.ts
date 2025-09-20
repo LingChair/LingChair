@@ -81,12 +81,16 @@ export default class Chat {
         this.bean[key] = value
     }
 
-    getTitleForPrivate(userMySelf: User) {
+    getAnotherUserForPrivate(userMySelf: User) {
+        // 注意: 這裏已經確定了 Chat, 不需要再指定對方用戶
         if (this.bean.user_a_id == userMySelf.bean.id)
-            return User.findById(this.bean?.user_b_id as string)?.getNickName() || "未知對話"
+            return User.findById(this.bean?.user_b_id as string)
         if (this.bean.user_b_id == userMySelf.bean.id)
-            return userMySelf.getNickName()
+            return userMySelf
 
-        return "未知對話"
+        return null
+    }
+    getTitleForPrivate(userMySelf: User) {
+        return this.getAnotherUserForPrivate(userMySelf)?.getNickName() || "未知對話"
     }
 }
