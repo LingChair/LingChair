@@ -88,10 +88,14 @@ export default function App() {
 
     React.useEffect(() => {
         ; (async () => {
-            Split(['#SideBar', '#ChatFragment'], {
-                sizes: [25, 75],
+            const split = Split(['#SideBar', '#ChatFragment'], {
+                sizes: data.split_sizes ? data.split_sizes : [25, 75],
                 minSize: [200, 400],
                 gutterSize: 2,
+                onDragEnd: function () {
+                    data.split_sizes = split.getSizes()
+                    data.apply()
+                }
             })
 
             Client.connect()

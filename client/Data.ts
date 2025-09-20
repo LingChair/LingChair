@@ -21,6 +21,7 @@ const _data_cached = JSON.parse(_dec)
 declare global {
     interface Window {
         data: {
+            split_sizes: number[];
             apply(): void
             access_token?: string
         }
