@@ -21,9 +21,9 @@ export default function ChatFragment({ target, ...props }: Args) {
     } as Chat)
 
     const [tabItemSelected, setTabItemSelected] = React.useState('Chat')
-    const tabRef: React.MutableRefObject<Tab | null> = React.useRef(null)
-    useEventListener(tabRef, 'change', (event) => {
-        setTabItemSelected((event.target as HTMLElement as Tab).value as string)
+    const tabRef = React.useRef<Tab>(null)
+    useEventListener(tabRef, 'change', () => {
+        setTabItemSelected(tabRef.current?.value || "Chat")
     })
 
     React.useEffect(() => {
@@ -38,6 +38,7 @@ export default function ChatFragment({ target, ...props }: Args) {
         })()
     }, [target])
 
+    console.log(tabItemSelected)
     return (
         <div style={{
             width: '100%',
