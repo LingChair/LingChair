@@ -1,6 +1,5 @@
-export default class RecentChat {
-    declare id: string
-    declare title: string
-    declare avatar?: string
+import Chat from "./Chat.ts"
+
+export default class RecentChat extends Chat {
     declare content: string
 }
