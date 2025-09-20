@@ -25,7 +25,7 @@ export default class Chat {
                 /* Chat ID */ id TEXT NOT NULL,
                 /* 標題 (群組) */ title TEXT,
                 /* 頭像 (群組) */ avatar BLOB,
-                /* UserIdA (私信) */ user_a_id TEXT
+                /* UserIdA (私信) */ user_a_id TEXT,
                 /* UserIdB (私信) */ user_b_id TEXT,
                 /* 设置 */ settings TEXT NOT NULL
             );
@@ -57,8 +57,8 @@ export default class Chat {
                     avatar,
                     user_a_id,
                     user_b_id,
-                    settings,
-                ) VALUES (?, ?);`).run(
+                    settings
+                ) VALUES (?, ?, ?, ?, ?, ?, ?);`).run(
                     type,
                     chatId,
                     null,
@@ -76,7 +76,7 @@ export default class Chat {
     constructor(bean: ChatBean) {
         this.bean = bean
     }
-    private setAttr(key: string, value: SQLInputValue): void {
+    setAttr(key: string, value: SQLInputValue): void {
         Chat.database.prepare(`UPDATE ${Chat.table_name} SET ${key} = ? WHERE id = ?`).run(value, this.bean.id)
         this.bean[key] = value
     }

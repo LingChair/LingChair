@@ -12,10 +12,14 @@ export default class ChatPrivate extends Chat {
     }
 
     static createForPrivate(userA: User, userB: User) {
-        return this.create(this.getChatIdByUsersId(userA.bean.id, userB.bean.id), 'private')
+        const chat = this.create(this.getChatIdByUsersId(userA.bean.id, userB.bean.id), 'private')
+        chat.setAttr('user_a_id', userA.bean.id)
+        chat.setAttr('user_b_id', userB.bean.id)
     }
     static findByUsersForPrivate(userA: User, userB: User) {
-        return this.fromChat(this.findById(this.getChatIdByUsersId(userA.bean.id, userB.bean.id)) as Chat)
+        const chat = this.findById(this.getChatIdByUsersId(userA.bean.id, userB.bean.id))
+        if (chat)
+            return this.fromChat(chat as Chat)
     }
     static findOrCreateForPrivate(userA: User, userB: User) {
         let a = this.findByUsersForPrivate(userA, userB)
