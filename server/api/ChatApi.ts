@@ -41,8 +41,8 @@ export default class ChatApi extends BaseApi {
                     msg: "成功",
                     data: {
                         type: chat.bean.type,
-                        title: chat.getTitleForPrivate(mine),
-                        avatar: chat.bean.avatar_file_hash ? "uploaded_files/" + chat.bean.avatar_file_hash : chat.bean.avatar_file_hash
+                        title: chat.getTitle(mine),
+                        avatar: chat.getAvatarFileHash(mine) ? "uploaded_files/" + chat.getAvatarFileHash(mine) : undefined
                     }
                 }
             }

@@ -90,7 +90,12 @@ export default class Chat {
 
         return null
     }
-    getTitleForPrivate(userMySelf: User) {
-        return this.getAnotherUserForPrivate(userMySelf)?.getNickName() || "未知對話"
+    getTitle(userMySelf?: User) {
+        if (this.bean.type == 'group') return this.bean.title
+        if (this.bean.type == 'private') return this.getAnotherUserForPrivate(userMySelf as User)?.getNickName()
+    }
+    getAvatarFileHash(userMySelf?: User) {
+        if (this.bean.type == 'group') return this.bean.avatar_file_hash
+        if (this.bean.type == 'private') return this.getAnotherUserForPrivate(userMySelf as User)?.getAvatarFileHash()
     }
 }
