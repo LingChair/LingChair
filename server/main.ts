@@ -15,7 +15,7 @@ import path from "node:path"
 
 const app = express()
 app.use('/', express.static(config.data_path + '/page_compiled'))
-app.use('/uploaded_files/:hash', (req, res) => {
+app.get('/uploaded_files/:hash', (req, res) => {
     const hash = req.params.hash as string
     if (hash == null) {
         res.sendStatus(404)
@@ -39,7 +39,7 @@ const httpServer: HttpServerLike = (
     http.createServer(app)
 )
 const io = new SocketIo.Server(httpServer, {
-
+    maxHttpBufferSize: 1e9,
 })
 
 ApiManager.initServer(httpServer, io)
