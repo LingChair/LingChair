@@ -17,7 +17,7 @@ export default function Avatar({
     else if (text != null)
         return <mdui-avatar ref={avatarRef} {...props}>
             {
-                text.substring(0, 0)
+                text.substring(0, 1)
             }
         </mdui-avatar>
     else
