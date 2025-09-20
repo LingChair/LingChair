@@ -37,7 +37,26 @@ export default function ChatFragment({ target, ...props }: Args) {
         setChatInfo(re.data as Chat)
     }, [target])
 
-    console.log(tabItemSelected)
+    let page = 0
+    async function loadMore() {
+        const re = await Client.invoke("Chat.getMessageHistory", {
+            token: data.access_token,
+            target,
+            page,
+        })
+
+        if (checkApiSuccessOrSncakbar(re, "拉取歷史記錄失敗")) return
+        page++
+        setMessagesList(messagesList.concat())
+    }
+
+    React.useEffect(() => {
+
+        return () => {
+            
+        }
+    })
+
     return (
         <div style={{
             width: '100%',

@@ -1,5 +1,6 @@
 import Chat from "../data/Chat.ts";
 import ChatPrivate from "../data/ChatPrivate.ts";
+import MessagesManager from "../data/MessagesManager.ts";
 import User from "../data/User.ts"
 import BaseApi from "./BaseApi.ts"
 import TokenManager from "./TokenManager.ts"
@@ -82,7 +83,7 @@ export default class ChatApi extends BaseApi {
          * @param page 頁面
          */
         this.registerEvent("Chat.getMessageHistory", (args) => {
-            if (this.checkArgsMissing(args, ['token', 'target'])) return {
+            if (this.checkArgsMissing(args, ['token', 'target', 'page'])) return {
                 msg: "參數缺失",
                 code: 400,
             }
@@ -93,9 +94,18 @@ export default class ChatApi extends BaseApi {
                 msg: "令牌無效",
             }
 
+            const chat = Chat.findById(args.target as string)
+            if (chat == null) return {
+                code: 404,
+                msg: "對話不存在",
+            }
+
             return {
-                code: 501,
-                msg: "未實現",
+                code: 200,
+                msg: "成功",
+                data: {
+                    messages: MessagesManager.getInstanceForChat(chat).getMessagesWithPage(),
+                },
             }
         })
     }
