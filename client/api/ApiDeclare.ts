@@ -3,10 +3,13 @@ export type CallMethod =
     "User.register" |
     "User.login" |
 
-    "User.setNickName" |
-    "User.setUserName" |
     "User.setAvatar" |
+    "User.updateProfile" |
     "User.getMyInfo" |
+
+    "User.getMyContacts" |
+    "User.addContact" |
+    "User.removeContacts" |
 
     "Chat.getInfo" |
     "Chat.sendMessage" |
