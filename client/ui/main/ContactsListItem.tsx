@@ -1,13 +1,14 @@
+import { ListItem } from "mdui";
 import User from "../../api/client_data/User.ts"
 import Avatar from "../Avatar.tsx"
 import React from 'react'
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     contact: User
-    openChatFragment: (id: string) => void
+    active?: boolean
 }
 
-export default function ContactsListItem({ contact, openChatFragment }: Args) {
+export default function ContactsListItem({ contact, ...prop }: Args) {
     const { id, nickname, avatar } = contact
     const ref = React.useRef<HTMLElement>(null)
 
@@ -16,7 +17,7 @@ export default function ContactsListItem({ contact, openChatFragment }: Args) {
             marginTop: '3px',
             marginBottom: '3px',
             width: '100%',
-        }} onClick={() => openChatFragment(id)}>
+        }} {...prop as any}>
             <span style={{
                 width: "100%",
             }}>{nickname}</span>
