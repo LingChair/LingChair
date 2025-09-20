@@ -124,6 +124,10 @@ export default class User {
         ls.push(chatId)
         this.setAttr("contacts_list", JSON.stringify(ls))
     }
+    removeContacts(contacts: string[]) {
+        const ls = this.getContactsList().filter((v) => !contacts.includes(v))
+        this.setAttr("contacts_list", JSON.stringify(ls))
+    }
     getContactsList() {
         try {
             return JSON.parse(this.bean.contacts_list) as string[]
