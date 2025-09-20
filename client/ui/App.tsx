@@ -18,6 +18,8 @@ import UserProfileDialog from "./dialog/UserProfileDialog.tsx"
 import ContactsList from "./main/ContactsList.tsx"
 import RecentsList from "./main/RecentsList.tsx"
 import useAsyncEffect from "./useAsyncEffect.ts"
+import ChatInfoDialog from "./dialog/ChatInfoDialog.tsx";
+import Chat from "../api/client_data/Chat.ts";
 
 declare global {
     namespace React {
@@ -31,32 +33,7 @@ declare global {
 }
 
 export default function App() {
-    const [recentsList, setRecentsList] = React.useState([
-        {
-            id: '0',
-            avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
-            title: "麻油衣酱",
-            content: "成步堂君, 我又坐牢了（"
-        },
-        {
-            id: '1',
-            avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
-            title: "Maya Fey",
-            content: "我是绫里真宵, 是一名灵媒师~"
-        },
-    ] as RecentChat[])
-    const [contactsList, setContactsList] = React.useState([
-        {
-            id: '1',
-            avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
-            nickname: "麻油衣酱",
-        },
-        {
-            id: '0',
-            avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
-            nickname: "Maya Fey",
-        },
-    ] as User[])
+    const [recentsList, setRecentsList] = React.useState([] as RecentChat[])
 
     const [navigationItemSelected, setNavigationItemSelected] = React.useState('Recents')
 
@@ -80,7 +57,10 @@ export default function App() {
         userProfileDialogRef.current!.open = true
     })
 
-    const [myUserProfileCache, setMyUserProfileCache]: [User, React.Dispatch<React.SetStateAction<User>>] = React.useState(null as unknown as User)
+    const chatInfoDialogRef = React.useRef<Dialog>(null)
+    const [chatInfo, setChatInfo] = React.useState(null as unknown as Chat)
+
+    const [myUserProfileCache, setMyUserProfileCache] = React.useState(null as unknown as User)
 
     const [isShowChatFragment, setIsShowChatFragment] = React.useState(false)
 
@@ -133,6 +113,14 @@ export default function App() {
                 userProfileDialogRef={userProfileDialogRef as any}
                 user={myUserProfileCache} />
 
+            <ChatInfoDialog
+                chatInfoDialogRef={chatInfoDialogRef as any}
+                openChatFragment={(id) => {
+                    setCurrentChatId(id)
+                    setIsShowChatFragment(true)
+                }}
+                chat={chatInfo} />
+
             <mdui-navigation-rail contained value="Recents" ref={navigationRailRef}>
                 <mdui-button-icon slot="top">
                     <Avatar src={myUserProfileCache?.avatar} text={myUserProfileCache?.nickname} avatarRef={openMyUserProfileDialogButtonRef} />
@@ -162,9 +150,8 @@ export default function App() {
                 {
                     // 联系人列表
                     <ContactsList
-                        openChatFragment={(id) => {
-                            setIsShowChatFragment(true)
-                        }}
+                        setChatInfo={setChatInfo}
+                        chatInfoDialogRef={chatInfoDialogRef as any}
                         display={navigationItemSelected == "Contacts"} />
                 }
             </div>
