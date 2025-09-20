@@ -57,8 +57,8 @@ export default function UserProfileDialog({
                     height: '50px',
                 }} />
                 <span style={{
-                    marginLeft: "10px",
-                    fontSize: '15.5px',
+                    marginLeft: "15px",
+                    fontSize: '16.5px',
                 }}>{user?.nickname}</span>
             </div>
             <mdui-divider style={{
