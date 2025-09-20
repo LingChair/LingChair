@@ -44,50 +44,37 @@ export default function App() {
             content: "我是绫里真宵, 是一名灵媒师~"
         },
     ] as RecentChat[])
-    const [contactsList, setContactsList] = React.useState({
-        所有: [
-            {
-                id: '1',
-                avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
-                nickname: "麻油衣酱",
-            },
-            {
-                id: '0',
-                avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
-                nickname: "Maya Fey",
-            },
-        ],
-        所2有: [
-            {
-                id: '1',
-                avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
-                nickname: "麻油衣酱",
-            },
-            {
-                id: '0',
-                avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
-                nickname: "Maya Fey",
-            },
-        ],
-    } as unknown as User[])
+    const [contactsList, setContactsList] = React.useState([
+        {
+            id: '1',
+            avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
+            nickname: "麻油衣酱",
+        },
+        {
+            id: '0',
+            avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
+            nickname: "Maya Fey",
+        },
+    ] as User[])
+    
     const [navigationItemSelected, setNavigationItemSelected] = React.useState('Recents')
 
-    const navigationRailRef: React.MutableRefObject<NavigationRail | null> = React.useRef(null)
+    const navigationRailRef = React.useRef<NavigationRail>(null)
     useEventListener(navigationRailRef, 'change', (event) => {
         setNavigationItemSelected((event.target as HTMLElement as NavigationRail).value as string)
     })
 
-    const loginDialogRef: React.MutableRefObject<Dialog | null> = React.useRef(null)
-    const loginInputAccountRef: React.MutableRefObject<TextField | null> = React.useRef(null)
-    const loginInputPasswordRef: React.MutableRefObject<TextField | null> = React.useRef(null)
+    const loginDialogRef = React.useRef<Dialog>(null)
+    const loginInputAccountRef = React.useRef<TextField>(null)
+    const loginInputPasswordRef = React.useRef<TextField>(null)
 
-    const registerDialogRef: React.MutableRefObject<Dialog | null> = React.useRef(null)
-    const registerInputUserNameRef: React.MutableRefObject<TextField | null> = React.useRef(null)
-    const registerInputNickNameRef: React.MutableRefObject<TextField | null> = React.useRef(null)
-    const registerInputPasswordRef: React.MutableRefObject<TextField | null> = React.useRef(null)
+    const registerDialogRef = React.useRef<Dialog>(null)
+    const registerInputUserNameRef = React.useRef<TextField>(null)
+    const registerInputNickNameRef = React.useRef<TextField>(null)
+    const registerInputPasswordRef = React.useRef<TextField>(null)
 
-    const userProfileDialogRef: React.MutableRefObject<Dialog | null> = React.useRef(null)
-    const openMyUserProfileDialogButtonRef: React.MutableRefObject<HTMLElement | null> = React.useRef(null)
+    const userProfileDialogRef = React.useRef<Dialog>(null)
+    const openMyUserProfileDialogButtonRef = React.useRef<HTMLElement>(null)
     useEventListener(openMyUserProfileDialogButtonRef, 'click', (_event) => {
         userProfileDialogRef.current!.open = true
     })
