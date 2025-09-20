@@ -9,6 +9,11 @@ export default class ChatApi extends BaseApi {
         return "Chat"
     }
     override onInit(): void {
+        /**
+         * 獲取對話訊息
+         * @param token 令牌
+         * @param target 目標對話
+         */
         this.registerEvent("Chat.getInfo", (args) => {
             if (this.checkArgsMissing(args, ['token', 'target'])) return {
                 msg: "參數缺失",
@@ -47,6 +52,12 @@ export default class ChatApi extends BaseApi {
                 msg: "not implmented",
             }
         })
+        /**
+         * 發送訊息
+         * @param token 令牌
+         * @param target 目標對話
+         * @param 
+         */
         this.registerEvent("Chat.sendMessage", (args) => {
             if (this.checkArgsMissing(args, ['token', 'target'])) return {
                 msg: "參數缺失",
@@ -64,6 +75,12 @@ export default class ChatApi extends BaseApi {
                 msg: "未實現",
             }
         })
+        /**
+         * 拉取歷史訊息
+         * @param token 令牌
+         * @param target 目標對話
+         * @param page 頁面
+         */
         this.registerEvent("Chat.getMessageHistory", (args) => {
             if (this.checkArgsMissing(args, ['token', 'target'])) return {
                 msg: "參數缺失",
