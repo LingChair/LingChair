@@ -18,7 +18,7 @@ export default class UserApi extends BaseApi {
             }
             try {
                 const access_token = TokenManager.decode(args.access_token as string)
-                
+
                 if (access_token.expired_time < Date.now()) return {
                     msg: "登錄令牌失效",
                     code: 401,
@@ -135,7 +135,7 @@ export default class UserApi extends BaseApi {
                 msg: "參數缺失",
                 code: 400,
             }
-            
+
             const token = TokenManager.decode(args.token as string)
             if (!this.checkToken(token)) return {
                 code: 401,
@@ -144,9 +144,9 @@ export default class UserApi extends BaseApi {
 
             const user = User.findById(token.author)
             if (args.nickname != null)
-            user!.setNickName(args.nickname as string)
+                user!.setNickName(args.nickname as string)
             if (args.username != null)
-            user!.setUserName(args.username as string)
+                user!.setUserName(args.username as string)
 
             return {
                 msg: "成功",
@@ -192,14 +192,21 @@ export default class UserApi extends BaseApi {
                 msg: "令牌無效",
             }
 
-            const user = User.findById(token.author)
+            const user = User.findById(token.author) as User
+            const contacts = user.getContactsList()
+            contacts.push(ChatPrivate.getChatIdByUsersId(token.author, token.author))
 
             return {
                 msg: "成功",
                 code: 200,
                 data: {
-                    contacts: user!.getContactsList().map((id) => {
-                        title: Chat.findById(id)?.bean.title
+                    contacts_list: contacts.map((id) => {
+                        const chat = Chat.findById(id)
+                        return {
+                            id,
+                            title: chat?.getTitle(user) || "未知",
+                            avatar: chat?.getAvatarFileHash(user) ? "uploaded_files/" + chat?.getAvatarFileHash(user) : undefined
+                        }
                     })
                 }
             }
@@ -230,6 +237,6 @@ export default class UserApi extends BaseApi {
          *                    公開資料
          * ================================================
          */
-        
+
     }
 }

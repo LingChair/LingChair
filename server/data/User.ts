@@ -36,7 +36,7 @@ export default class User {
                 /* 用戶名, 可選 */ username TEXT,
                 /* 昵称 */ nickname TEXT NOT NULL,
                 /* 头像, 可选 */ avatar_file_hash TEXT,
-                /* 聯絡人組 */ contact_groups TEXT NOT NULL,
+                /* 聯絡人組 */ contacts_list TEXT NOT NULL,
                 /* 设置 */ settings TEXT NOT NULL
             );
        `)
@@ -80,7 +80,7 @@ export default class User {
             )[0]
         )
         avatar && user.setAvatar(avatar)
-        user.addContact(ChatPrivate.getChatIdByUsersId(user.bean.id, user.bean.id))
+        ChatPrivate.findOrCreateForPrivate(user, user)
         return user
     }
 
@@ -133,9 +133,7 @@ export default class User {
             return JSON.parse(this.bean.contacts_list) as string[]
         } catch (e) {
             console.log(chalk.yellow(`警告: 聯絡人組解析失敗: ${(e as Error).message}`))
-            return [
-                this.bean.id
-            ]
+            return []
         }
     }
     getNickName(): string {

@@ -1,44 +1,42 @@
 import React from "react"
-import User from "../../api/client_data/User.ts"
 import ContactsListItem from "./ContactsListItem.tsx"
 import useEventListener from "../useEventListener.ts"
-import { ListItem, TextField } from "mdui"
+import { Dialog, ListItem, TextField } from "mdui"
 import useAsyncEffect from "../useAsyncEffect.ts"
 import Client from "../../api/Client.ts"
 import data from "../../Data.ts"
+import { checkApiSuccessOrSncakbar } from "../snackbar.ts"
+import Chat from "../../api/client_data/Chat.ts"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     display: boolean
-    openChatFragment: (id: string) => void
+    chatInfoDialogRef: React.MutableRefObject<Dialog>
+    setChatInfo: React.Dispatch<React.SetStateAction<Chat>>
 }
 
 export default function ContactsList({
     display,
-    openChatFragment,
+    setChatInfo,
+    chatInfoDialogRef,
     ...props
 }: Args) {
     const searchRef = React.useRef<HTMLElement>(null)
     const [isMultiSelecting, setIsMultiSelecting] = React.useState(false)
     const [searchText, setSearchText] = React.useState('')
-    const [contactsList, setContactsList] = React.useState([
-        {
-            id: '1',
-            avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
-            nickname: "麻油衣酱",
-        },
-        {
-            id: '0',
-            avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
-            nickname: "Maya Fey",
-        },
-    ] as User[])
+    const [contactsList, setContactsList] = React.useState<Chat[]>([])
 
     useEventListener(searchRef, 'input', (e) => {
         setSearchText((e.target as unknown as TextField).value)
     })
 
     useAsyncEffect(async () => {
-        
+        const re = await Client.invoke("User.getMyContacts", {
+            token: data.access_token,
+        })
+        if (re.code != 200)
+            return checkApiSuccessOrSncakbar(re, "获取联络人列表失败")
+
+        setContactsList(re.data!.contacts_list as Chat[])
     })
 
     return <mdui-list style={{
@@ -63,21 +61,21 @@ export default function ContactsList({
         }} icon={ isMultiSelecting ? "done" : "edit"} onClick={() => setIsMultiSelecting(!isMultiSelecting)}>{ isMultiSelecting ? "關閉多選" : "多選模式" }</mdui-list-item> */}
 
         {
-            contactsList.filter((user) =>
+            contactsList.filter((chat) =>
                 searchText == '' ||
-                user.nickname.includes(searchText) ||
-                user.id.includes(searchText) ||
-                user.username?.includes(searchText)
+                chat.title.includes(searchText) ||
+                chat.id.includes(searchText)
             ).map((v) =>
                 <ContactsListItem
-                    /* active={!isMultiSelecting && false}
+                    // active={!isMultiSelecting && false}
                     onClick={(e) => {
                         const self = (e.target as ListItem)
-                        if (isMultiSelecting)
+                        /*if (isMultiSelecting)
                             self.active = !self.active
-                        else
-                            void(0)
-                    }} */
+                        else*/
+                        setChatInfo(v)
+                        chatInfoDialogRef.current!.open = true
+                    }} 
                     key={v.id}
                     contact={v} />
             )
