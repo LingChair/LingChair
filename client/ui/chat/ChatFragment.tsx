@@ -1,14 +1,14 @@
-import { Tab } from "mdui"
+import { Tab, TextField } from "mdui"
 import useEventListener from "../useEventListener.ts"
-import Element_Message from "./Message.jsx"
-import MessageContainer from "./MessageContainer.jsx"
+import Element_Message from "./Message.tsx"
+import MessageContainer from "./MessageContainer.tsx"
 
 import * as React from 'react'
 import Client from "../../api/Client.ts"
 import Message from "../../api/client_data/Message.ts"
 import Chat from "../../api/client_data/Chat.ts"
 import data from "../../Data.ts"
-import { checkApiSuccessOrSncakbar } from "../snackbar.ts"
+import { checkApiSuccessOrSncakbar, snackbar } from "../snackbar.ts"
 import useAsyncEffect from "../useAsyncEffect.ts"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
@@ -23,6 +23,7 @@ export default function ChatFragment({ target, ...props }: Args) {
 
     const [tabItemSelected, setTabItemSelected] = React.useState('Chat')
     const tabRef = React.useRef<Tab>(null)
+    const chatPanelRef = React.useRef<HTMLElement>(null)
     useEventListener(tabRef, 'change', () => {
         setTabItemSelected(tabRef.current?.value || "Chat")
     })
@@ -35,27 +36,70 @@ export default function ChatFragment({ target, ...props }: Args) {
         if (re.code != 200)
             return checkApiSuccessOrSncakbar(re, "對話錯誤")
         setChatInfo(re.data as Chat)
+
+        loadMore()
     }, [target])
 
-    let page = 0
+    const page = React.useRef(0)
     async function loadMore() {
         const re = await Client.invoke("Chat.getMessageHistory", {
             token: data.access_token,
             target,
-            page,
+            page: page.current,
         })
 
         if (checkApiSuccessOrSncakbar(re, "拉取歷史記錄失敗")) return
-        page++
-        setMessagesList(messagesList.concat())
+        const returnMsgs = (re.data!.messages as Message[]).reverse()
+        if (returnMsgs.length == 0)
+            return snackbar({
+                message: "已經沒有消息了哦~",
+                placement: 'top',
+            })
+        setMessagesList(returnMsgs.concat(messagesList))
+
+        if (page.current == 0 + 1)
+            setTimeout(() => chatPanelRef.current!.scrollTo({
+                top: 10000000000,
+                behavior: "smooth",
+            }), 100)
+
+        page.current++
     }
 
     React.useEffect(() => {
-
+        interface OnMessageData {
+            chat: string
+            msg: Message
+        }
+        Client.on('Client.onMessage', (data: unknown) => {
+            const { chat, msg } = (data as OnMessageData)
+            if (target == chat) {
+                setMessagesList(messagesList.concat([msg]))
+            }
+        })
         return () => {
-            
+            Client.off('Client.onMessage')
         }
     })
+
+    const inputRef = React.useRef<TextField>(null)
+
+    async function sendMessage() {
+        const text = inputRef.current!.value
+
+        const re = await Client.invoke("Chat.sendMessage", {
+            token: data.access_token,
+            target,
+            text,
+        }, 5000)
+        if (checkApiSuccessOrSncakbar(re, "發送失敗")) return
+        inputRef.current!.value = ''
+
+        chatPanelRef.current!.scrollTo({
+            top: 10000000000,
+            behavior: "smooth",
+        })
+    }
 
     return (
         <div style={{
@@ -76,7 +120,7 @@ export default function ChatFragment({ target, ...props }: Args) {
                 }</mdui-tab>
                 <mdui-tab value="Settings">設定</mdui-tab>
 
-                <mdui-tab-panel slot="panel" value="Chat" style={{
+                <mdui-tab-panel slot="panel" value="Chat" ref={chatPanelRef} style={{
                     display: tabItemSelected == "Chat" ? "flex" : "none",
                     flexDirection: "column",
                     height: "100%",
@@ -84,11 +128,24 @@ export default function ChatFragment({ target, ...props }: Args) {
                     <div style={{
                         display: "flex",
                         justifyContent: "center",
-                        marginTop: "15px"
+                        paddingTop: "15px",
+
                     }}>
-                        <mdui-button variant="text">加載更多</mdui-button>
+                        <mdui-button variant="text" onClick={() => loadMore()}>加載更多</mdui-button>
                     </div>
-                    <MessageContainer>
+                    <MessageContainer style={{
+                        paddingTop: "15px",
+                        flexGrow: '1',
+                    }}>
+                        {
+                            messagesList.map((msg) =>
+                                <Element_Message
+                                    key={msg.id}
+                                    userId={msg.user_id}>
+                                    {msg.text}
+                                </Element_Message>
+                            )
+                        }
                     </MessageContainer>
                     {
                         // 输入框
@@ -96,16 +153,19 @@ export default function ChatFragment({ target, ...props }: Args) {
                     <div style={{
                         display: 'flex',
                         alignItems: 'center',
-                        paddingBottom: '0.1rem',
+                        paddingBottom: '2px',
                         paddingTop: '0.1rem',
                         height: '4rem',
                         position: 'sticky',
-                        bottom: '2px',
+                        bottom: '0',
                         marginLeft: '5px',
                         marginRight: '4px',
                         backgroundColor: 'rgb(var(--mdui-color-background))',
                     }}>
-                        <mdui-text-field variant="outlined" placeholder="喵呜~" autosize max-rows={1} style={{
+                        <mdui-text-field variant="outlined" placeholder="喵呜~" autosize ref={inputRef as any} max-rows={1} onKeyDown={(event) => {
+                            if (event.ctrlKey && event.key == 'Enter')
+                                sendMessage()
+                        }} style={{
                             marginRight: '10px',
                         }}></mdui-text-field>
                         <mdui-button-icon slot="end-icon" icon="more_vert" style={{
@@ -113,7 +173,7 @@ export default function ChatFragment({ target, ...props }: Args) {
                         }}></mdui-button-icon>
                         <mdui-button-icon icon="send" style={{
                             marginRight: '7px',
-                        }}></mdui-button-icon>
+                        }} onClick={() => sendMessage()}></mdui-button-icon>
                     </div>
                 </mdui-tab-panel>
                 <mdui-tab-panel slot="panel" value="Settings" style={{

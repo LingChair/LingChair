@@ -2,6 +2,7 @@ import Chat from "../data/Chat.ts";
 import ChatPrivate from "../data/ChatPrivate.ts";
 import MessagesManager from "../data/MessagesManager.ts";
 import User from "../data/User.ts"
+import ApiManager from "./ApiManager.ts";
 import BaseApi from "./BaseApi.ts"
 import TokenManager from "./TokenManager.ts"
 
@@ -57,10 +58,10 @@ export default class ChatApi extends BaseApi {
          * 發送訊息
          * @param token 令牌
          * @param target 目標對話
-         * @param 
+         * @param text 消息内容
          */
         this.registerEvent("Chat.sendMessage", (args, { deviceId }) => {
-            if (this.checkArgsMissing(args, ['token', 'target'])) return {
+            if (this.checkArgsMissing(args, ['token', 'target', 'text'])) return {
                 msg: "參數缺失",
                 code: 400,
             }
@@ -71,9 +72,42 @@ export default class ChatApi extends BaseApi {
                 msg: "令牌無效",
             }
 
+            const chat = Chat.findById(args.target as string)
+            if (chat == null) return {
+                code: 404,
+                msg: "對話不存在",
+            }
+
+            const msg = {
+                text: args.text as string,
+                user_id: token.author,
+            }
+            const id = MessagesManager.getInstanceForChat(chat).addMessage(msg)
+
+            const users: string[] = []
+            if (chat.bean.type == 'private') {
+                users.push(token.author as string)
+            }
+
+            for (const user of users) {
+                if (ApiManager.checkUserIsOnline(user)) {
+                    const sockets = ApiManager.getUserClientSockets(user)
+                    for (const socket of Object.keys(sockets))
+                        this.emitToClient(sockets[socket], 'Client.onMessage', {
+                            chat: chat.bean.id,
+                            msg: {
+                                ...msg,
+                                id
+                            }
+                        })
+                } else {
+                    // TODO: EventStore
+                }
+            }
+
             return {
-                code: 501,
-                msg: "未實現",
+                code: 200,
+                msg: "成功",
             }
         })
         /**
@@ -104,7 +138,7 @@ export default class ChatApi extends BaseApi {
                 code: 200,
                 msg: "成功",
                 data: {
-                    messages: MessagesManager.getInstanceForChat(chat).getMessagesWithPage(),
+                    messages: MessagesManager.getInstanceForChat(chat).getMessagesWithPage(15, args.page as number),
                 },
             }
         })
