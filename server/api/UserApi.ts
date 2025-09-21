@@ -1,9 +1,11 @@
-import { Buffer } from "node:buffer";
-import User from "../data/User.ts";
+import { Buffer } from "node:buffer"
+import User from "../data/User.ts"
 import BaseApi from "./BaseApi.ts"
-import TokenManager from "./TokenManager.ts";
-import ChatPrivate from "../data/ChatPrivate.ts";
-import Chat from "../data/Chat.ts";
+import TokenManager from "./TokenManager.ts"
+import ChatPrivate from "../data/ChatPrivate.ts"
+import Chat from "../data/Chat.ts"
+import chalk from "chalk"
+import ApiManager from "./ApiManager.ts"
 
 export default class UserApi extends BaseApi {
     override getName(): string {
@@ -11,11 +13,12 @@ export default class UserApi extends BaseApi {
     }
     override onInit(): void {
         // 驗證
-        this.registerEvent("User.auth", (args, { deviceId }) => {
+        this.registerEvent("User.auth", (args, clientInfo) => {
             if (this.checkArgsMissing(args, ['access_token'])) return {
                 msg: "參數缺失",
                 code: 400,
             }
+            const { deviceId, ip, socket } = clientInfo
             try {
                 const access_token = TokenManager.decode(args.access_token as string)
 
@@ -31,6 +34,13 @@ export default class UserApi extends BaseApi {
                     msg: "驗證失敗",
                     code: 401,
                 }
+                
+                clientInfo.userId = access_token.author
+                console.log(chalk.green('[驗]') + ` ${access_token.author} authed on Client ${deviceId} (ip = ${ip})`)
+                if (ApiManager.clients[clientInfo.userId] == null) ApiManager.clients[clientInfo.userId] = {
+                    [deviceId]: socket
+                }
+                else ApiManager.clients[clientInfo.userId][deviceId] = socket
 
                 return {
                     msg: "成功",

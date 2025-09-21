@@ -32,9 +32,9 @@ export default class ApiManager {
     static addEventListener(name: string, func: EventCallbackFunction) {
         this.event_listeners[name] = func
     }
-    static clients: { [key: string]: string[] } = {}
+    static clients: { [key: string]: { [key: string]: SocketIo.Socket<SocketIo.DefaultEventsMap, SocketIo.DefaultEventsMap, SocketIo.DefaultEventsMap, any> } } = {}
     static checkUserIsOnline(userId: string, deviceId: string) {
-        return this.clients[userId].includes(deviceId)
+        return this.clients[userId]?.[deviceId] != null
     }
     static initEvents() {
         const io = this.socketIoServer
@@ -49,7 +49,8 @@ export default class ApiManager {
             const clientInfo = {
                 userId: '',
                 deviceId,
-                ip
+                ip,
+                socket,
             }
 
             socket.on('disconnect', (_reason) => {
@@ -57,8 +58,7 @@ export default class ApiManager {
                     console.log(chalk.yellow('[斷]') + ` ${ip} disconnected`)
                 else {
                     console.log(chalk.green('[斷]') + ` ${ip} disconnected`)
-                    const ls = this.clients[clientInfo.userId]
-                    ls.splice(ls.indexOf(deviceId))
+                    delete this.clients[clientInfo.userId][deviceId]
                 }
             })
             console.log(chalk.yellow('[連]') + ` ${ip} connected`)
