@@ -15,14 +15,14 @@ export default class ChatApi extends BaseApi {
          * @param token 令牌
          * @param target 目標對話
          */
-        this.registerEvent("Chat.getInfo", (args) => {
+        this.registerEvent("Chat.getInfo", (args, { deviceId }) => {
             if (this.checkArgsMissing(args, ['token', 'target'])) return {
                 msg: "參數缺失",
                 code: 400,
             }
 
             const token = TokenManager.decode(args.token as string)
-            if (!this.checkToken(token)) return {
+            if (!this.checkToken(token, deviceId)) return {
                 code: 401,
                 msg: "令牌無效",
             }
@@ -59,14 +59,14 @@ export default class ChatApi extends BaseApi {
          * @param target 目標對話
          * @param 
          */
-        this.registerEvent("Chat.sendMessage", (args) => {
+        this.registerEvent("Chat.sendMessage", (args, { deviceId }) => {
             if (this.checkArgsMissing(args, ['token', 'target'])) return {
                 msg: "參數缺失",
                 code: 400,
             }
 
             const token = TokenManager.decode(args.token as string)
-            if (!this.checkToken(token)) return {
+            if (!this.checkToken(token, deviceId)) return {
                 code: 401,
                 msg: "令牌無效",
             }
@@ -82,14 +82,14 @@ export default class ChatApi extends BaseApi {
          * @param target 目標對話
          * @param page 頁面
          */
-        this.registerEvent("Chat.getMessageHistory", (args) => {
+        this.registerEvent("Chat.getMessageHistory", (args, { deviceId }) => {
             if (this.checkArgsMissing(args, ['token', 'target', 'page'])) return {
                 msg: "參數缺失",
                 code: 400,
             }
 
             const token = TokenManager.decode(args.token as string)
-            if (!this.checkToken(token)) return {
+            if (!this.checkToken(token, deviceId)) return {
                 code: 401,
                 msg: "令牌無效",
             }

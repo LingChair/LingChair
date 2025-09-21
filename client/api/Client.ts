@@ -2,19 +2,24 @@ import { io, Socket } from 'socket.io-client'
 import { CallMethod, ClientEvent } from './ApiDeclare.ts'
 import ApiCallbackMessage from './ApiCallbackMessage.ts'
 import User from "./client_data/User.ts"
-import data from "../Data.ts";
+import data from "../Data.ts"
 
 type UnknownObject = { [key: string]: unknown }
 
 class Client {
     static myUserProfile?: User
     static socket?: Socket
-    static events: { [key: string]: (data: UnknownObject) => UnknownObject } = {}
+    static events: { [key: string]: (data: UnknownObject) => UnknownObject | undefined } = {}
     static connect() {
+        if (data.device_id == null)
+            data.device_id = crypto.randomUUID()
         this.socket?.disconnect()
         this.socket && delete this.socket
         this.socket = io({
-            transports: ['websocket']
+            transports: ['websocket'],
+            auth: {
+                device_id: data.device_id
+            },
         })
         this.socket!.on("The_White_Silk", (name: string, data: UnknownObject, callback: (ret: UnknownObject) => void) => {
             try {

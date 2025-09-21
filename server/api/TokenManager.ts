@@ -22,22 +22,29 @@ export default class TokenManager {
         ).toString('hex')
     }
     static decode(token: string) {
+        if (token == null) throw new Error('令牌為空!')
         return JSON.parse(crypto.createDecipheriv("aes-256-gcm", normalizeKey(config.aes_key), '01234567890123456').update(
             Buffer.from(token, 'hex')
         ).toString()) as Token
     }
 
-    static make(user: User, time: number = Date.now()) {
+    static make(user: User, time_: number | null | undefined, device_id: string) {
+        const time = (time_ || Date.now())
         return this.encode({
             author: user.bean.id,
             auth: this.makeAuth(user),
             made_time: time,
             expired_time: time + (1 * 1000 * 60 * 60 * 24),
+            device_id: device_id
         })
     }
+    /**
+     * 獲取新令牌
+     * 注意: 只驗證用戶, 不驗證令牌有效性!
+     */
     static makeNewer(user: User, token: string) {
         if (this.check(user, token))
-            return this.make(user, Date.now() + (1 * 1000 * 60 * 60 * 24))
+            return this.make(user, Date.now() + (1 * 1000 * 60 * 60 * 24), this.decode(token).device_id)
     }
     static check(user: User, token: string) {
         const tk = this.decode(token)

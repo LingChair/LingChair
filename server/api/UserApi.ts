@@ -11,7 +11,7 @@ export default class UserApi extends BaseApi {
     }
     override onInit(): void {
         // 驗證
-        this.registerEvent("User.auth", (args) => {
+        this.registerEvent("User.auth", (args, { deviceId }) => {
             if (this.checkArgsMissing(args, ['access_token'])) return {
                 msg: "參數缺失",
                 code: 400,
@@ -23,9 +23,12 @@ export default class UserApi extends BaseApi {
                     msg: "登錄令牌失效",
                     code: 401,
                 }
-
                 if (!User.findById(access_token.author)) return {
                     msg: "賬號不存在",
+                    code: 401,
+                }
+                if (access_token.device_id != deviceId) return {
+                    msg: "驗證失敗",
                     code: 401,
                 }
 
@@ -45,7 +48,7 @@ export default class UserApi extends BaseApi {
             }
         })
         // 登錄
-        this.registerEvent("User.login", (args) => {
+        this.registerEvent("User.login", (args, { deviceId }) => {
             if (this.checkArgsMissing(args, ['account', 'password'])) return {
                 msg: "參數缺失",
                 code: 400,
@@ -65,7 +68,7 @@ export default class UserApi extends BaseApi {
                 msg: "成功",
                 code: 200,
                 data: {
-                    access_token: TokenManager.make(user)
+                    access_token: TokenManager.make(user, null, deviceId)
                 },
             }
 
@@ -75,7 +78,7 @@ export default class UserApi extends BaseApi {
             }
         })
         // 注冊
-        this.registerEvent("User.register", (args) => {
+        this.registerEvent("User.register", (args, { deviceId }) => {
             if (this.checkArgsMissing(args, ['nickname', 'password'])) return {
                 msg: "參數缺失",
                 code: 400,
@@ -105,7 +108,7 @@ export default class UserApi extends BaseApi {
          * ================================================
          */
         // 更新頭像
-        this.registerEvent("User.setAvatar", (args) => {
+        this.registerEvent("User.setAvatar", (args, { deviceId }) => {
             if (this.checkArgsMissing(args, ['avatar', 'token'])) return {
                 msg: "參數缺失",
                 code: 400,
@@ -115,7 +118,7 @@ export default class UserApi extends BaseApi {
                 code: 400,
             }
             const token = TokenManager.decode(args.token as string)
-            if (!this.checkToken(token)) return {
+            if (!this.checkToken(token, deviceId)) return {
                 code: 401,
                 msg: "令牌無效",
             }
@@ -130,14 +133,14 @@ export default class UserApi extends BaseApi {
             }
         })
         // 更新資料
-        this.registerEvent("User.updateProfile", (args) => {
+        this.registerEvent("User.updateProfile", (args, { deviceId }) => {
             if (this.checkArgsMissing(args, ['token'])) return {
                 msg: "參數缺失",
                 code: 400,
             }
 
             const token = TokenManager.decode(args.token as string)
-            if (!this.checkToken(token)) return {
+            if (!this.checkToken(token, deviceId)) return {
                 code: 401,
                 msg: "令牌無效",
             }
@@ -154,14 +157,14 @@ export default class UserApi extends BaseApi {
             }
         })
         // 獲取用戶信息
-        this.registerEvent("User.getMyInfo", (args) => {
+        this.registerEvent("User.getMyInfo", (args, { deviceId }) => {
             if (this.checkArgsMissing(args, ['token'])) return {
                 msg: "參數缺失",
                 code: 400,
             }
 
             const token = TokenManager.decode(args.token as string)
-            if (!this.checkToken(token)) return {
+            if (!this.checkToken(token, deviceId)) return {
                 code: 401,
                 msg: "令牌無效",
             }
@@ -180,14 +183,14 @@ export default class UserApi extends BaseApi {
             }
         })
         // 獲取聯絡人列表
-        this.registerEvent("User.getMyContacts", (args) => {
+        this.registerEvent("User.getMyContacts", (args, { deviceId }) => {
             if (this.checkArgsMissing(args, ['token'])) return {
                 msg: "參數缺失",
                 code: 400,
             }
 
             const token = TokenManager.decode(args.token as string)
-            if (!this.checkToken(token)) return {
+            if (!this.checkToken(token, deviceId)) return {
                 code: 401,
                 msg: "令牌無效",
             }
@@ -212,14 +215,14 @@ export default class UserApi extends BaseApi {
             }
         })
         // 添加聯絡人
-        this.registerEvent("User.addContact", (args) => {
+        this.registerEvent("User.addContact", (args, { deviceId }) => {
             if (this.checkArgsMissing(args, ['token', 'contact_chat_id'])) return {
                 msg: "參數缺失",
                 code: 400,
             }
 
             const token = TokenManager.decode(args.token as string)
-            if (!this.checkToken(token)) return {
+            if (!this.checkToken(token, deviceId)) return {
                 code: 401,
                 msg: "令牌無效",
             }
