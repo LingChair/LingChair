@@ -1,8 +1,6 @@
-/**
- * 消息容器
- * @returns { React.JSX.Element }
- */
-export default function MessageContainer({ children, style, ...props } = {}) {
+interface Args extends React.HTMLAttributes<HTMLElement> {}
+
+export default function MessageContainer({ children, style, ...props }: Args) {
     return (
         <div style={{
             display: 'flex',
@@ -10,7 +8,6 @@ export default function MessageContainer({ children, style, ...props } = {}) {
             justifyContent: 'flex-end',
             alignItems: 'center',
             marginBottom: '20px',
-            height: "100%",
             ...style,
         }}
         {...props}>

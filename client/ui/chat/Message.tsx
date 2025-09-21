@@ -1,15 +1,25 @@
+import Client from "../../api/Client.ts"
+import DataCaches from "../../api/DataCaches.ts"
 import Avatar from "../Avatar.tsx"
+import useAsyncEffect from "../useAsyncEffect.ts"
+import React from "react"
 
-/**
- * 一条消息
- * @param { Object } param
- * @param { "left" | "right" } [param.direction="left"] 消息方向
- * @param { String } [param.avatar] 头像链接
- * @param { String } [param.nickName] 昵称
- * @returns { React.JSX.Element }
- */
-export default function Message({ direction = 'left', avatar, nickName, children, ...props } = {}) {
-    let isAtRight = direction == 'right'
+interface Args extends React.HTMLAttributes<HTMLElement> {
+    userId: string
+}
+
+export default function Message({ userId, children, ...props }: Args) {
+    const isAtRight = Client.myUserProfile?.id == userId
+
+    const [ nickName, setNickName ] = React.useState("")
+    const [ avatarUrl, setAvatarUrl ] = React.useState<string | undefined>("")
+
+    useAsyncEffect(async () => {
+        const user = await DataCaches.getUserProfile(userId)
+        setNickName(user.nickname)
+        setAvatarUrl(user?.avatar)
+    }, [userId])
+
     return (
         <div
             slot="trigger"
@@ -39,7 +49,7 @@ export default function Message({ direction = 'left', avatar, nickName, children
                     // 发送者头像
                 }
                 <Avatar
-                    src={avatar}
+                    src={avatarUrl}
                     text={nickName}
                     style={{
                         width: "43px",
