@@ -45,6 +45,7 @@ export default function ContactsList({
         paddingRight: '10px',
         display: display ? undefined : 'none',
         height: '100%',
+        width: '100%',
     }} {...props}>
         <mdui-text-field icon="search" type="search" clearable ref={searchRef} variant="outlined" placeholder="搜索..." style={{
             marginTop: '5px',
