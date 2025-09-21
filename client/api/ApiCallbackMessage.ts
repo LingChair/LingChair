@@ -8,8 +8,9 @@ type ApiCallbackMessage = {
      * 404: Not Found
      * 500: 伺服器端錯誤
      * 501: 伺服器端不支持請求的功能
+     * -1:  客戶端錯誤
      */
-    code: 200 | 400 | 401 | 403 | 404 | 500 | 501,
-    data?: { [key: string]: unknown },
+    code: 200 | 400 | 401 | 403 | 404 | 500 | 501 | -1
+    data?: { [key: string]: unknown }
 }
 export default ApiCallbackMessage

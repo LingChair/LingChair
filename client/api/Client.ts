@@ -9,7 +9,7 @@ type UnknownObject = { [key: string]: unknown }
 class Client {
     static myUserProfile?: User
     static socket?: Socket
-    static events: { [key: string]: (data: UnknownObject) => UnknownObject | undefined } = {}
+    static events: { [key: string]: (data: UnknownObject) => UnknownObject | void } = {}
     static connect() {
         if (data.device_id == null)
             data.device_id = crypto.randomUUID()
@@ -37,9 +37,12 @@ class Client {
                 setTimeout(async () => reslove(await this.invoke(method, args, timeout)), 500)
             })
         }
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             this.socket!.timeout(timeout).emit("The_White_Silk", method, args, (err: string, res: ApiCallbackMessage) => {
-                if (err) return reject(err)
+                if (err) return resolve({
+                    code: -1,
+                    msg: err,
+                })
                 resolve(res)
             })
         })
@@ -57,7 +60,7 @@ class Client {
             token: data.access_token
         })).data as unknown as User
     }
-    static on(eventName: ClientEvent, func: (data: UnknownObject) => UnknownObject) {
+    static on(eventName: ClientEvent, func: (data: UnknownObject) => UnknownObject | void) {
         this.events[eventName] = func
     }
     static off(eventName: ClientEvent) {
