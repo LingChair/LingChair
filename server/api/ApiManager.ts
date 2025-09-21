@@ -32,6 +32,10 @@ export default class ApiManager {
     static addEventListener(name: string, func: EventCallbackFunction) {
         this.event_listeners[name] = func
     }
+    static clients: { [key: string]: string[] } = {}
+    static checkUserIsOnline(userId: string, deviceId: string) {
+        return this.clients[userId].includes(deviceId)
+    }
     static initEvents() {
         const io = this.socketIoServer
 
@@ -42,10 +46,22 @@ export default class ApiManager {
 
             const deviceId = socket.handshake.auth.device_id as string
 
+            const clientInfo = {
+                userId: '',
+                deviceId,
+                ip
+            }
+
             socket.on('disconnect', (_reason) => {
-                console.log(chalk.yellow('[斷]') + ` ${ip} disconnected`)
+                if (clientInfo.userId == '')
+                    console.log(chalk.yellow('[斷]') + ` ${ip} disconnected`)
+                else {
+                    console.log(chalk.green('[斷]') + ` ${ip} disconnected`)
+                    const ls = this.clients[clientInfo.userId]
+                    ls.splice(ls.indexOf(deviceId))
+                }
             })
-            console.log(chalk.green('[連]') + ` ${ip} connected`)
+            console.log(chalk.yellow('[連]') + ` ${ip} connected`)
 
             socket.on("The_White_Silk", (name: string, args: { [key: string]: unknown }, callback_: (ret: ApiCallbackMessage) => void) => {
                 function callback(ret: ApiCallbackMessage) {
@@ -59,9 +75,7 @@ export default class ApiManager {
                     })
                     console.log(chalk.red('[收]') + ` ${ip} -> ${chalk.yellow(name)} <args: ${JSON.stringify(args)}>`)
 
-                    return callback(this.event_listeners[name]?.(args, {
-                        deviceId
-                    }) || {
+                    return callback(this.event_listeners[name]?.(args, clientInfo) || {
                         code: 501,
                         msg: "Not implmented",
                     })
