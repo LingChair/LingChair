@@ -34,7 +34,7 @@ export default class UserApi extends BaseApi {
                     msg: "驗證失敗",
                     code: 401,
                 }
-                
+
                 clientInfo.userId = access_token.author
                 console.log(chalk.green('[驗]') + ` ${access_token.author} authed on Client ${deviceId} (ip = ${ip})`)
                 if (ApiManager.clients[clientInfo.userId] == null) ApiManager.clients[clientInfo.userId] = {
@@ -250,6 +250,35 @@ export default class UserApi extends BaseApi {
          *                    公開資料
          * ================================================
          */
+        // 獲取用戶信息
+        this.registerEvent("User.getInfo", (args, { deviceId }) => {
+            if (this.checkArgsMissing(args, ['token', 'target'])) return {
+                msg: "參數缺失",
+                code: 400,
+            }
 
+            const token = TokenManager.decode(args.token as string)
+            if (!this.checkToken(token, deviceId)) return {
+                code: 401,
+                msg: "令牌無效",
+            }
+
+            const user = User.findById(args.target as string)
+            if (user == null) return {
+                code: 404,
+                msg: "用戶不存在",
+            }
+
+            return {
+                msg: "成功",
+                code: 200,
+                data: {
+                    username: user!.getUserName(),
+                    nickname: user!.getNickName(),
+                    avatar: user!.getAvatarFileHash() ? "uploaded_files/" + user!.getAvatarFileHash() : null,
+                    id: token.author,
+                }
+            }
+        })
     }
 }

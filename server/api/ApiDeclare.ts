@@ -7,6 +7,8 @@ export type CallMethod =
     "User.updateProfile" |
     "User.getMyInfo" |
 
+    "User.getInfo" |
+
     "User.getMyContacts" |
     "User.addContact" |
     "User.removeContacts" |
