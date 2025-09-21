@@ -33,8 +33,11 @@ export default class ApiManager {
         this.event_listeners[name] = func
     }
     static clients: { [key: string]: { [key: string]: SocketIo.Socket<SocketIo.DefaultEventsMap, SocketIo.DefaultEventsMap, SocketIo.DefaultEventsMap, any> } } = {}
-    static checkUserIsOnline(userId: string, deviceId: string) {
-        return this.clients[userId]?.[deviceId] != null
+    static checkUserIsOnline(userId: string) {
+        return this.getUserClientSockets(userId) != null
+    }
+    static getUserClientSockets(userId: string) {
+        return this.clients[userId]
     }
     static initEvents() {
         const io = this.socketIoServer
