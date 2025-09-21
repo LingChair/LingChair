@@ -27,12 +27,12 @@ export default class MessagesManager {
             CREATE TABLE IF NOT EXISTS ${this.getTableName()} (
                 /* 序号, MessageId */ id INTEGER PRIMARY KEY AUTOINCREMENT,
                 /* 消息文本 */ text TEXT NOT NULL,
-                /* 发送者 */ user_id TEXT NOT NULL,
+                /* 发送者 */ user_id TEXT NOT NULL
             );
        `)
     }
     protected getTableName() {
-        return `messages_${this.chat.bean.id}`
+        return `messages_${this.chat.bean.id}`.replaceAll('-', '_')
     }
     addMessage({
         text,
@@ -41,13 +41,13 @@ export default class MessagesManager {
         text: string,
         user_id?: string
     }) {
-        MessagesManager.database.prepare(`INSERT INTO ${this.getTableName()} (
+        return MessagesManager.database.prepare(`INSERT INTO ${this.getTableName()} (
             text,
             user_id
         ) VALUES (?, ?);`).run(
             text,
             user_id || null
-        )
+        ).lastInsertRowid
     }
     addSystemMessage(text: string) {
         this.addMessage({
