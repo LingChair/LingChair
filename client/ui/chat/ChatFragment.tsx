@@ -75,6 +75,11 @@ export default function ChatFragment({ target, ...props }: Args) {
             const { chat, msg } = (data as OnMessageData)
             if (target == chat) {
                 setMessagesList(messagesList.concat([msg]))
+                if ((chatPanelRef.current!.scrollHeight - chatPanelRef.current!.scrollTop - chatPanelRef.current!.clientHeight) < 80)
+                    setTimeout(() => chatPanelRef.current!.scrollTo({
+                        top: 10000000000,
+                        behavior: "smooth",
+                    }), 100)
             }
         })
         return () => {
@@ -96,11 +101,6 @@ export default function ChatFragment({ target, ...props }: Args) {
         }, 5000)
         if (checkApiSuccessOrSncakbar(re, "發送失敗")) return
         inputRef.current!.value = ''
-
-        chatPanelRef.current!.scrollTo({
-            top: 10000000000,
-            behavior: "smooth",
-        })
     }
 
     return (
