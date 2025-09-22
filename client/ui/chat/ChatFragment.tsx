@@ -180,14 +180,24 @@ export default function ChatFragment({ target, ...props }: Args) {
                         alignItems: 'center',
                         paddingBottom: '2px',
                         paddingTop: '0.1rem',
-                        height: '4rem',
                         position: 'sticky',
                         bottom: '0',
                         marginLeft: '5px',
                         marginRight: '4px',
                         backgroundColor: 'rgb(var(--mdui-color-background))',
+                    }} onDrop={(e) => {
+                        if (e.dataTransfer.files) {
+                            const files = e.dataTransfer.files
+                            // 基于当前的实现, 浏览器不会读取文件的字节流来确定其媒体类型, 其根据文件扩展名进行假设
+                            // https://developer.mozilla.org/zh-CN/docs/Web/API/Blob/type
+                            for (const file of files) {
+                                if (file.type.startsWith("image/")) {
+                                    
+                                }
+                            }
+                        }
                     }}>
-                        <mdui-text-field variant="outlined" placeholder="喵呜~" autosize ref={inputRef as any} max-rows={1} onKeyDown={(event) => {
+                        <mdui-text-field variant="outlined" placeholder="喵呜~" autosize ref={inputRef as any} max-rows={6} onKeyDown={(event) => {
                             if (event.ctrlKey && event.key == 'Enter')
                                 sendMessage()
                         }} style={{
