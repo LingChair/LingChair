@@ -57,7 +57,7 @@ export default function ChatFragment({ target, ...props }: Args) {
             })
         setMessagesList(returnMsgs.concat(messagesList))
 
-        if (page.current == 0 + 1)
+        if (page.current == 0)
             setTimeout(() => chatPanelRef.current!.scrollTo({
                 top: 10000000000,
                 behavior: "smooth",
@@ -131,7 +131,7 @@ export default function ChatFragment({ target, ...props }: Args) {
                         paddingTop: "15px",
 
                     }}>
-                        <mdui-button variant="text" onClick={() => loadMore()}>加載更多</mdui-button>
+                        <mdui-button variant="text" onClick={() => ()}>加載更多</mdui-button>
                     </div>
                     <MessageContainer style={{
                         paddingTop: "15px",
