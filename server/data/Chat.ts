@@ -7,6 +7,7 @@ import ChatBean from './ChatBean.ts'
 import { SQLInputValue } from "node:sqlite"
 import chalk from "chalk"
 import User from "./User.ts"
+import ChatType from "./ChatType.ts"
 
 /**
  * Chat.ts - Wrapper and manager
@@ -25,8 +26,7 @@ export default class Chat {
                 /* Chat ID */ id TEXT NOT NULL,
                 /* 標題 (群組) */ title TEXT,
                 /* 頭像 (群組) */ avatar BLOB,
-                /* UserIdA (私信) */ user_a_id TEXT,
-                /* UserIdB (私信) */ user_b_id TEXT,
+                /* 成員 */ members_list TEXT,
                 /* 设置 */ settings TEXT NOT NULL
             );
        `)
@@ -46,7 +46,7 @@ export default class Chat {
         return new Chat(beans[0])
     }
 
-    static create(chatId: string, type: 'private' | 'group') {
+    static create(chatId: string, type: ChatType) {
         const chat = new Chat(
             Chat.findAllBeansByCondition(
                 'count = ?',
@@ -55,16 +55,14 @@ export default class Chat {
                     id,
                     title,
                     avatar,
-                    user_a_id,
-                    user_b_id,
+                    members_list,
                     settings
-                ) VALUES (?, ?, ?, ?, ?, ?, ?);`).run(
+                ) VALUES (?, ?, ?, ?, ?, ?);`).run(
                     type,
                     chatId,
                     null,
                     null,
-                    null,
-                    null,
+                    "[]",
                     "{}"
                 ).lastInsertRowid
             )[0]
@@ -81,11 +79,28 @@ export default class Chat {
         this.bean[key] = value
     }
 
+    getMembersList() {
+        return JSON.parse(this.bean.members_list) as string[]
+    }
+    addMember(userId: string) {
+        const ls = this.getMembersList()
+        ls.push(userId)
+        this.setMembers(ls)
+    }
+    setMembers(members: string[]) {
+        this.setAttr("members_list", JSON.stringify(members))
+    }
+    removeMembers(members: string[]) {
+        const ls = this.getMembersList().filter((v) => !members.includes(v))
+        this.setAttr("members_list", JSON.stringify(ls))
+    }
     getAnotherUserForPrivate(userMySelf: User) {
+        const user_a_id = this.getMembersList()[0]
+        const user_b_id = this.getMembersList()[0]
         // 注意: 這裏已經確定了 Chat, 不需要再指定對方用戶
-        if (this.bean.user_a_id == userMySelf.bean.id)
-            return User.findById(this.bean?.user_b_id as string)
-        if (this.bean.user_b_id == userMySelf.bean.id)
+        if (user_a_id == userMySelf.bean.id)
+            return User.findById(user_b_id as string)
+        if (user_b_id == userMySelf.bean.id)
             return userMySelf
 
         return null
