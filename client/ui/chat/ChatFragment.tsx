@@ -50,11 +50,11 @@ export default function ChatFragment({ target, ...props }: Args) {
 
         if (checkApiSuccessOrSncakbar(re, "拉取歷史記錄失敗")) return
         const returnMsgs = (re.data!.messages as Message[]).reverse()
-        if (returnMsgs.length == 0)
-            return snackbar({
-                message: "已經沒有消息了哦~",
-                placement: 'top',
-            })
+        if (returnMsgs.length == 0) {
+            setShowNoMoreMessagesTip(true)
+            setTimeout(() => setShowNoMoreMessagesTip(false), 1000)
+            return
+        }
         setMessagesList(returnMsgs.concat(messagesList))
 
         if (page.current == 0)
@@ -83,6 +83,8 @@ export default function ChatFragment({ target, ...props }: Args) {
     })
 
     const inputRef = React.useRef<TextField>(null)
+    const [showLoadingMoreMessagesTip, setShowLoadingMoreMessagesTip] = React.useState(false)
+    const [showNoMoreMessagesTip, setShowNoMoreMessagesTip] = React.useState(false)
 
     async function sendMessage() {
         const text = inputRef.current!.value
@@ -124,14 +126,37 @@ export default function ChatFragment({ target, ...props }: Args) {
                     display: tabItemSelected == "Chat" ? "flex" : "none",
                     flexDirection: "column",
                     height: "100%",
+                }} onScroll={async (e) => {
+                    const scrollTop = (e.target as HTMLDivElement).scrollTop
+                    if (scrollTop == 0 && !showLoadingMoreMessagesTip) {
+                        setShowLoadingMoreMessagesTip(true)
+                        await loadMore()
+                        setShowLoadingMoreMessagesTip(false)
+                    }
                 }}>
                     <div style={{
-                        display: "flex",
+                        display: 'flex',
                         justifyContent: "center",
                         paddingTop: "15px",
-
                     }}>
-                        <mdui-button variant="text" onClick={() => ()}>加載更多</mdui-button>
+                        <div style={{
+                            display: showLoadingMoreMessagesTip ? 'flex' : 'none',
+                        }}>
+                            <mdui-circular-progress style={{
+                                width: '30px',
+                                height: '30px',
+                            }}></mdui-circular-progress>
+                            <span style={{
+                                alignSelf: 'center',
+                                paddingLeft: '12px',
+                            }}>加載中...</span>
+                        </div>
+                        <div style={{
+                            display: showNoMoreMessagesTip ? undefined : 'none',
+                            alignSelf: 'center',
+                        }}>
+                            沒有更多消息啦~
+                        </div>
                     </div>
                     <MessageContainer style={{
                         paddingTop: "15px",
