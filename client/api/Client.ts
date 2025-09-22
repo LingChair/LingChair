@@ -3,6 +3,7 @@ import { CallMethod, ClientEvent } from './ApiDeclare.ts'
 import ApiCallbackMessage from './ApiCallbackMessage.ts'
 import User from "./client_data/User.ts"
 import data from "../Data.ts"
+import { checkApiSuccessOrSncakbar } from "../ui/snackbar.ts"
 
 type UnknownObject = { [key: string]: unknown }
 
@@ -21,6 +22,13 @@ class Client {
                 device_id: data.device_id
             },
         })
+        this.socket!.on("connect", async () => {
+            const re = await this.invoke("User.auth", {
+                access_token: data.access_token
+            }, 1000)
+            if (re.code != 200)
+                checkApiSuccessOrSncakbar(re, "重連失敗")
+        })
         this.socket!.on("The_White_Silk", (name: string, data: UnknownObject, callback: (ret: UnknownObject) => void) => {
             try {
                 if (name == null || data == null) return
@@ -33,15 +41,16 @@ class Client {
     }
     static invoke(method: CallMethod, args: UnknownObject = {}, timeout: number = 5000): Promise<ApiCallbackMessage> {
         if (this.socket == null) {
+            console.warn("客戶端未初始化, 等待初始化后再請求......")
             return new Promise((reslove) => {
                 setTimeout(async () => reslove(await this.invoke(method, args, timeout)), 500)
             })
         }
         return new Promise((resolve) => {
-            this.socket!.timeout(timeout).emit("The_White_Silk", method, args, (err: string, res: ApiCallbackMessage) => {
+            this.socket!.timeout(timeout).emit("The_White_Silk", method, args, (err: Error, res: ApiCallbackMessage) => {
                 if (err) return resolve({
                     code: -1,
-                    msg: err,
+                    msg: err.message.indexOf("timed out") != -1 ? "請求超時" : err.message,
                 })
                 resolve(res)
             })
