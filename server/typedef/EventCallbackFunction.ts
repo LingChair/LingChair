@@ -6,6 +6,6 @@ type EventCallbackFunction = (args: { [key: string]: unknown }, clientInfo: {
     deviceId: string
     ip: string
     socket: SocketIo.Socket<SocketIo.DefaultEventsMap, SocketIo.DefaultEventsMap, SocketIo.DefaultEventsMap, any>
-}) => ApiCallbackMessage
+}) => ApiCallbackMessage | Promise<ApiCallbackMessage>
 
 export default EventCallbackFunction
