@@ -8,8 +8,9 @@ import Client from "../../api/Client.ts"
 import Message from "../../api/client_data/Message.ts"
 import Chat from "../../api/client_data/Chat.ts"
 import data from "../../Data.ts"
-import { checkApiSuccessOrSncakbar, snackbar } from "../snackbar.ts"
+import { checkApiSuccessOrSncakbar } from "../snackbar.ts"
 import useAsyncEffect from "../useAsyncEffect.ts"
+import * as marked from 'marked'
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     target: string
