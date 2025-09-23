@@ -66,10 +66,15 @@ export default class ApiManager {
             })
             console.log(chalk.yellow('[連]') + ` ${ip} connected`)
 
-            socket.on("The_White_Silk", (name: string, args: { [key: string]: unknown }, callback_: (ret: ApiCallbackMessage) => void) => {
+            socket.on("The_White_Silk", async (name: string, args: { [key: string]: unknown }, callback_: (ret: ApiCallbackMessage) => void) => {
                 function callback(ret: ApiCallbackMessage) {
                     console.log(chalk.blue('[發]') + ` ${ip} <- ${ret.code == 200 ? chalk.green(ret.msg) : chalk.red(ret.msg)} [${ret.code}]${ret.data ? (' <extras: ' + JSON.stringify(ret.data) + '>') : ''}`)
                     return callback_(ret)
+                }
+                async function checkIsPromiseAndAwait(value: Promise<unknown> | unknown) {
+                    if (value instanceof Promise)
+                        return await value
+                    return value
                 }
                 try {
                     if (name == null || args == null) return callback({
@@ -78,7 +83,7 @@ export default class ApiManager {
                     })
                     console.log(chalk.red('[收]') + ` ${ip} -> ${chalk.yellow(name)} <args: ${JSON.stringify(args)}>`)
 
-                    return callback(this.event_listeners[name]?.(args, clientInfo) || {
+                    return callback(await checkIsPromiseAndAwait(this.event_listeners[name]?.(args, clientInfo)) || {
                         code: 501,
                         msg: "Not implmented",
                     })
