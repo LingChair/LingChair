@@ -13,7 +13,7 @@ export default class ChatPrivate extends Chat {
 
     static createForPrivate(userA: User, userB: User) {
         const chat = this.create(this.getChatIdByUsersId(userA.bean.id, userB.bean.id), 'private')
-        chat.setMembers([
+        chat.addMembers([
             userA.bean.id,
             userB.bean.id
         ])

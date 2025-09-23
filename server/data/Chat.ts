@@ -8,6 +8,7 @@ import { SQLInputValue } from "node:sqlite"
 import chalk from "chalk"
 import User from "./User.ts"
 import ChatType from "./ChatType.ts"
+import UserChatLinker from "./UserChatLinker.ts"
 
 /**
  * Chat.ts - Wrapper and manager
@@ -55,14 +56,12 @@ export default class Chat {
                     id,
                     title,
                     avatar,
-                    members_list,
                     settings
-                ) VALUES (?, ?, ?, ?, ?, ?);`).run(
+                ) VALUES (?, ?, ?, ?, ?);`).run(
                     type,
                     chatId,
                     null,
                     null,
-                    "[]",
                     "{}"
                 ).lastInsertRowid
             )[0]
@@ -80,19 +79,13 @@ export default class Chat {
     }
 
     getMembersList() {
-        return JSON.parse(this.bean.members_list) as string[]
+        return UserChatLinker.getChatMembers(this.bean.id)
     }
-    addMember(userId: string) {
-        const ls = this.getMembersList()
-        ls.push(userId)
-        this.setMembers(ls)
+    addMembers(userIds: string[]) {
+        userIds.forEach((v) => UserChatLinker.linkUserAndChat(v, this.bean.id))
     }
-    setMembers(members: string[]) {
-        this.setAttr("members_list", JSON.stringify(members))
-    }
-    removeMembers(members: string[]) {
-        const ls = this.getMembersList().filter((v) => !members.includes(v))
-        this.setAttr("members_list", JSON.stringify(ls))
+    removeMembers(userIds: string[]) {
+        userIds.forEach((v) => UserChatLinker.unlinkUserAndChat(v, this.bean.id))
     }
     getAnotherUserForPrivate(userMySelf: User) {
         const user_a_id = this.getMembersList()[0]
