@@ -15,7 +15,9 @@ export type CallMethod =
 
     "Chat.getInfo" |
     "Chat.sendMessage" |
-    "Chat.getMessageHistory"
+    "Chat.getMessageHistory" |
+
+    "Chat.uploadFile"
 
 export type ClientEvent = 
     "Client.onMessage"
