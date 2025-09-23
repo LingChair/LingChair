@@ -12,10 +12,12 @@ import { checkApiSuccessOrSncakbar, snackbar } from "../snackbar.ts"
 import useAsyncEffect from "../useAsyncEffect.ts"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
-    target: string,
+    target: string
+    showReturnButton?: boolean
+    onReturnButtonClicked?: () => void
 }
 
-export default function ChatFragment({ target, ...props }: Args) {
+export default function ChatFragment({ target, showReturnButton, onReturnButtonClicked, ...props }: Args) {
     const [messagesList, setMessagesList] = React.useState([] as Message[])
     const [chatInfo, setChatInfo] = React.useState({
         title: '加載中...'
@@ -117,6 +119,13 @@ export default function ChatFragment({ target, ...props }: Args) {
                 flexDirection: "column",
                 height: "100%",
             }}>
+                {
+                    showReturnButton && <mdui-button-icon icon="arrow_back" onClick={onReturnButtonClicked} style={{
+                        alignSelf: 'center',
+                        marginLeft: '5px',
+                        marginRight: '15px',
+                    }}></mdui-button-icon>
+                }
                 <mdui-tab value="Chat">{
                     chatInfo.title
                 }</mdui-tab>
@@ -182,9 +191,9 @@ export default function ChatFragment({ target, ...props }: Args) {
                         paddingTop: '0.1rem',
                         position: 'sticky',
                         bottom: '0',
-                        marginLeft: '5px',
-                        marginRight: '4px',
-                        backgroundColor: 'rgb(var(--mdui-color-background))',
+                        paddingLeft: '5px',
+                        paddingRight: '4px',
+                        backgroundColor: 'rgb(var(--mdui-color-surface))',
                     }} onDrop={(e) => {
                         if (e.dataTransfer.files) {
                             const files = e.dataTransfer.files
@@ -202,6 +211,8 @@ export default function ChatFragment({ target, ...props }: Args) {
                                 sendMessage()
                         }} style={{
                             marginRight: '10px',
+                            marginTop: '3px',
+                            marginBottom: '3px',
                         }}></mdui-text-field>
                         <mdui-button-icon slot="end-icon" icon="more_vert" style={{
                             marginRight: '6px',

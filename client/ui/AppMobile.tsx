@@ -1,11 +1,14 @@
 import Client from "../api/Client.ts"
 import data from "../Data.ts"
+import ChatFragment from "./chat/ChatFragment.tsx"
 import useEventListener from './useEventListener.ts'
 import User from "../api/client_data/User.ts"
 import RecentChat from "../api/client_data/RecentChat.ts"
+import Avatar from "./Avatar.tsx"
 
 import * as React from 'react'
 import { Dialog, NavigationBar, TextField } from "mdui"
+import Split from 'split.js'
 import 'mdui/jsx.zh-cn.d.ts'
 import { checkApiSuccessOrSncakbar } from "./snackbar.ts"
 
@@ -15,6 +18,8 @@ import UserProfileDialog from "./dialog/UserProfileDialog.tsx"
 import ContactsList from "./main/ContactsList.tsx"
 import RecentsList from "./main/RecentsList.tsx"
 import useAsyncEffect from "./useAsyncEffect.ts"
+import ChatInfoDialog from "./dialog/ChatInfoDialog.tsx";
+import Chat from "../api/client_data/Chat.ts";
 
 declare global {
     namespace React {
@@ -28,57 +33,47 @@ declare global {
 }
 
 export default function AppMobile() {
-    const [recentsList, setRecentsList] = React.useState([
-        {
-            id: '0',
-            avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
-            title: "麻油衣酱",
-            content: "成步堂君, 我又坐牢了（"
-        },
-        {
-            id: '0',
-            avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
-            title: "Maya Fey",
-            content: "我是绫里真宵, 是一名灵媒师~"
-        },
-    ] as RecentChat[])
-    const [contactsMap, setContactsMap] = React.useState({
-        所有: [
-            {
-                id: '0',
-                avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
-                nickname: "麻油衣酱",
-            },
-            {
-                id: '0',
-                avatar: "https://www.court-records.net/mugshot/aa6-004-maya.png",
-                nickname: "Maya Fey",
-            },
-        ],
-    } as unknown as { [key: string]: User[] })
+    const [recentsList, setRecentsList] = React.useState([] as RecentChat[])
+
     const [navigationItemSelected, setNavigationItemSelected] = React.useState('Recents')
 
-    const navigationBarRef: React.MutableRefObject<NavigationBar | null> = React.useRef(null)
+    const navigationBarRef = React.useRef<NavigationBar>(null)
     useEventListener(navigationBarRef, 'change', (event) => {
         setNavigationItemSelected((event.target as HTMLElement as NavigationBar).value as string)
     })
 
-    const loginDialogRef: React.MutableRefObject<Dialog | null> = React.useRef(null)
-    const loginInputAccountRef: React.MutableRefObject<TextField | null> = React.useRef(null)
-    const loginInputPasswordRef: React.MutableRefObject<TextField | null> = React.useRef(null)
+    const loginDialogRef = React.useRef<Dialog>(null)
+    const loginInputAccountRef = React.useRef<TextField>(null)
+    const loginInputPasswordRef = React.useRef<TextField>(null)
 
-    const registerDialogRef: React.MutableRefObject<Dialog | null> = React.useRef(null)
-    const registerInputUserNameRef: React.MutableRefObject<TextField | null> = React.useRef(null)
-    const registerInputNickNameRef: React.MutableRefObject<TextField | null> = React.useRef(null)
-    const registerInputPasswordRef: React.MutableRefObject<TextField | null> = React.useRef(null)
+    const registerDialogRef = React.useRef<Dialog>(null)
+    const registerInputUserNameRef = React.useRef<TextField>(null)
+    const registerInputNickNameRef = React.useRef<TextField>(null)
+    const registerInputPasswordRef = React.useRef<TextField>(null)
 
-    const userProfileDialogRef: React.MutableRefObject<Dialog | null> = React.useRef(null)
-    const openMyUserProfileDialogButtonRef: React.MutableRefObject<HTMLElement | null> = React.useRef(null)
-    /*    useEventListener(openMyUserProfileDialogButtonRef, 'click', (_event) => {
-            userProfileDialogRef.current!.open = true
-        })*/
+    const userProfileDialogRef = React.useRef<Dialog>(null)
 
-    const [myUserProfileCache, setMyUserProfileCache]: [User, React.Dispatch<React.SetStateAction<User>>] = React.useState(null as unknown as User)
+    const chatInfoDialogRef = React.useRef<Dialog>(null)
+    const [chatInfo, setChatInfo] = React.useState(null as unknown as Chat)
+
+    const [myUserProfileCache, setMyUserProfileCache] = React.useState(null as unknown as User)
+
+    const [isShowChatFragment, setIsShowChatFragment] = React.useState(false)
+
+    const [currentChatId, setCurrentChatId] = React.useState('')
+
+    const chatFragmentDialogRef = React.useRef<Dialog>(null)
+    React.useEffect(() => {
+        const shadow = chatFragmentDialogRef.current!.shadowRoot
+        const panel = shadow.querySelector(".panel")
+        panel.style.padding = '0'
+        panel.style.color = 'inherit'
+        panel.style.backgroundColor = 'rgb(var(--mdui-color-background))'
+        panel.style.setProperty('--mdui-color-background', 'inherit')
+        const body = shadow.querySelector(".body")
+        body.style.height = '100%'
+        body.style.display = 'flex'
+    })
 
     useAsyncEffect(async () => {
         Client.connect()
@@ -99,6 +94,21 @@ export default function AppMobile() {
             width: 'var(--whitesilk-window-width)',
             height: 'var(--whitesilk-window-height)',
         }}>
+            <mdui-dialog fullscreen open={isShowChatFragment} ref={chatFragmentDialogRef}>
+                {
+                    // 聊天页面
+                }
+                <div id="ChatFragment" style={{
+                    width: '100%',
+                    heght: '100%',
+                }}>
+                    <ChatFragment
+                        showReturnButton={true}
+                        onReturnButtonClicked={() => setIsShowChatFragment(false)}
+                        target={currentChatId} />
+                </div>
+            </mdui-dialog>
+
             <LoginDialog
                 loginDialogRef={loginDialogRef}
                 loginInputAccountRef={loginInputAccountRef}
@@ -114,14 +124,24 @@ export default function AppMobile() {
                 loginInputPasswordRef={loginInputPasswordRef} />
 
             <UserProfileDialog
-                userProfileDialogRef={userProfileDialogRef}
+                userProfileDialogRef={userProfileDialogRef as any}
                 user={myUserProfileCache} />
 
-            <mdui-navigation-bar scroll-target="#SideBar" label-visibility="selected" value="Recents" ref={navigationBarRef}>
-                <mdui-navigation-bar-item icon="watch_later--outlined" value="Recents">最近</mdui-navigation-bar-item>
-                <mdui-navigation-bar-item icon="contacts--outlined" value="Contacts">聯絡人</mdui-navigation-bar-item>
-            </mdui-navigation-bar>
+            <ChatInfoDialog
+                chatInfoDialogRef={chatInfoDialogRef as any}
+                openChatFragment={(id) => {
+                    setCurrentChatId(id)
+                    setIsShowChatFragment(true)
+                }}
+                chat={chatInfo} />
 
+            <mdui-navigation-bar scroll-target="#SideBar" label-visibility="selected" value="Recents" ref={navigationBarRef}>
+                <mdui-navigation-bar-item icon="watch_later--outlined" active-icon="watch_later--filled" value="Recents">最近</mdui-navigation-bar-item>
+                <mdui-navigation-bar-item icon="contacts--outlined" active-icon="contacts--filled" value="Contacts">聯絡人</mdui-navigation-bar-item>
+            </mdui-navigation-bar>
+            {
+                // 侧边列表
+            }
             <div style={{
                 display: 'flex',
                 height: 'calc(100% - 80px)',
@@ -130,14 +150,21 @@ export default function AppMobile() {
                 {
                     // 最近聊天
                     <RecentsList
+                        openChatFragment={(id) => {
+                            setCurrentChatId(id)
+                            setIsShowChatFragment(true)
+                        }}
                         display={navigationItemSelected == "Recents"}
-                        recentsList={recentsList} />
+                        currentChatId={currentChatId}
+                        recentsList={recentsList}
+                        setRecentsList={setRecentsList} />
                 }
                 {
                     // 联系人列表
                     <ContactsList
-                        display={navigationItemSelected == "Contacts"}
-                        contactsMap={contactsMap} />
+                        setChatInfo={setChatInfo}
+                        chatInfoDialogRef={chatInfoDialogRef as any}
+                        display={navigationItemSelected == "Contacts"} />
                 }
             </div>
         </div>
