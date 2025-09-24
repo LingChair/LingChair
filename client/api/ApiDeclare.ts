@@ -19,5 +19,11 @@ export type CallMethod =
 
     "Chat.uploadFile"
 
+export const CallableMethodBeforeAuth = [
+    "User.auth",
+    "User.register",
+    "User.login",
+]
+
 export type ClientEvent = 
     "Client.onMessage"

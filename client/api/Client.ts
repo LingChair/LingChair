@@ -1,5 +1,5 @@
 import { io, Socket } from 'socket.io-client'
-import { CallMethod, ClientEvent } from './ApiDeclare.ts'
+import { CallMethod, ClientEvent, CallableMethodBeforeAuth } from './ApiDeclare.ts'
 import ApiCallbackMessage from './ApiCallbackMessage.ts'
 import User from "./client_data/User.ts"
 import data from "../Data.ts"
@@ -12,6 +12,7 @@ class Client {
     static myUserProfile?: User
     static socket?: Socket
     static events: { [key: string]: (data: UnknownObject) => UnknownObject | void } = {}
+    static connected = false
     static connect() {
         if (data.device_id == null)
             data.device_id = randomUUID()
@@ -29,6 +30,10 @@ class Client {
             }, 1000)
             if (re.code != 200)
                 checkApiSuccessOrSncakbar(re, "重連失敗")
+            this.connected = true
+        })
+        this.socket!.on("disconnect", () => {
+            this.connected = false
         })
         this.socket!.on("The_White_Silk", (name: string, data: UnknownObject, callback: (ret: UnknownObject) => void) => {
             try {
@@ -41,8 +46,7 @@ class Client {
         })
     }
     static invoke(method: CallMethod, args: UnknownObject = {}, timeout: number = 5000): Promise<ApiCallbackMessage> {
-        if (this.socket == null) {
-            console.warn("客戶端未初始化, 等待初始化后再請求......")
+        if (this.socket == null || (!this.connected && !CallableMethodBeforeAuth.includes(method))) {
             return new Promise((reslove) => {
                 setTimeout(async () => reslove(await this.invoke(method, args, timeout)), 500)
             })
