@@ -57,7 +57,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
             target: target,
         })
         if (re.code != 200)
-            return checkApiSuccessOrSncakbar(re, "對話錯誤")
+            return target != '' && checkApiSuccessOrSncakbar(re, "對話錯誤")
         setChatInfo(re.data as Chat)
 
         await loadMore()
