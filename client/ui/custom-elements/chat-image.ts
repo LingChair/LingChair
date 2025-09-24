@@ -7,10 +7,12 @@ function openImageViewer(src: string) {
     $('#image-viewer-dialog-inner').empty()
 
     const e = new Image()
-    e.onload = () => ($('#image-viewer-dialog-inner').get(0) as any).setTransform({
-        scale: 0.1,
-        x: 0 + e.width / 4,
-        y: 0 + e.height / 16,
+    e.onload = () => ($('#image-viewer-dialog-inner').get(0) as any).scaleTo(0.1, {
+        // Transform origin. Can be a number, or string percent, eg "50%"
+        originX: '50%',
+        originY: '50%',
+        // Should the transform origin be relative to the container, or content?
+        relativeTo: 'container',
     })
     e.src = src
     $('#image-viewer-dialog-inner').append(e)
