@@ -18,7 +18,7 @@ export default class UserApi extends BaseApi {
                 msg: "參數缺失",
                 code: 400,
             }
-            const { deviceId, ip, socket } = clientInfo
+            const { deviceId, ip, socket, sessionId } = clientInfo
             try {
                 const access_token = TokenManager.decode(args.access_token as string)
 
@@ -38,9 +38,9 @@ export default class UserApi extends BaseApi {
                 clientInfo.userId = access_token.author
                 console.log(chalk.green('[驗]') + ` ${access_token.author} authed on Client ${deviceId} (ip = ${ip})`)
                 if (ApiManager.clients[clientInfo.userId] == null) ApiManager.clients[clientInfo.userId] = {
-                    [deviceId]: socket
+                    [deviceId + '_' + sessionId]: socket
                 }
-                else ApiManager.clients[clientInfo.userId][deviceId] = socket
+                else ApiManager.clients[clientInfo.userId][deviceId + '_' + sessionId] = socket
 
                 return {
                     msg: "成功",

@@ -48,6 +48,9 @@ export default class ApiManager {
     static checkUserIsOnline(userId: string) {
         return this.getUserClientSockets(userId) != null
     }
+    /**
+     * 獲取用戶所有的客戶端表 (格式遵循 設備ID_當前Session)
+     */
     static getUserClientSockets(userId: string) {
         return this.clients[userId]
     }
@@ -60,10 +63,12 @@ export default class ApiManager {
             const ip = socket.conn.remoteAddress
 
             const deviceId = socket.handshake.auth.device_id as string
+            const sessionId = socket.handshake.auth.session_id as string
 
             const clientInfo = {
                 userId: '',
                 deviceId,
+                sessionId,
                 ip,
                 socket,
             }
@@ -73,7 +78,7 @@ export default class ApiManager {
                     console.log(chalk.yellow('[斷]') + ` ${ip} disconnected`)
                 else {
                     console.log(chalk.green('[斷]') + ` ${ip} disconnected`)
-                    delete this.clients[clientInfo.userId][deviceId]
+                    delete this.clients[clientInfo.userId][deviceId + '_' + sessionId]
                 }
             })
             console.log(chalk.yellow('[連]') + ` ${ip} connected`)

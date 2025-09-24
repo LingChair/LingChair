@@ -9,6 +9,7 @@ import randomUUID from "../randomUUID.ts"
 type UnknownObject = { [key: string]: unknown }
 
 class Client {
+    static sessionId = randomUUID()
     static myUserProfile?: User
     static socket?: Socket
     static events: { [key: string]: (data: UnknownObject) => UnknownObject | void } = {}
@@ -21,7 +22,8 @@ class Client {
         this.socket = io({
             transports: ['websocket'],
             auth: {
-                device_id: data.device_id
+                device_id: data.device_id,
+                session_id: this.sessionId,
             },
         })
         this.socket!.on("connect", async () => {

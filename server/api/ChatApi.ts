@@ -1,6 +1,5 @@
-import { Buffer } from "node:buffer";
-import Chat from "../data/Chat.ts";
-import ChatPrivate from "../data/ChatPrivate.ts"
+import { Buffer } from "node:buffer"
+import Chat from "../data/Chat.ts"
 import FileManager from "../data/FileManager.ts"
 import MessagesManager from "../data/MessagesManager.ts"
 import User from "../data/User.ts"
