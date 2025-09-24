@@ -4,6 +4,7 @@ import ApiCallbackMessage from './ApiCallbackMessage.ts'
 import User from "./client_data/User.ts"
 import data from "../Data.ts"
 import { checkApiSuccessOrSncakbar } from "../ui/snackbar.ts"
+import randomUUID from "../randomUUID.ts"
 
 type UnknownObject = { [key: string]: unknown }
 
@@ -13,7 +14,7 @@ class Client {
     static events: { [key: string]: (data: UnknownObject) => UnknownObject | void } = {}
     static connect() {
         if (data.device_id == null)
-            data.device_id = crypto.randomUUID()
+            data.device_id = randomUUID()
         this.socket?.disconnect()
         this.socket && delete this.socket
         this.socket = io({
