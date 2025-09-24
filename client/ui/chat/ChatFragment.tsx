@@ -18,6 +18,15 @@ interface Args extends React.HTMLAttributes<HTMLElement> {
     onReturnButtonClicked?: () => void
 }
 
+const markedInstance = new marked.Marked({
+    renderer: {
+        heading({ tokens, depth: _depth }) {
+            const text = this.parser.parseInline(tokens);
+            return `<span>${text}</span>`
+        }
+    }
+})
+
 export default function ChatFragment({ target, showReturnButton, onReturnButtonClicked, ...props }: Args) {
     const [messagesList, setMessagesList] = React.useState([] as Message[])
     const [chatInfo, setChatInfo] = React.useState({
@@ -177,7 +186,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                                 <Element_Message
                                     key={msg.id}
                                     userId={msg.user_id}>
-                                    {msg.text}
+                                    {markedInstance.parse(msg.text) as string}
                                 </Element_Message>
                             )
                         }
