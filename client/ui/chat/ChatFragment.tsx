@@ -11,6 +11,7 @@ import data from "../../Data.ts"
 import { checkApiSuccessOrSncakbar } from "../snackbar.ts"
 import useAsyncEffect from "../useAsyncEffect.ts"
 import * as marked from 'marked'
+import DOMPurify from 'dompurify'
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     target: string
@@ -186,7 +187,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                                 <Element_Message
                                     key={msg.id}
                                     userId={msg.user_id}>
-                                    {markedInstance.parse(msg.text) as string}
+                                    <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(markedInstance.parse(msg.text) as string) }}></div>
                                 </Element_Message>
                             )
                         }

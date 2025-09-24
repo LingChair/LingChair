@@ -26,6 +26,7 @@
     "split.js": "npm:split.js@1.3.2",
     "crypto-js": "npm:crypto-js@4.2.0",
     "socket.io-client": "npm:socket.io-client@4.8.1",
-    "marked": "npm:marked@16.3.0"
+    "marked": "npm:marked@16.3.0",
+    "dompurify": "npm:dompurify@3.2.7"
   }
 }
