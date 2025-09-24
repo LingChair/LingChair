@@ -100,7 +100,7 @@ export default function AppMobile() {
                 }
                 <div id="ChatFragment" style={{
                     width: '100%',
-                    heght: '100%',
+                    height: '100%',
                 }}>
                     <ChatFragment
                         showReturnButton={true}
