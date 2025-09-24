@@ -30,6 +30,7 @@ export default function RecentsList({
     return <mdui-list style={{
         overflowY: 'auto',
         paddingRight: '10px',
+        paddingLeft: '10px',
         display: display ? undefined : 'none',
         height: '100%',
         width: '100%',
