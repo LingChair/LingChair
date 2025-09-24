@@ -1,16 +1,20 @@
-function openImageViewer(src) {
+import { $ } from 'mdui/jq'
+import { dialog } from 'mdui'
+
+import 'pinch-zoom-element'
+
+function openImageViewer(src: string) {
     $('#image-viewer-dialog-inner').empty()
 
     const e = new Image()
+    e.onload = () => ($('#image-viewer-dialog-inner').get(0) as any).setTransform({
+        scale: 0.1,
+        x: 0 + e.width / 4,
+        y: 0 + e.height / 16,
+    })
     e.src = src
     $('#image-viewer-dialog-inner').append(e)
-
-    e.onload = () => $('#image-viewer-dialog-inner').get(0).setTransform({
-        scale: 0.6,
-        x: $(window).width() / 2 - (e.width / 4),
-        y: $(window).height() / 2 - (e.height / 3),
-    })
-    $('#image-viewer-dialog').get(0).open = true
+    $('#image-viewer-dialog').attr('open', 'true')
 }
 
 customElements.define('chat-image', class extends HTMLElement {
@@ -23,34 +27,36 @@ customElements.define('chat-image', class extends HTMLElement {
         e.style.maxHeight = "90%"
         e.style.marginTop = "13px"
         e.style.borderRadius = "var(--mdui-shape-corner-medium)"
-        e.src = $(this).attr('src')
-        e.alt = $(this).attr('alt')
+        e.alt = $(this).attr('alt') || ""
         e.onerror = () => {
             const bak = $(this).html()
             $(this).html(`<br/><mdui-icon name="broken_image" style="font-size: 2rem;"></mdui-icon>`)
             $(this).attr('alt', '無法加載圖像')
-            $(this).on('click', () => dialog({
-                headline: "圖片無法載入",
-                description: "您是否需要重新加載?",
-                actions: [
-                    {
-                        text: "重載",
-                        onClick: () => {
-                            $(this).html(bak)
-                            return false
+            $(this).on('click', () => {
+                dialog({
+                    headline: "圖片無法載入",
+                    description: "您是否需要重新加載?",
+                    actions: [
+                        {
+                            text: "重載",
+                            onClick: () => {
+                                $(this).html(bak)
+                                return false
+                            },
                         },
-                    },
-                    {
-                        text: "取消",
-                        onClick: () => {
-                            return false
+                        {
+                            text: "取消",
+                            onClick: () => {
+                                return false
+                            },
                         },
-                    },
-                ],
-            }))
+                    ],
+                })
+            })
         }
+        e.src = $(this).attr('src') as string
         e.onclick = () => {
-            openImageViewer($(this).attr('src'))
+            openImageViewer($(this).attr('src') as string)
         }
         this.appendChild(e)
     }
@@ -81,11 +87,11 @@ document.body.appendChild(new DOMParser().parseFromString(`
             }
         </style>
         <mdui-button-icon icon="open_in_new"
-            onclick="window.open($('#image-viewer-dialog-inner > *').attr('src'), '_blank')">
+            onclick="window.open(document.querySelector('#image-viewer-dialog-inner > *').src, '_blank')">
         </mdui-button-icon>
         <mdui-button-icon icon="close" onclick="this.parentNode.open = false">
         </mdui-button-icon>
         <pinch-zoom id="image-viewer-dialog-inner" style="width: var(--whitesilk-window-width); height: var(--whitesilk-window-height);">
         </pinch-zoom>
     </mdui-dialog>
-`, 'text/html').body.firstChild)
+`, 'text/html').body.firstChild as Node)
