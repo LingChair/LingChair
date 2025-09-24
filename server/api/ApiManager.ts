@@ -8,6 +8,19 @@ import BaseApi from "./BaseApi.ts"
 import DataWrongError from "./DataWrongError.ts"
 import chalk from "chalk"
 
+function stringifyNotIncludeArrayBuffer(value: any) {
+    return JSON.stringify(value, (_k, v) => {
+        if (v instanceof ArrayBuffer) {
+            return {
+                type: 'ArrayBuffer',
+                byteLength: value.byteLength,
+                data: '[...binary data omitted...]'
+            }
+        }
+        return v
+    })
+}
+
 export default class ApiManager {
     static httpServer: HttpServerLike
     static socketIoServer: SocketIo.Server
