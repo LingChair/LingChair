@@ -1,7 +1,7 @@
 import { $ } from 'mdui/jq'
-import { dialog } from 'mdui'
 
 import 'pinch-zoom-element'
+import { snackbar } from "../snackbar.ts";
 
 function openImageViewer(src: string) {
     $('#image-viewer-dialog-inner').empty()
@@ -25,32 +25,18 @@ customElements.define('chat-image', class extends HTMLElement {
         const e = new Image()
         e.style.maxWidth = "100%"
         e.style.maxHeight = "90%"
-        e.style.marginTop = "13px"
+        e.style.marginTop = '5px'
+        e.style.marginBottom = '5px'
         e.style.borderRadius = "var(--mdui-shape-corner-medium)"
         e.alt = $(this).attr('alt') || ""
         e.onerror = () => {
-            const bak = $(this).html()
-            $(this).html(`<br/><mdui-icon name="broken_image" style="font-size: 2rem;"></mdui-icon>`)
+            const src = $(this).attr('src')
+            $(this).html(`<mdui-icon name="broken_image" style="font-size: 2rem;"></mdui-icon>`)
             $(this).attr('alt', '無法加載圖像')
             $(this).on('click', () => {
-                dialog({
-                    headline: "圖片無法載入",
-                    description: "您是否需要重新加載?",
-                    actions: [
-                        {
-                            text: "重載",
-                            onClick: () => {
-                                $(this).html(bak)
-                                return false
-                            },
-                        },
-                        {
-                            text: "取消",
-                            onClick: () => {
-                                return false
-                            },
-                        },
-                    ],
+                snackbar({
+                    message: `圖片 (${src}) 無法加載!`,
+                    placement: 'top'
                 })
             })
         }
