@@ -119,6 +119,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
     const [isMessageSending, setIsMessageSending] = React.useState(false)
 
     const cachedFiles = React.useRef({} as { [fileName: string]: ArrayBuffer })
+    const cachedFileNamesCount = React.useRef({} as { [fileName: string]: number })
     async function sendMessage() {
         try {
             let text = inputRef.current!.value
@@ -133,7 +134,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                         data: cachedFiles.current[fileName],
                     }, 5000)
                     if (checkApiSuccessOrSncakbar(re, `文件[${fileName}] 上傳失敗`)) return
-                    text = text.replaceAll(fileName, re.data!.file_path as string)
+                    text = text.replaceAll('(' + fileName + ')', '(' + re.data!.file_path as string + ')')
                 }
             }
 
@@ -152,6 +153,25 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
             })
         }
         setIsMessageSending(false)
+    }
+
+    function insertText(text: string) {
+        const input = inputRef.current!.shadowRoot!.querySelector('[part=input]') as HTMLTextAreaElement
+        inputRef.current!.value = input.value!.substring(0, input.selectionStart as number) + text + input.value!.substring(input.selectionEnd as number, input.value.length)
+    }
+    async function addFile(type: string, name_: string, data: Blob | Response) {
+        let name = name_
+        while (cachedFiles.current[name] != null) {
+            name = name_ + '_' + cachedFileNamesCount.current[name]
+            cachedFileNamesCount.current[name]++
+        }
+
+        cachedFiles.current[name] = await data.arrayBuffer()
+        cachedFileNamesCount.current[name] = 1
+        if (type.startsWith('image/'))
+            insertText(`![圖片](${name})`)
+        else
+            insertText(`![File=${name}](${name})`)
     }
 
     return (
@@ -253,17 +273,6 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                         paddingRight: '4px',
                         backgroundColor: 'rgb(var(--mdui-color-surface))',
                     }} onDrop={(e) => {
-                        const input = inputRef.current!.shadowRoot!.querySelector('[part=input]') as HTMLTextAreaElement
-                        function insertText(text: string) {
-                            inputRef.current!.value = input.value!.substring(0, input.selectionStart as number) + text + input.value!.substring(input.selectionEnd as number, input.value.length)
-                        }
-                        async function addFile(type: string, name: string, data: Blob | Response) {
-                            cachedFiles.current![name] = await data.arrayBuffer()
-                            if (type.startsWith('image/'))
-                                insertText(`![圖片](${name})`)
-                            else
-                                insertText(`![File=${name}](${name})`)
-                        }
                         function getFileNameOrRandom(urlString: string) {
                             const url = new URL(urlString)
                             let filename = url.pathname.substring(url.pathname.lastIndexOf('/') + 1).trim()
@@ -304,6 +313,14 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                         }} onKeyDown={(event) => {
                             if (event.ctrlKey && event.key == 'Enter')
                                 sendMessage()
+                        }} onPaste={(event) => {
+                            for (const item of event.clipboardData.items) {
+                                if (item.kind == 'file') {
+                                    event.preventDefault()
+                                    const file = item.getAsFile() as File
+                                    addFile(item.type, file.name, file)
+                                }
+                            }
                         }} style={{
                             marginRight: '10px',
                             marginTop: '3px',
