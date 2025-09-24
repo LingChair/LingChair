@@ -64,13 +64,13 @@ export default function AppMobile() {
 
     const chatFragmentDialogRef = React.useRef<Dialog>(null)
     React.useEffect(() => {
-        const shadow = chatFragmentDialogRef.current!.shadowRoot
-        const panel = shadow.querySelector(".panel")
+        const shadow = chatFragmentDialogRef.current!.shadowRoot as ShadowRoot
+        const panel = shadow.querySelector(".panel") as HTMLElement
         panel.style.padding = '0'
         panel.style.color = 'inherit'
         panel.style.backgroundColor = 'rgb(var(--mdui-color-background))'
         panel.style.setProperty('--mdui-color-background', 'inherit')
-        const body = shadow.querySelector(".body")
+        const body = shadow.querySelector(".body") as HTMLElement
         body.style.height = '100%'
         body.style.display = 'flex'
     })
