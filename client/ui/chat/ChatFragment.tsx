@@ -41,11 +41,11 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
         title: '加載中...'
     } as Chat)
 
-    const [tabItemSelected, setTabItemSelected] = React.useState('Chat')
+    const [tabItemSelected, setTabItemSelected] = React.useState('None')
     const tabRef = React.useRef<Tab>(null)
     const chatPanelRef = React.useRef<HTMLElement>(null)
     useEventListener(tabRef, 'change', () => {
-        setTabItemSelected(tabRef.current?.value || "Chat")
+        tabRef.current != null && setTabItemSelected(tabRef.current!.value as string)
     })
 
     useAsyncEffect(async () => {
@@ -57,7 +57,15 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
             return checkApiSuccessOrSncakbar(re, "對話錯誤")
         setChatInfo(re.data as Chat)
 
-        loadMore()
+        await loadMore()
+
+        setTabItemSelected("Chat")
+        setTimeout(() => {
+            chatPanelRef.current!.scrollTo({
+                top: 10000000000,
+                behavior: "smooth",
+            })
+        }, 100)
     }, [target])
 
     const page = React.useRef(0)
@@ -131,7 +139,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
             flexDirection: 'column',
             overflowY: 'auto',
         }} {...props}>
-            <mdui-tabs ref={tabRef} value="Chat" style={{
+            <mdui-tabs ref={tabRef} value={tabItemSelected} style={{
                 position: 'sticky',
                 display: "flex",
                 flexDirection: "column",
@@ -148,6 +156,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                     chatInfo.title
                 }</mdui-tab>
                 <mdui-tab value="Settings">設定</mdui-tab>
+                <mdui-tab value="None" style={{ display: 'none' }}></mdui-tab>
 
                 <mdui-tab-panel slot="panel" value="Chat" ref={chatPanelRef} style={{
                     display: tabItemSelected == "Chat" ? "flex" : "none",
@@ -254,6 +263,8 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                     height: "100%",
                 }}>
                     Work in progress...
+                </mdui-tab-panel>
+                <mdui-tab-panel slot="panel" value="None">
                 </mdui-tab-panel>
             </mdui-tabs>
         </div>
