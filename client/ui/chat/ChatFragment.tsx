@@ -1,4 +1,5 @@
 import { Tab, TextField } from "mdui"
+import { $ } from "mdui/jq"
 import useEventListener from "../useEventListener.ts"
 import Element_Message from "./Message.tsx"
 import MessageContainer from "./MessageContainer.tsx"
@@ -86,7 +87,10 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
             setTimeout(() => setShowNoMoreMessagesTip(false), 1000)
             return
         }
+
+        const oldest = messagesList[0]
         setMessagesList(returnMsgs.concat(messagesList))
+        setTimeout(() => chatPanelRef.current!.scrollTo({ top: $(`#chat_${target}_message_${oldest.id}`).get(0).offsetTop, behavior: 'smooth' }), 100)
 
         page.current++
     }
@@ -245,6 +249,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                             messagesList.map((msg) =>
                                 <Element_Message
                                     key={msg.id}
+                                    id={`chat_${target}_message_${msg.id}`}
                                     userId={msg.user_id}>
                                     <div dangerouslySetInnerHTML={{
                                         __html: DOMPurify.sanitize(markedInstance.parse(msg.text) as string, {
