@@ -8,7 +8,6 @@ import Avatar from "./Avatar.tsx"
 
 import * as React from 'react'
 import { Dialog, NavigationBar, TextField } from "mdui"
-import Split from 'split.js'
 import 'mdui/jsx.zh-cn.d.ts'
 import { checkApiSuccessOrSncakbar } from "./snackbar.ts"
 
@@ -18,8 +17,8 @@ import UserProfileDialog from "./dialog/UserProfileDialog.tsx"
 import ContactsList from "./main/ContactsList.tsx"
 import RecentsList from "./main/RecentsList.tsx"
 import useAsyncEffect from "./useAsyncEffect.ts"
-import ChatInfoDialog from "./dialog/ChatInfoDialog.tsx";
-import Chat from "../api/client_data/Chat.ts";
+import ChatInfoDialog from "./dialog/ChatInfoDialog.tsx"
+import Chat from "../api/client_data/Chat.ts"
 
 declare global {
     namespace React {
@@ -52,6 +51,10 @@ export default function AppMobile() {
     const registerInputPasswordRef = React.useRef<TextField>(null)
 
     const userProfileDialogRef = React.useRef<Dialog>(null)
+    const openMyUserProfileDialogButtonRef = React.useRef<HTMLElement>(null)
+    useEventListener(openMyUserProfileDialogButtonRef, 'click', (_event) => {
+        userProfileDialogRef.current!.open = true
+    })
 
     const chatInfoDialogRef = React.useRef<Dialog>(null)
     const [chatInfo, setChatInfo] = React.useState(null as unknown as Chat)
@@ -91,6 +94,7 @@ export default function AppMobile() {
         <div style={{
             display: "flex",
             position: 'relative',
+            flexDirection: 'column',
             width: 'var(--whitesilk-window-width)',
             height: 'var(--whitesilk-window-height)',
         }}>
@@ -135,16 +139,33 @@ export default function AppMobile() {
                 }}
                 chat={chatInfo} />
 
-            <mdui-navigation-bar scroll-target="#SideBar" label-visibility="selected" value="Recents" ref={navigationBarRef}>
-                <mdui-navigation-bar-item icon="watch_later--outlined" active-icon="watch_later--filled" value="Recents">最近</mdui-navigation-bar-item>
-                <mdui-navigation-bar-item icon="contacts--outlined" active-icon="contacts--filled" value="Contacts">聯絡人</mdui-navigation-bar-item>
-            </mdui-navigation-bar>
+            <mdui-top-app-bar style={{
+                position: 'sticky',
+                marginTop: '3px',
+                marginRight: '6px',
+                marginLeft: '15px',
+                top: '0px',
+            }}>
+                <mdui-top-app-bar-title>{
+                    ({
+                        Recents: "最近對話",
+                        Contacts: "聯絡人"
+                    })[navigationItemSelected]
+                }</mdui-top-app-bar-title>
+                <div style={{
+                    flexGrow: 1,
+                }}></div>
+                <mdui-button-icon icon="settings"></mdui-button-icon>
+                <mdui-button-icon>
+                    <Avatar src={myUserProfileCache?.avatar} text={myUserProfileCache?.nickname} avatarRef={openMyUserProfileDialogButtonRef} />
+                </mdui-button-icon>
+            </mdui-top-app-bar>
             {
                 // 侧边列表
             }
             <div style={{
                 display: 'flex',
-                height: 'calc(100% - 80px)',
+                height: 'calc(100% - 80px - 67px)',
                 width: '100%',
             }} id="SideBar">
                 {
@@ -167,6 +188,13 @@ export default function AppMobile() {
                         display={navigationItemSelected == "Contacts"} />
                 }
             </div>
+            <mdui-navigation-bar label-visibility="selected" value="Recents" ref={navigationBarRef} style={{
+                position: 'sticky',
+                bottom: '0',
+            }}>
+                <mdui-navigation-bar-item icon="watch_later--outlined" active-icon="watch_later--filled" value="Recents">最近</mdui-navigation-bar-item>
+                <mdui-navigation-bar-item icon="contacts--outlined" active-icon="contacts--filled" value="Contacts">聯絡人</mdui-navigation-bar-item>
+            </mdui-navigation-bar>
         </div>
     )
 }
