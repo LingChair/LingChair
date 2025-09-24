@@ -6,6 +6,8 @@ import { breakpoint, Dialog } from "mdui"
 import * as React from 'react'
 import ReactDOM from 'react-dom/client'
 
+import './ui/custom-elements/chat-image.js'
+
 const urlParams = new URL(location.href).searchParams
 
 // deno-lint-ignore no-window no-window-prefix

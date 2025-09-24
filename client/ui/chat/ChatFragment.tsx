@@ -22,8 +22,15 @@ interface Args extends React.HTMLAttributes<HTMLElement> {
 const markedInstance = new marked.Marked({
     renderer: {
         heading({ tokens, depth: _depth }) {
-            const text = this.parser.parseInline(tokens);
+            const text = this.parser.parseInline(tokens)
             return `<span>${text}</span>`
+        },
+        paragraph({ tokens, depth: _depth }) {
+            const text = this.parser.parseInline(tokens)
+            return `<span>${text}</span>`
+        },
+        image({ title, href }) {
+            return `<chat-image src="${href}"></chat-image>`
         }
     }
 })
@@ -187,7 +194,15 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                                 <Element_Message
                                     key={msg.id}
                                     userId={msg.user_id}>
-                                    <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(markedInstance.parse(msg.text) as string) }}></div>
+                                    <div dangerouslySetInnerHTML={{ 
+                                        __html: DOMPurify.sanitize(markedInstance.parse(msg.text) as string, {
+                                            ALLOWED_TAGS: [
+                                                "chat-image",
+                                                "span",
+                                                "chat-link",
+                                            ]
+                                        }) 
+                                    }}></div>
                                 </Element_Message>
                             )
                         }
