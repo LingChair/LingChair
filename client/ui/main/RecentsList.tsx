@@ -38,7 +38,6 @@ export default function RecentsList({
         <mdui-text-field icon="search" type="search" clearable ref={searchRef} variant="outlined" placeholder="搜索..." style={{
             marginTop: '5px',
             marginBottom: '13px',
-            paddingLeft: '10px',
         }}></mdui-text-field>
         {
             recentsList.filter((chat) =>
