@@ -104,7 +104,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
             const { chat, msg } = (data as OnMessageData)
             if (target == chat) {
                 setMessagesList(messagesList.concat([msg]))
-                if ((chatPanelRef.current!.scrollHeight - chatPanelRef.current!.scrollTop - chatPanelRef.current!.clientHeight) < 80)
+                if ((chatPanelRef.current!.scrollHeight - chatPanelRef.current!.scrollTop - chatPanelRef.current!.clientHeight) < 130)
                     setTimeout(() => chatPanelRef.current!.scrollTo({
                         top: 10000000000,
                         behavior: "smooth",
@@ -159,6 +159,8 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
         setIsMessageSending(false)
     }
 
+    const attachFileInputRef = React.useRef<HTMLInputElement>(null)
+
     function insertText(text: string) {
         const input = inputRef.current!.shadowRoot!.querySelector('[part=input]') as HTMLTextAreaElement
         inputRef.current!.value = input.value!.substring(0, input.selectionStart as number) + text + input.value!.substring(input.selectionEnd as number, input.value.length)
@@ -177,6 +179,14 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
         else
             insertText(`![File=${name}](${name})`)
     }
+    useEventListener(attachFileInputRef, 'change', (_e) => {
+        const files = attachFileInputRef.current!.files as unknown as File[]
+        if (files?.length == 0) return
+
+        for (const file of files) {
+            addFile(file.type, file.name, file)
+        }
+    })
 
     return (
         <div style={{
@@ -331,12 +341,19 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                             marginTop: '3px',
                             marginBottom: '3px',
                         }}></mdui-text-field>
-                        <mdui-button-icon slot="end-icon" icon="more_vert" style={{
+                        <mdui-button-icon slot="end-icon" icon="attach_file" style={{
                             marginRight: '6px',
+                        }} onClick={() => {
+                            attachFileInputRef.current!.click()
                         }}></mdui-button-icon>
                         <mdui-button-icon icon="send" style={{
                             marginRight: '7px',
                         }} onClick={() => sendMessage()} loading={isMessageSending}></mdui-button-icon>
+                        <div style={{
+                            display: 'none'
+                        }}>
+                            <input accept="*/*" type="file" name="選擇附加文檔" multiple ref={attachFileInputRef}></input>
+                        </div>
                     </div>
                 </mdui-tab-panel>
                 <mdui-tab-panel slot="panel" value="Settings" style={{
