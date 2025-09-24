@@ -116,30 +116,42 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
     const [showLoadingMoreMessagesTip, setShowLoadingMoreMessagesTip] = React.useState(false)
     const [showNoMoreMessagesTip, setShowNoMoreMessagesTip] = React.useState(false)
 
+    const [isMessageSending, setIsMessageSending] = React.useState(false)
+
     const cachedFiles = React.useRef({} as { [fileName: string]: ArrayBuffer })
     async function sendMessage() {
-        let text = inputRef.current!.value
-        for (const fileName of Object.keys(cachedFiles.current)) {
-            if (text.indexOf(fileName) != -1) {
-                const re = await Client.invoke("Chat.uploadFile", {
-                    token: data.access_token,
-                    file_name: fileName,
-                    target,
-                    data: cachedFiles.current[fileName],
-                }, 5000)
-                if (checkApiSuccessOrSncakbar(re, `文件[${fileName}] 上傳失敗`)) return
-                text = text.replaceAll(fileName, re.data!.file_path as string)
+        try {
+            let text = inputRef.current!.value
+            if (text.trim() == '') return
+            setIsMessageSending(true)
+            for (const fileName of Object.keys(cachedFiles.current)) {
+                if (text.indexOf(fileName) != -1) {
+                    const re = await Client.invoke("Chat.uploadFile", {
+                        token: data.access_token,
+                        file_name: fileName,
+                        target,
+                        data: cachedFiles.current[fileName],
+                    }, 5000)
+                    if (checkApiSuccessOrSncakbar(re, `文件[${fileName}] 上傳失敗`)) return
+                    text = text.replaceAll(fileName, re.data!.file_path as string)
+                }
             }
-        }
 
-        const re = await Client.invoke("Chat.sendMessage", {
-            token: data.access_token,
-            target,
-            text,
-        }, 5000)
-        if (checkApiSuccessOrSncakbar(re, "發送失敗")) return
-        inputRef.current!.value = ''
-        cachedFiles.current = {}
+            const re = await Client.invoke("Chat.sendMessage", {
+                token: data.access_token,
+                target,
+                text,
+            }, 5000)
+            if (checkApiSuccessOrSncakbar(re, "發送失敗")) return
+            inputRef.current!.value = ''
+            cachedFiles.current = {}
+        } catch (e) {
+            snackbar({
+                message: '發送失敗: ' + (e as Error).message,
+                placement: 'top',
+            })
+        }
+        setIsMessageSending(false)
     }
 
     return (
@@ -160,7 +172,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                     showReturnButton && <mdui-button-icon icon="arrow_back" onClick={onReturnButtonClicked} style={{
                         alignSelf: 'center',
                         marginLeft: '5px',
-                        marginRight: '15px',
+                        marginRight: '5px',
                     }}></mdui-button-icon>
                 }
                 <mdui-tab value="Chat">{
@@ -302,7 +314,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                         }}></mdui-button-icon>
                         <mdui-button-icon icon="send" style={{
                             marginRight: '7px',
-                        }} onClick={() => sendMessage()}></mdui-button-icon>
+                        }} onClick={() => sendMessage()} loading={isMessageSending}></mdui-button-icon>
                     </div>
                 </mdui-tab-panel>
                 <mdui-tab-panel slot="panel" value="Settings" style={{
