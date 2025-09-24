@@ -182,13 +182,13 @@ export default class ChatApi extends BaseApi {
                 msg: "用戶無權訪問該對話",
             }
 
-            const file = await FileManager.uploadFile(args.file_name as string, args.data as Buffer<ArrayBufferLike>)
+            const file = await FileManager.uploadFile(args.file_name as string, args.data as Buffer<ArrayBufferLike>, args.target as string)
 
             return {
                 code: 200,
                 msg: "成功",
                 data: {
-                    messages: MessagesManager.getInstanceForChat(chat).getMessagesWithPage(15, args.page as number),
+                    file_path: 'uploaded_files/' + file.getHash()
                 },
             }
         })

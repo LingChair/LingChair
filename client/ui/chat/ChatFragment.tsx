@@ -8,10 +8,11 @@ import Client from "../../api/Client.ts"
 import Message from "../../api/client_data/Message.ts"
 import Chat from "../../api/client_data/Chat.ts"
 import data from "../../Data.ts"
-import { checkApiSuccessOrSncakbar } from "../snackbar.ts"
+import { checkApiSuccessOrSncakbar, snackbar } from "../snackbar.ts"
 import useAsyncEffect from "../useAsyncEffect.ts"
 import * as marked from 'marked'
 import DOMPurify from 'dompurify'
+import randomUUID from "../../randomUUID.ts"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     target: string
@@ -25,12 +26,14 @@ const markedInstance = new marked.Marked({
             const text = this.parser.parseInline(tokens)
             return `<span>${text}</span>`
         },
-        paragraph({ tokens, depth: _depth }) {
+        paragraph({ tokens }) {
             const text = this.parser.parseInline(tokens)
             return `<span>${text}</span>`
         },
-        image({ title, href }) {
-            return `<chat-image src="${href}"></chat-image>`
+        image({ text, href }) {
+            if (/uploaded_files\/[A-Za-z0-9]+$/.test(href))
+                return `<chat-image src="${href}" alt="${text}"></chat-image>`
+            return ``
         }
     }
 })
@@ -85,12 +88,6 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
         }
         setMessagesList(returnMsgs.concat(messagesList))
 
-        if (page.current == 0)
-            setTimeout(() => chatPanelRef.current!.scrollTo({
-                top: 10000000000,
-                behavior: "smooth",
-            }), 100)
-
         page.current++
     }
 
@@ -119,8 +116,21 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
     const [showLoadingMoreMessagesTip, setShowLoadingMoreMessagesTip] = React.useState(false)
     const [showNoMoreMessagesTip, setShowNoMoreMessagesTip] = React.useState(false)
 
+    const cachedFiles = React.useRef({} as { [fileName: string]: ArrayBuffer })
     async function sendMessage() {
-        const text = inputRef.current!.value
+        let text = inputRef.current!.value
+        for (const fileName of Object.keys(cachedFiles.current)) {
+            if (text.indexOf(fileName) != -1) {
+                const re = await Client.invoke("Chat.uploadFile", {
+                    token: data.access_token,
+                    file_name: fileName,
+                    target,
+                    data: cachedFiles.current[fileName],
+                }, 5000)
+                if (checkApiSuccessOrSncakbar(re, `文件[${fileName}] 上傳失敗`)) return
+                text = text.replaceAll(fileName, re.data!.file_path as string)
+            }
+        }
 
         const re = await Client.invoke("Chat.sendMessage", {
             token: data.access_token,
@@ -129,6 +139,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
         }, 5000)
         if (checkApiSuccessOrSncakbar(re, "發送失敗")) return
         inputRef.current!.value = ''
+        cachedFiles.current = {}
     }
 
     return (
@@ -203,14 +214,14 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                                 <Element_Message
                                     key={msg.id}
                                     userId={msg.user_id}>
-                                    <div dangerouslySetInnerHTML={{ 
+                                    <div dangerouslySetInnerHTML={{
                                         __html: DOMPurify.sanitize(markedInstance.parse(msg.text) as string, {
                                             ALLOWED_TAGS: [
                                                 "chat-image",
                                                 "span",
                                                 "chat-link",
                                             ]
-                                        }) 
+                                        })
                                     }}></div>
                                 </Element_Message>
                             )
@@ -230,18 +241,55 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                         paddingRight: '4px',
                         backgroundColor: 'rgb(var(--mdui-color-surface))',
                     }} onDrop={(e) => {
-                        if (e.dataTransfer.files) {
-                            const files = e.dataTransfer.files
+                        const input = inputRef.current!.shadowRoot!.querySelector('[part=input]') as HTMLTextAreaElement
+                        function insertText(text: string) {
+                            inputRef.current!.value = input.value!.substring(0, input.selectionStart as number) + text + input.value!.substring(input.selectionEnd as number, input.value.length)
+                        }
+                        async function addFile(type: string, name: string, data: Blob | Response) {
+                            cachedFiles.current![name] = await data.arrayBuffer()
+                            if (type.startsWith('image/'))
+                                insertText(`![圖片](${name})`)
+                            else
+                                insertText(`![File=${name}](${name})`)
+                        }
+                        function getFileNameOrRandom(urlString: string) {
+                            const url = new URL(urlString)
+                            let filename = url.pathname.substring(url.pathname.lastIndexOf('/') + 1).trim()
+                            if (filename == '')
+                                filename = 'file_' + randomUUID()
+                            return filename
+                        }
+                        if (e.dataTransfer.items.length > 0) {
                             // 基于当前的实现, 浏览器不会读取文件的字节流来确定其媒体类型, 其根据文件扩展名进行假设
                             // https://developer.mozilla.org/zh-CN/docs/Web/API/Blob/type
-                            for (const file of files) {
-                                if (file.type.startsWith("image/")) {
-                                    
+                            for (const item of e.dataTransfer.items) {
+                                if (item.type == 'text/uri-list') {
+                                    item.getAsString(async (url) => {
+                                        try {
+                                            // 即便是 no-cors 還是殘廢, 因此暫時沒有什麽想法
+                                            const re = await fetch(url)
+                                            const type = re.headers.get("Content-Type")
+                                            if (type?.startsWith("image/"))
+                                                addFile(type as string, getFileNameOrRandom(url), re)
+                                        } catch (e) {
+                                            snackbar({
+                                                message: '無法解析連結: ' + (e as Error).message,
+                                                placement: 'top',
+                                            })
+                                        }
+                                    })
+                                } else if (item.kind == 'file') {
+                                    e.preventDefault()
+                                    const file = item.getAsFile() as File
+                                    addFile(item.type, file.name, file)
                                 }
                             }
                         }
                     }}>
-                        <mdui-text-field variant="outlined" placeholder="喵呜~" autosize ref={inputRef as any} max-rows={6} onKeyDown={(event) => {
+                        <mdui-text-field variant="outlined" placeholder="喵呜~" autosize ref={inputRef as any} max-rows={6} onChange={() => {
+                            if (inputRef.current?.value.trim() == '')
+                                cachedFiles.current = {}
+                        }} onKeyDown={(event) => {
                             if (event.ctrlKey && event.key == 'Enter')
                                 sendMessage()
                         }} style={{
