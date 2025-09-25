@@ -25,7 +25,7 @@ export default abstract class BaseApi {
     }
     checkToken(token: Token, deviceId: string) {
         if (token.expired_time < Date.now()) return false
-        if (!User.findById(token.author)) return false
+        if (!token.author || !User.findById(token.author)) return false
         if (deviceId != null)
             if (token.device_id != deviceId)
                 return false

@@ -22,9 +22,13 @@ export default class FileTokenManager {
     }
     static decode(token: string) {
         if (token == null) throw new Error('令牌為空!')
-        return JSON.parse(crypto.createDecipheriv("aes-256-gcm", normalizeKey(config.aes_key + '_file'), '01234567890123456').update(
-            Buffer.from(token, 'hex')
-        ).toString()) as Token
+        try {
+            return JSON.parse(crypto.createDecipheriv("aes-256-gcm", normalizeKey(config.aes_key + '_file'), '01234567890123456').update(
+                Buffer.from(token, 'hex')
+            ).toString()) as Token
+        } catch(e) {
+            throw new Error('令牌無效!')
+        }
     }
 
     /**

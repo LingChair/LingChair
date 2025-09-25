@@ -23,9 +23,13 @@ export default class TokenManager {
     }
     static decode(token: string) {
         if (token == null) throw new Error('令牌為空!')
-        return JSON.parse(crypto.createDecipheriv("aes-256-gcm", normalizeKey(config.aes_key), '01234567890123456').update(
-            Buffer.from(token, 'hex')
-        ).toString()) as Token
+        try {
+            return JSON.parse(crypto.createDecipheriv("aes-256-gcm", normalizeKey(config.aes_key), '01234567890123456').update(
+                Buffer.from(token, 'hex')
+            ).toString()) as Token
+        } catch(e) {
+            return {} as Token
+        }
     }
 
     static make(user: User, time_: number | null | undefined, device_id: string) {

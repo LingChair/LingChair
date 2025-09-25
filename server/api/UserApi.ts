@@ -26,7 +26,7 @@ export default class UserApi extends BaseApi {
                     msg: "登錄令牌失效",
                     code: 401,
                 }
-                if (!User.findById(access_token.author)) return {
+                if (!access_token.author || !User.findById(access_token.author)) return {
                     msg: "賬號不存在",
                     code: 401,
                 }
