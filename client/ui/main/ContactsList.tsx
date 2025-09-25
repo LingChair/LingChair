@@ -61,8 +61,11 @@ export default function ContactsList({
         <mdui-list-item rounded style={{
             width: '100%',
             marginTop: '13px',
-            marginBottom: '15px',
         }} icon="person_add" onClick={() => addContactDialogRef.current!.open = true}>添加對話</mdui-list-item>
+        <mdui-list-item rounded style={{
+            width: '100%',
+            marginBottom: '15px',
+        }} icon="refresh" onClick={() => EventBus.emit('ContactsList.updateContacts')}>刷新</mdui-list-item>
         {/* <mdui-list-item rounded style={{
             width: '100%',
             marginBottom: '15px',
