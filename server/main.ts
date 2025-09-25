@@ -11,21 +11,38 @@ import process from "node:process"
 import chalk from "chalk"
 import child_process from "node:child_process"
 import FileManager from "./data/FileManager.ts"
+import TokenManager from "./api/TokenManager.ts"
+import UserChatLinker from "./data/UserChatLinker.ts"
 import path from "node:path"
+import cookieParser from 'cookie-parser'
 
 const app = express()
 app.use('/', express.static(config.data_path + '/page_compiled'))
+app.use(cookieParser())
 app.get('/uploaded_files/:hash', (req, res) => {
     const hash = req.params.hash as string
+    res.setHeader('Content-Type', 'text/plain')
     if (hash == null) {
-        res.sendStatus(404)
-        res.send("404 Not Found")
+        res.send("404 Not Found", 404)
         return
     }
     const file = FileManager.findByHash(hash)
+    
+    if (file.getChatId() != null) {
+        const userToken = TokenManager.decode(req.cookies.token)
+        console.log(userToken, req.cookies.device_id)
+        if (!TokenManager.checkToken(userToken, req.cookies.device_id)) {
+            res.send("401 UnAuthorized", 401)
+            return
+        }
+        if (!UserChatLinker.checkUserIsLinkedToChat(userToken.author, file.getChatId())) {
+            res.send("403 Forbidden", 403)
+            return
+        }
+    }
+    
     if (file == null) {
-        res.sendStatus(404)
-        res.send("404 Not Found")
+        res.send("404 Not Found", 404)
         return
     }
 
