@@ -71,8 +71,17 @@ export default function UserProfileDialog({
                 {
                     isMySelf && <>
                         <mdui-list-item icon="edit" rounded onClick={() => userProfileEditDialogRef.current!.open = true}>編輯資料</mdui-list-item>
+                        {/*
                         <mdui-list-item icon="settings" rounded>賬號設定</mdui-list-item>
                         <mdui-list-item icon="lock" rounded>隱私設定</mdui-list-item>
+                        */}
+                        <mdui-divider style={{
+                            marginTop: "10px",
+                            marginBottom: "10px",
+                        }}></mdui-divider>
+                        <mdui-list-item icon="logout" rounded onClick={() => dialog({
+                            
+                        })}>退出登錄</mdui-list-item>
                     </>
                 }
             </mdui-list>
@@ -102,10 +111,13 @@ export default function UserProfileDialog({
             </div>
             <mdui-divider style={{
                 marginTop: "10px",
-                marginBottom: "10px",
             }}></mdui-divider>
 
-            <mdui-text-field variant="outlined" label="用戶名" value={user?.username || ''} ref={editUserNameRef as any}></mdui-text-field>
+            <mdui-text-field style={{ marginTop: "10px", }} variant="outlined" label="用戶 ID" value={user?.id || ''} readonly onClick={(e) => {
+                e.target.select()
+                e.target.setSelectRange(0, 1145141919810)
+            }}></mdui-text-field>
+            <mdui-text-field style={{ marginTop: "20px", }} variant="outlined" label="用戶名" value={user?.username || ''} ref={editUserNameRef as any}></mdui-text-field>
 
             <mdui-button slot="action" variant="text" onClick={() => userProfileEditDialogRef.current!.open = false}>取消</mdui-button>
             <mdui-button slot="action" variant="text" onClick={async () => {
