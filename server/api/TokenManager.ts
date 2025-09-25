@@ -22,7 +22,6 @@ export default class TokenManager {
         ).toString('hex')
     }
     static decode(token: string) {
-        if (token == null) throw new Error('令牌為空!')
         try {
             return JSON.parse(crypto.createDecipheriv("aes-256-gcm", normalizeKey(config.aes_key), '01234567890123456').update(
                 Buffer.from(token, 'hex')
@@ -54,5 +53,16 @@ export default class TokenManager {
         const tk = this.decode(token)
 
         return this.makeAuth(user) == tk.auth
+    }
+    /**
+     * 嚴格檢驗令牌: 時間, 用戶, (設備 ID)
+     */
+    static checkToken(token: Token, deviceId?: string) {
+        if (token.expired_time < Date.now()) return false
+        if (!token.author || !User.findById(token.author)) return false
+        if (deviceId != null)
+            if (token.device_id != deviceId)
+                return false
+        return true
     }
 }

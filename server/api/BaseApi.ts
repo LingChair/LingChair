@@ -3,6 +3,7 @@ import ApiManager from "./ApiManager.ts"
 import { CallMethod, ClientEvent } from './ApiDeclare.ts'
 import User from "../data/User.ts"
 import Token from "./Token.ts"
+import TokenManager from './TokenManager.ts'
 import * as SocketIo from "socket.io"
 
 export default abstract class BaseApi {
@@ -24,12 +25,7 @@ export default abstract class BaseApi {
         return false
     }
     checkToken(token: Token, deviceId: string) {
-        if (token.expired_time < Date.now()) return false
-        if (!token.author || !User.findById(token.author)) return false
-        if (deviceId != null)
-            if (token.device_id != deviceId)
-                return false
-        return true
+        return TokenManager.checkToken(token, deviceId)
     }
     registerEvent(name: CallMethod, func: EventCallbackFunction) {
         if (!name.startsWith(this.getName() + ".")) throw Error("注冊的事件應該與接口集合命名空間相匹配: " + name)
