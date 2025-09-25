@@ -63,7 +63,6 @@ export default function UserProfileDialog({
             </div>
             <mdui-divider style={{
                 marginTop: "10px",
-                marginBottom: "10px",
             }}></mdui-divider>
 
             <mdui-list>
