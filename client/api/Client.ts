@@ -67,8 +67,11 @@ class Client {
         const re = await this.invoke("User.auth", {
             access_token: token
         }, timeout)
-        if (re.code == 200)
+        if (re.code == 200) {
             await this.updateCachedProfile()
+            document.cookie = 'token=' + token
+            document.cookie = 'device_id=' + data.device_id
+        }
         return re
     }
     static async updateCachedProfile() {
