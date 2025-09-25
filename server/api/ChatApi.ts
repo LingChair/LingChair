@@ -90,11 +90,7 @@ export default class ChatApi extends BaseApi {
             }
             const id = MessagesManager.getInstanceForChat(chat).addMessage(msg)
 
-            const users: string[] = []
-            if (chat.bean.type == 'private') {
-                users.push(token.author as string)
-            }
-
+            const users: string[] = UserChatLinker.getChatMembers(chat.bean.id)
             for (const user of users) {
                 if (ApiManager.checkUserIsOnline(user)) {
                     const sockets = ApiManager.getUserClientSockets(user)
