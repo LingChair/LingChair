@@ -18,8 +18,9 @@ import UserProfileDialog from "./dialog/UserProfileDialog.tsx"
 import ContactsList from "./main/ContactsList.tsx"
 import RecentsList from "./main/RecentsList.tsx"
 import useAsyncEffect from "./useAsyncEffect.ts"
-import ChatInfoDialog from "./dialog/ChatInfoDialog.tsx";
-import Chat from "../api/client_data/Chat.ts";
+import ChatInfoDialog from "./dialog/ChatInfoDialog.tsx"
+import Chat from "../api/client_data/Chat.ts"
+import AddContactDialog from './dialog/AddContactDialog.tsx'
 
 declare global {
     namespace React {
@@ -56,6 +57,8 @@ export default function App() {
     useEventListener(openMyUserProfileDialogButtonRef, 'click', (_event) => {
         userProfileDialogRef.current!.open = true
     })
+    
+    const addContactDialogRef = React.useRef<Dialog>(null)
 
     const chatInfoDialogRef = React.useRef<Dialog>(null)
     const [chatInfo, setChatInfo] = React.useState(null as unknown as Chat)
@@ -120,6 +123,9 @@ export default function App() {
                     setIsShowChatFragment(true)
                 }}
                 chat={chatInfo} />
+            
+            <AddContactDialog
+                addContactDialogRef={addContactDialogRef} />
 
             <mdui-navigation-rail contained value="Recents" ref={navigationRailRef}>
                 <mdui-button-icon slot="top">
@@ -151,6 +157,7 @@ export default function App() {
                     // 對話列表
                     <ContactsList
                         setChatInfo={setChatInfo}
+                        addContactDialogRef={addContactDialogRef as any}
                         chatInfoDialogRef={chatInfoDialogRef as any}
                         display={navigationItemSelected == "Contacts"} />
                 }

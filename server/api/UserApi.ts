@@ -226,7 +226,7 @@ export default class UserApi extends BaseApi {
         })
         // 添加聯絡人
         this.registerEvent("User.addContact", (args, { deviceId }) => {
-            if (this.checkArgsMissing(args, ['token', 'contact_chat_id'])) return {
+            if (this.checkArgsMissing(args, ['token']) || (args.chat_id == null && args.account == null)) return {
                 msg: "參數缺失",
                 code: 400,
             }
@@ -238,7 +238,19 @@ export default class UserApi extends BaseApi {
             }
 
             const user = User.findById(token.author)
-            user!.addContact(args.contact_chat_id as string)
+            if (args.chat_id)
+                user!.addContact(args.chat_id as string)
+            else if (args.account) {
+                const targetUser = User.findByAccount(args.account as string) as User
+                if (targetUser == null) {
+                    return {
+                        msg: "找不到用戶",
+                        code: 404,
+                    }
+                }
+                const chat = ChatPrivate.findOrCreateForPrivate(user, targetUser)
+                user!.addContact(chat.bean.id)
+            }
 
             return {
                 msg: "成功",

@@ -19,6 +19,7 @@ import RecentsList from "./main/RecentsList.tsx"
 import useAsyncEffect from "./useAsyncEffect.ts"
 import ChatInfoDialog from "./dialog/ChatInfoDialog.tsx"
 import Chat from "../api/client_data/Chat.ts"
+import AddContactDialog from './dialog/AddContactDialog.tsx'
 
 declare global {
     namespace React {
@@ -55,6 +56,8 @@ export default function AppMobile() {
     useEventListener(openMyUserProfileDialogButtonRef, 'click', (_event) => {
         userProfileDialogRef.current!.open = true
     })
+    
+    const addContactDialogRef = React.useRef<Dialog>(null)
 
     const chatInfoDialogRef = React.useRef<Dialog>(null)
     const [chatInfo, setChatInfo] = React.useState(null as unknown as Chat)
@@ -139,6 +142,9 @@ export default function AppMobile() {
                     setIsShowChatFragment(true)
                 }}
                 chat={chatInfo} />
+                
+            <AddContactDialog
+                addContactDialogRef={addContactDialogRef} />
 
             <mdui-top-app-bar style={{
                 position: 'sticky',
@@ -150,7 +156,7 @@ export default function AppMobile() {
                 <mdui-top-app-bar-title>{
                     ({
                         Recents: "最近對話",
-                        Contacts: "對話"
+                        Contacts: "所有對話"
                     })[navigationItemSelected]
                 }</mdui-top-app-bar-title>
                 <div style={{
@@ -185,6 +191,7 @@ export default function AppMobile() {
                     // 對話列表
                     <ContactsList
                         setChatInfo={setChatInfo}
+                        addContactDialogRef={addContactDialogRef as any}
                         chatInfoDialogRef={chatInfoDialogRef as any}
                         display={navigationItemSelected == "Contacts"} />
                 }
