@@ -13,7 +13,7 @@ import { SQLInputValue } from "node:sqlite"
 import DataWrongError from "../api/DataWrongError.ts"
 import ChatPrivate from "./ChatPrivate.ts"
 import Chat from "./Chat.ts"
-import ChatBean from "./ChatBean.ts";
+import ChatBean from "./ChatBean.ts"
 
 type UserBeanKey = keyof UserBean
 
@@ -124,6 +124,7 @@ export default class User {
     }
     addContact(chatId: string) {
         const ls = this.getContactsList()
+        if (ls.indexOf(chatId) != -1 || ChatPrivate.getChatIdByUsersId(this.bean.id, this.bean.id) == chatId) return
         ls.push(chatId)
         this.setAttr("contacts_list", JSON.stringify(ls))
     }
