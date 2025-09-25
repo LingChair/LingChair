@@ -100,7 +100,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
             chat: string
             msg: Message
         }
-        Client.on('Client.onMessage', (data: unknown) => {
+        function callback(data: unknown) {
             const { chat, msg } = (data as OnMessageData)
             if (target == chat) {
                 setMessagesList(messagesList.concat([msg]))
@@ -110,9 +110,11 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                         behavior: "smooth",
                     }), 100)
             }
-        })
+        }
+
+        Client.on('Client.onMessage', callback)
         return () => {
-            Client.off('Client.onMessage')
+            Client.off('Client.onMessage', callback)
         }
     })
 

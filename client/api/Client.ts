@@ -6,13 +6,11 @@ import data from "../Data.ts"
 import { checkApiSuccessOrSncakbar } from "../ui/snackbar.ts"
 import randomUUID from "../randomUUID.ts"
 
-type UnknownObject = { [key: string]: unknown }
-
 class Client {
     static sessionId = randomUUID()
     static myUserProfile?: User
     static socket?: Socket
-    static events: { [key: string]: (data: UnknownObject) => UnknownObject | void } = {}
+    static events: { [key: string]: ((data: unknown) => void)[] } = {}
     static connected = false
     static connect() {
         if (data.device_id == null)
@@ -37,17 +35,16 @@ class Client {
         this.socket!.on("disconnect", () => {
             this.connected = false
         })
-        this.socket!.on("The_White_Silk", (name: string, data: UnknownObject, callback: (ret: UnknownObject) => void) => {
+        this.socket!.on("The_White_Silk", (name: string, data: unknown, callback: (ret: unknown) => void) => {
             try {
                 if (name == null || data == null) return
-                const re = this.events[name]?.(data)
-                re && callback(re)
+                this.events[name]?.forEach((v) => v(data))
             } catch (e) {
                 console.error(e)
             }
         })
     }
-    static invoke(method: CallMethod, args: UnknownObject = {}, timeout: number = 5000): Promise<ApiCallbackMessage> {
+    static invoke(method: CallMethod, args: unknown = {}, timeout: number = 5000): Promise<ApiCallbackMessage> {
         if (this.socket == null || (!this.connected && !CallableMethodBeforeAuth.includes(method))) {
             return new Promise((reslove) => {
                 setTimeout(async () => reslove(await this.invoke(method, args, timeout)), 500)
@@ -79,11 +76,18 @@ class Client {
             token: data.access_token
         })).data as unknown as User
     }
-    static on(eventName: ClientEvent, func: (data: UnknownObject) => UnknownObject | void) {
-        this.events[eventName] = func
+    static on(eventName: ClientEvent, func: (data: unknown) => void) {
+        if (this.events[eventName] == null)
+            this.events[eventName] = []
+        if (this.events[eventName].indexOf(func) == -1)
+            this.events[eventName].push(func)
     }
-    static off(eventName: ClientEvent) {
-        delete this.events[eventName]
+    static off(eventName: ClientEvent, func: (data: unknown) => void) {
+        if (this.events[eventName] == null)
+            this.events[eventName] = []
+        const index = this.events[eventName].indexOf(func)
+        if (index != -1)
+            this.events[eventName].splice(index, 1)
     }
 }
 
