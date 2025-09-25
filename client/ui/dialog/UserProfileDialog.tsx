@@ -132,8 +132,9 @@ export default function UserProfileDialog({
             }}></mdui-divider>
 
             <mdui-text-field style={{ marginTop: "10px", }} variant="outlined" label="用戶 ID" value={user?.id || ''} readonly onClick={(e) => {
-                e.target.select()
-                e.target.setSelectRange(0, 1145141919810)
+                const input = e.target as HTMLInputElement
+                input.select()
+                input.setSelectionRange(0, 1145141919810)
             }}></mdui-text-field>
             <mdui-text-field style={{ marginTop: "20px", }} variant="outlined" label="用戶名" value={user?.username || ''} ref={editUserNameRef as any}></mdui-text-field>
 
