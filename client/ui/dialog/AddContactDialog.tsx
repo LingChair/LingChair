@@ -17,7 +17,7 @@ export default function AddContactDialog({
 }: Refs) {
     const inputUserAccountRef = React.useRef<TextField>(null)
     return (
-        <mdui-dialog headline="添加對話" ref={addContactDialogRef}>
+        <mdui-dialog close-on-overlay-click close-on-esc headline="添加對話" ref={addContactDialogRef}>
             現階段只支持添加用戶, 對話敬請期待...
             <mdui-text-field style={{ marginTop: "10px", }} label="對方的 用戶 ID / 用戶名" ref={inputUserAccountRef as any}></mdui-text-field>
             <mdui-button slot="action" variant="text" onClick={() => addContactDialogRef.current!.open = false}>取消</mdui-button>
