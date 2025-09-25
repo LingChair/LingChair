@@ -8,7 +8,7 @@ export default class ChatPrivate extends Chat {
     }
 
     static getChatIdByUsersId(userIdA: string, userIdB: string) {
-        return [userIdA, userIdB].sort().join('-')
+        return [userIdA, userIdB].sort().join('------')
     }
 
     static createForPrivate(userA: User, userB: User) {
