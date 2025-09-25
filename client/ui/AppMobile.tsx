@@ -149,7 +149,7 @@ export default function AppMobile() {
                 <mdui-top-app-bar-title>{
                     ({
                         Recents: "最近對話",
-                        Contacts: "聯絡人"
+                        Contacts: "對話"
                     })[navigationItemSelected]
                 }</mdui-top-app-bar-title>
                 <div style={{
@@ -181,7 +181,7 @@ export default function AppMobile() {
                         setRecentsList={setRecentsList} />
                 }
                 {
-                    // 联系人列表
+                    // 對話列表
                     <ContactsList
                         setChatInfo={setChatInfo}
                         chatInfoDialogRef={chatInfoDialogRef as any}
@@ -193,7 +193,7 @@ export default function AppMobile() {
                 bottom: '0',
             }}>
                 <mdui-navigation-bar-item icon="watch_later--outlined" active-icon="watch_later--filled" value="Recents">最近</mdui-navigation-bar-item>
-                <mdui-navigation-bar-item icon="contacts--outlined" active-icon="contacts--filled" value="Contacts">聯絡人</mdui-navigation-bar-item>
+                <mdui-navigation-bar-item icon="chat--outlined" active-icon="chat--filled" value="Contacts">對話</mdui-navigation-bar-item>
             </mdui-navigation-bar>
         </div>
     )

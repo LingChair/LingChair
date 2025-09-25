@@ -127,7 +127,7 @@ export default function App() {
                 </mdui-button-icon>
 
                 <mdui-navigation-rail-item icon="watch_later--outlined" active-icon="watch_later--filled" value="Recents"></mdui-navigation-rail-item>
-                <mdui-navigation-rail-item icon="contacts--outlined" active-icon="contacts--filled" value="Contacts"></mdui-navigation-rail-item>
+                <mdui-navigation-rail-item icon="chat--outlined" active-icon="chat--filled" value="Contacts"></mdui-navigation-rail-item>
 
                 <mdui-button-icon icon="settings" slot="bottom"></mdui-button-icon>
             </mdui-navigation-rail>
@@ -148,7 +148,7 @@ export default function App() {
                         setRecentsList={setRecentsList} />
                 }
                 {
-                    // 联系人列表
+                    // 對話列表
                     <ContactsList
                         setChatInfo={setChatInfo}
                         chatInfoDialogRef={chatInfoDialogRef as any}
@@ -168,7 +168,7 @@ export default function App() {
                         textAlign: 'center',
                         alignSelf: 'center',
                     }}>
-                        選擇聯絡人以開始對話...
+                        選擇以開始對話...
                     </div>
                 }
                 {
