@@ -7,10 +7,12 @@ import Client from "../../api/Client.ts"
 import data from "../../Data.ts"
 import { checkApiSuccessOrSncakbar } from "../snackbar.ts"
 import Chat from "../../api/client_data/Chat.ts"
+import EventBus from "../../EventBus.ts"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     display: boolean
     chatInfoDialogRef: React.MutableRefObject<Dialog>
+    addContactDialogRef: React.MutableRefObject<Dialog>
     setChatInfo: React.Dispatch<React.SetStateAction<Chat>>
 }
 
@@ -18,6 +20,7 @@ export default function ContactsList({
     display,
     setChatInfo,
     chatInfoDialogRef,
+    addContactDialogRef,
     ...props
 }: Args) {
     const searchRef = React.useRef<HTMLElement>(null)
@@ -30,13 +33,17 @@ export default function ContactsList({
     })
 
     useAsyncEffect(async () => {
-        const re = await Client.invoke("User.getMyContacts", {
-            token: data.access_token,
-        })
-        if (re.code != 200)
-            return checkApiSuccessOrSncakbar(re, "获取對話列表失败")
-
-        setContactsList(re.data!.contacts_list as Chat[])
+        async function updateContacts() {
+            const re = await Client.invoke("User.getMyContacts", {
+                token: data.access_token,
+            })
+            if (re.code != 200)
+                return checkApiSuccessOrSncakbar(re, "获取對話列表失败")
+    
+            setContactsList(re.data!.contacts_list as Chat[])
+        }
+        updateContacts()
+        EventBus.on('ContactsList.updateContacts', () => updateContacts())
     })
 
     return <mdui-list style={{
@@ -55,7 +62,7 @@ export default function ContactsList({
             width: '100%',
             marginTop: '13px',
             marginBottom: '15px',
-        }} icon="person_add">添加對話</mdui-list-item>
+        }} icon="person_add" onClick={() => addContactDialogRef.current!.open = true}>添加對話</mdui-list-item>
         {/* <mdui-list-item rounded style={{
             width: '100%',
             marginBottom: '15px',
