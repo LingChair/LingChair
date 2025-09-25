@@ -109,6 +109,7 @@ export default function AppMobile() {
                     <ChatFragment
                         showReturnButton={true}
                         onReturnButtonClicked={() => setIsShowChatFragment(false)}
+                        key={currentChatId}
                         target={currentChatId} />
                 </div>
             </mdui-dialog>

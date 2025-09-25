@@ -173,7 +173,8 @@ export default function App() {
                 }
                 {
                     isShowChatFragment && <ChatFragment
-                        target={currentChatId} />
+                        target={currentChatId}
+                        key={currentChatId} />
                 }
             </div>
         </div>
