@@ -237,7 +237,7 @@ export default class UserApi extends BaseApi {
                 msg: "令牌無效",
             }
 
-            const user = User.findById(token.author)
+            const user = User.findById(token.author) as User
             if (args.chat_id)
                 user!.addContact(args.chat_id as string)
             else if (args.account) {
