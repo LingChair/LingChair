@@ -20,8 +20,8 @@ export default function LoginDialog({
     loginDialogRef,
     registerDialogRef
 }: Refs) {
-    const loginButtonRef: React.MutableRefObject<Button | null> = React.useRef(null)
-    const registerButtonRef: React.MutableRefObject<Button | null> = React.useRef(null)
+    const loginButtonRef = React.useRef<Button>(null)
+    const registerButtonRef = React.useRef<Button>(null)
     useEventListener(registerButtonRef, 'click', () => registerDialogRef.current!.open = true)
     useEventListener(loginButtonRef, 'click', async () => {
         const account = loginInputAccountRef.current!.value
@@ -41,11 +41,11 @@ export default function LoginDialog({
     return (
         <mdui-dialog headline="登錄" ref={loginDialogRef}>
 
-            <mdui-text-field label="用戶 ID / 用戶名" ref={loginInputAccountRef}></mdui-text-field>
+            <mdui-text-field label="用戶 ID / 用戶名" ref={loginInputAccountRef as any}></mdui-text-field>
             <div style={{
                 height: "10px",
             }}></div>
-            <mdui-text-field label="密碼" type="password" toggle-password ref={loginInputPasswordRef}></mdui-text-field>
+            <mdui-text-field label="密碼" type="password" toggle-password ref={loginInputPasswordRef as any}></mdui-text-field>
 
             <mdui-button slot="action" variant="text" ref={registerButtonRef}>注册</mdui-button>
             <mdui-button slot="action" variant="text" ref={loginButtonRef}>登录</mdui-button>

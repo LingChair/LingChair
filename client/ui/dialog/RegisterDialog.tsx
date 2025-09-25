@@ -23,8 +23,8 @@ export default function RegisterDialog({
     registerInputPasswordRef,
     registerDialogRef
 }: Refs) {
-    const registerBackButtonRef: React.MutableRefObject<Button | null> = React.useRef(null)
-    const doRegisterButtonRef: React.MutableRefObject<Button | null> = React.useRef(null)
+    const registerBackButtonRef = React.useRef<Button>(null)
+    const doRegisterButtonRef = React.useRef<Button>(null)
     useEventListener(registerBackButtonRef, 'click', () => registerDialogRef.current!.open = false)
     useEventListener(doRegisterButtonRef, 'click', async () => {
         const username = registerInputUserNameRef.current!.value
@@ -50,15 +50,15 @@ export default function RegisterDialog({
     return (
         <mdui-dialog headline="注冊" ref={registerDialogRef}>
 
-            <mdui-text-field label="用戶名 (可選)" ref={registerInputUserNameRef}></mdui-text-field>
+            <mdui-text-field label="用戶名 (可選)" ref={registerInputUserNameRef as any}></mdui-text-field>
             <div style={{
                 height: "10px",
             }}></div>
-            <mdui-text-field label="昵稱" ref={registerInputNickNameRef}></mdui-text-field>
+            <mdui-text-field label="昵稱" ref={registerInputNickNameRef as any}></mdui-text-field>
             <div style={{
                 height: "10px",
             }}></div>
-            <mdui-text-field label="密码" type="password" toggle-password ref={registerInputPasswordRef}></mdui-text-field>
+            <mdui-text-field label="密码" type="password" toggle-password ref={registerInputPasswordRef as any}></mdui-text-field>
 
             <mdui-button slot="action" variant="text" ref={registerBackButtonRef}>返回</mdui-button>
             <mdui-button slot="action" variant="text" ref={doRegisterButtonRef}>注冊</mdui-button>
