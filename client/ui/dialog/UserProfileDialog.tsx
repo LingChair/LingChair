@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Button, Dialog, TextField } from "mdui"
+import { Button, Dialog, TextField, dialog } from "mdui"
 import useEventListener from "../useEventListener.ts"
 import { checkApiSuccessOrSncakbar, snackbar } from "../snackbar.ts"
 import Client from "../../api/Client.ts"
@@ -80,7 +80,25 @@ export default function UserProfileDialog({
                             marginBottom: "10px",
                         }}></mdui-divider>
                         <mdui-list-item icon="logout" rounded onClick={() => dialog({
-                            
+                            headline: "退出登錄",
+                            description: "確定要退出登錄嗎? (若您的賬號未設定 用戶名, 請無務必複製 用戶 ID, 以免丟失賬號!)",
+                            actions: [
+                                {
+                                    text: "取消",
+                                    onClick: () => {
+                                        return true
+                                    },
+                                },
+                                {
+                                    text: "確定",
+                                    onClick: () => {
+                                        data.access_token = ''
+                                        data.apply()
+                                        location.reload()
+                                        return true
+                                    },
+                                }
+                            ],
                         })}>退出登錄</mdui-list-item>
                     </>
                 }
