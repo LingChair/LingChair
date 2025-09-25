@@ -88,13 +88,16 @@ export default class Chat {
         userIds.forEach((v) => UserChatLinker.unlinkUserAndChat(v, this.bean.id))
     }
     getAnotherUserForPrivate(userMySelf: User) {
-        const user_a_id = this.getMembersList()[0]
-        const user_b_id = this.getMembersList()[0]
+        const members = this.getMembersList()
+        const user_a_id = members[0]
+        const user_b_id = members[1]
+        if (members.length == 1 && user_a_id == userMySelf.bean.id)
+            return userMySelf
         // 注意: 這裏已經確定了 Chat, 不需要再指定對方用戶
         if (user_a_id == userMySelf.bean.id)
             return User.findById(user_b_id as string)
         if (user_b_id == userMySelf.bean.id)
-            return userMySelf
+            return User.findById(user_a_id as string)
 
         return null
     }
