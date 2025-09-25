@@ -103,6 +103,9 @@ export default class User {
             console.error(chalk.red(`警告: 查询 username = ${userName} 时, 查询到多个相同用户名的用户`))
         return new User(beans[0])
     }
+    static findByAccount(account: string) {
+        return User.findByUserName(account) || User.findById(account)
+    }
 
     declare bean: UserBean
     constructor(bean: UserBean) {

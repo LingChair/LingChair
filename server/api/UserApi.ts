@@ -68,7 +68,7 @@ export default class UserApi extends BaseApi {
                 code: 400,
             }
 
-            const user = (User.findByUserName(args.account as string) || User.findById(args.account as string)) as User
+            const user = User.findByAccount(args.account as string) as User
             if (user == null) return {
                 msg: "賬號或密碼錯誤",
                 code: 400,
