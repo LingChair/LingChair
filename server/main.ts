@@ -23,27 +23,26 @@ app.get('/uploaded_files/:hash', (req, res) => {
     const hash = req.params.hash as string
     res.setHeader('Content-Type', 'text/plain')
     if (hash == null) {
-        res.send("404 Not Found", 404)
+        res.status(404).send("404 Not Found")
         return
     }
     const file = FileManager.findByHash(hash)
-    
+
+    if (file == null) {
+        res.status(404).send("404 Not Found")
+        return
+    }
+
     if (file.getChatId() != null) {
         const userToken = TokenManager.decode(req.cookies.token)
-        console.log(userToken, req.cookies.device_id)
         if (!TokenManager.checkToken(userToken, req.cookies.device_id)) {
-            res.send("401 UnAuthorized", 401)
+            res.status(401).send("401 UnAuthorized")
             return
         }
-        if (!UserChatLinker.checkUserIsLinkedToChat(userToken.author, file.getChatId())) {
-            res.send("403 Forbidden", 403)
+        if (!UserChatLinker.checkUserIsLinkedToChat(userToken.author, file.getChatId() as string)) {
+            res.status(403).send("403 Forbidden")
             return
         }
-    }
-    
-    if (file == null) {
-        res.send("404 Not Found", 404)
-        return
     }
 
     res.setHeader('Content-Type', file!.getMime())
