@@ -33,10 +33,17 @@ const markedInstance = new marked.Marked({
             return `<span>${text}</span>`
         },
         image({ text, href }) {
-            if (/uploaded_files\/[A-Za-z0-9]+$/.test(href))
-                return `<chat-image src="${href}" alt="${text}"></chat-image>`
+            const type = /^(Video|File)=.*/.exec(text)?.[1] || 'Image'
+
+            if (/uploaded_files\/[A-Za-z0-9]+$/.test(href)) {
+                return ({
+                    Image: `<chat-image src="${href}" alt="${text}"></chat-image>`,
+                    Video: `<chat-video src="${href}" alt="${text}"></chat-video>`,
+                    File: `<chat-file src="${href}" alt="${text}"></chat-file>`,
+                })?.[type] || ``
+            }
             return ``
-        }
+        },
     }
 })
 
@@ -178,6 +185,8 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
         cachedFileNamesCount.current[name] = 1
         if (type.startsWith('image/'))
             insertText(`![圖片](${name})`)
+        else if (type.startsWith('video/'))
+            insertText(`![Video=${name}](${name})`)
         else
             insertText(`![File=${name}](${name})`)
     }
