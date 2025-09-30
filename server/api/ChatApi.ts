@@ -86,6 +86,7 @@ export default class ChatApi extends BaseApi {
 
             const msg = {
                 text: args.text as string,
+                time: Date.now(),
                 user_id: token.author,
             }
             const id = MessagesManager.getInstanceForChat(chat).addMessage(msg)
