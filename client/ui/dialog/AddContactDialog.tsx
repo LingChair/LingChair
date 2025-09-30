@@ -16,26 +16,33 @@ export default function AddContactDialog({
     addContactDialogRef,
 }: Refs) {
     const inputUserAccountRef = React.useRef<TextField>(null)
+
+    async function addContact() {
+        const re = await Client.invoke("User.addContact", {
+            account: inputUserAccountRef.current!.value,
+            token: data.access_token,
+        })
+
+        if (checkApiSuccessOrSncakbar(re, "添加失敗")) return
+        snackbar({
+            message: "添加成功!",
+            placement: "top",
+        })
+        EventBus.emit('ContactsList.updateContacts')
+
+        inputUserAccountRef.current!.value = ''
+        addContactDialogRef.current!.open = false
+    }
+
     return (
         <mdui-dialog close-on-overlay-click close-on-esc headline="添加對話" ref={addContactDialogRef}>
             現階段只支持添加用戶, 對話敬請期待...
-            <mdui-text-field style={{ marginTop: "10px", }} label="對方的 用戶 ID / 用戶名" ref={inputUserAccountRef as any}></mdui-text-field>
+            <mdui-text-field style={{ marginTop: "10px", }} clearable label="對方的 用戶 ID / 用戶名" ref={inputUserAccountRef as any} onKeyDown={(event) => {
+                if (event.key == 'Enter')
+                    addContact()
+            }}></mdui-text-field>
             <mdui-button slot="action" variant="text" onClick={() => addContactDialogRef.current!.open = false}>取消</mdui-button>
-            <mdui-button slot="action" variant="text" onClick={async () => {
-                const re = await Client.invoke("User.addContact", {
-                    account: inputUserAccountRef.current!.value,
-                    token: data.access_token,
-                })
-        
-                if (checkApiSuccessOrSncakbar(re, "添加失敗")) return
-                snackbar({
-                    message: "添加成功!",
-                    placement: "top",
-                })
-                EventBus.emit('ContactsList.updateContacts')
-                
-                addContactDialogRef.current!.open = false
-            }}>添加</mdui-button>
+            <mdui-button slot="action" variant="text" onClick={() => addContact()}>添加</mdui-button>
         </mdui-dialog>
     )
 }
