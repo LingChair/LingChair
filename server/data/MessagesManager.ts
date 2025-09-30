@@ -27,7 +27,8 @@ export default class MessagesManager {
             CREATE TABLE IF NOT EXISTS ${this.getTableName()} (
                 /* 序号, MessageId */ id INTEGER PRIMARY KEY AUTOINCREMENT,
                 /* 消息文本 */ text TEXT NOT NULL,
-                /* 发送者 */ user_id TEXT NOT NULL
+                /* 发送者 */ user_id TEXT NOT NULL,
+                /* 發送時間 */ time INT8 NOT NULL
             );
        `)
     }
@@ -36,17 +37,21 @@ export default class MessagesManager {
     }
     addMessage({
         text,
-        user_id
+        user_id,
+        time
     }: {
         text: string,
-        user_id?: string
+        user_id?: string,
+        time?: number
     }) {
         return MessagesManager.database.prepare(`INSERT INTO ${this.getTableName()} (
             text,
-            user_id
-        ) VALUES (?, ?);`).run(
+            user_id,
+            time
+        ) VALUES (?, ?, ?);`).run(
             text,
-            user_id || null
+            user_id || null,
+            time || Date.now()
         ).lastInsertRowid
     }
     addSystemMessage(text: string) {
