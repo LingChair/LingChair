@@ -14,6 +14,7 @@ import useAsyncEffect from "../useAsyncEffect.ts"
 import * as marked from 'marked'
 import DOMPurify from 'dompurify'
 import randomUUID from "../../randomUUID.ts"
+import { time } from "node:console";
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     target: string
@@ -257,22 +258,55 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                         flexGrow: '1',
                     }}>
                         {
-                            messagesList.map((msg) =>
-                                <Element_Message
-                                    key={msg.id}
-                                    id={`chat_${target}_message_${msg.id}`}
-                                    userId={msg.user_id}>
-                                    <div dangerouslySetInnerHTML={{
-                                        __html: DOMPurify.sanitize(markedInstance.parse(msg.text) as string, {
-                                            ALLOWED_TAGS: [
-                                                "chat-image",
-                                                "span",
-                                                "chat-link",
-                                            ]
-                                        })
-                                    }}></div>
-                                </Element_Message>
-                            )
+                            (() => {
+                                let date = new Date(0)
+                                return messagesList.map((msg) => {
+                                    const rendeText = DOMPurify.sanitize(markedInstance.parse(msg.text) as string, {
+                                        ALLOWED_TAGS: [
+                                            "chat-image",
+                                            "span",
+                                            "chat-link",
+                                        ],
+                                        ALLOWED_ATTR: [
+                                            'src',
+                                            'alt',
+                                            'href',
+                                        ],
+                                    })
+                                    const lastDate = date
+                                    date = new Date(msg.time)
+
+                                    const msgElement = <Element_Message
+                                        rawData={msg.text}
+                                        renderHTML={rendeText}
+                                        message={msg}
+                                        key={msg.id}
+                                        slot="trigger"
+                                        id={`chat_${target}_message_${msg.id}`}
+                                        userId={msg.user_id} />
+
+                                    return (
+                                        <>
+                                            {
+                                                (date.getMinutes() != lastDate.getMinutes() || date.getDate() != lastDate.getDate() || date.getMonth() != lastDate.getMonth() || date.getFullYear() != lastDate.getFullYear())
+                                                && <mdui-tooltip content={`${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日  ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`}>
+                                                    <div>
+                                                        {
+                                                            (date.getFullYear() != lastDate.getFullYear() ? `${date.getFullYear()}年` : '')
+                                                            + (date.getMonth() != lastDate.getMonth() ? `${date.getMonth() + 1}月` : '')
+                                                            + (date.getDate() != lastDate.getDate() ? `${date.getDate()}日` : '')
+                                                            + `  ${date.getHours()}:${date.getMinutes()}`
+                                                        }
+                                                    </div>
+                                                </mdui-tooltip>
+                                            }
+                                            {
+                                                msgElement
+                                            }
+                                        </>
+                                    )
+                                })
+                            })()
                         }
                     </MessageContainer>
                     {
