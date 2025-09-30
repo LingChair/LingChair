@@ -82,6 +82,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
 
         if (checkApiSuccessOrSncakbar(re, "拉取歷史記錄失敗")) return
         const returnMsgs = (re.data!.messages as Message[]).reverse()
+        page.current++
         if (returnMsgs.length == 0) {
             setShowNoMoreMessagesTip(true)
             setTimeout(() => setShowNoMoreMessagesTip(false), 1000)
@@ -91,8 +92,6 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
         const oldest = messagesList[0]
         setMessagesList(returnMsgs.concat(messagesList))
         setTimeout(() => chatPanelRef.current!.scrollTo({ top: $(`#chat_${target}_message_${oldest.id}`).get(0).offsetTop, behavior: 'smooth' }), 100)
-
-        page.current++
     }
 
     React.useEffect(() => {
