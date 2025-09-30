@@ -9,6 +9,7 @@ customElements.define('chat-image', class extends HTMLElement {
         super()
     }
     connectedCallback() {
+        this.style.display = 'block'
         const e = new Image()
         e.style.maxWidth = "100%"
         e.style.maxHeight = "90%"
