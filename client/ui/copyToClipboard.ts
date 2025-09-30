@@ -9,6 +9,6 @@ export default function copyToClipboard(text: string) {
         input.select()
         input.setSelectionRange(0, 1145141919810)
         document.execCommand('copy')
-        input.clearSelection()
+        input.setSelectionRange(null, null)
     }
 }
