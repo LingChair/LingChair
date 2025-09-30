@@ -272,7 +272,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                                             'alt',
                                             'href',
                                         ],
-                                    })
+                                    }).replaceAll('\n', '<br>')
                                     const lastDate = date
                                     date = new Date(msg.time)
 
