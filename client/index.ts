@@ -21,7 +21,8 @@ urlParams.get('debug') == 'true' && window.addEventListener('error', ({ message,
 
 import App from './ui/App.tsx'
 import AppMobile from './ui/AppMobile.tsx'
-ReactDOM.createRoot(document.getElementById('app') as HTMLElement).render(React.createElement(urlParams.get('mobile') == 'true' ? AppMobile : App, null))
+import isMobileUI from "./ui/isMobileUI.ts"
+ReactDOM.createRoot(document.getElementById('app') as HTMLElement).render(React.createElement(isMobileUI() ? AppMobile : App, null))
 
 const onResize = () => {
     document.body.style.setProperty('--whitesilk-widget-message-maxwidth', breakpoint().down('md') ? "80%" : "70%")
