@@ -29,7 +29,8 @@ customElements.define('chat-image', class extends HTMLElement {
             })
         }
         e.src = $(this).attr('src') as string
-        e.onclick = () => {
+        e.onclick = (event) => {
+            event.stopPropagation()
             openImageViewer($(this).attr('src') as string)
         }
         this.appendChild(e)

@@ -14,7 +14,6 @@ import useAsyncEffect from "../useAsyncEffect.ts"
 import * as marked from 'marked'
 import DOMPurify from 'dompurify'
 import randomUUID from "../../randomUUID.ts"
-import { time } from "node:console";
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     target: string

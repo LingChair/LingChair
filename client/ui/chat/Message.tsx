@@ -1,4 +1,4 @@
-import { alert, Dropdown } from "mdui"
+import { Dropdown, Dialog } from "mdui"
 import { $ } from "mdui/jq"
 import Client from "../../api/Client.ts"
 import Data_Message from "../../api/client_data/Message.ts"
@@ -6,9 +6,11 @@ import DataCaches from "../../api/DataCaches.ts"
 import Avatar from "../Avatar.tsx"
 import copyToClipboard from "../copyToClipboard.ts"
 import useAsyncEffect from "../useAsyncEffect.ts"
+import useEventListener from "../useEventListener.ts"
 import React from "react"
 import useEventListener from "../useEventListener.ts"
 import isMobileUI from "../isMobileUI.ts"
+import ReactJson from 'react-json-view'
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     userId: string
@@ -30,10 +32,23 @@ export default function Message({ userId, rawData, renderHTML, message, ...props
     }, [userId])
 
     const dropDownRef = React.useRef<Dropdown>(null)
+    const messageJsonDialogRef = React.useRef<Dialog>(null)
+    
+    const [isDropDownOpen, setDropDownOpen] = React.useState(false)
 
     return (
         <div
             slot="trigger"
+            onContextMenu={(e) => {
+                if (isMobileUI()) return
+                e.preventDefault()
+                setDropDownOpen(!isDropDownOpen)
+            }}
+            onClick={(e) => {
+                if (!isMobileUI()) return
+                e.preventDefault()
+                setDropDownOpen(!isDropDownOpen)
+            }}
             style={{
                 width: "100%",
                 display: "flex",
@@ -88,7 +103,10 @@ export default function Message({ userId, rawData, renderHTML, message, ...props
                     padding: "15px",
                     alignSelf: isAtRight ? "flex-end" : "flex-start",
                 }}>
-                <mdui-dropdown trigger={isMobileUI() ? 'click' : 'contextmenu'} ref={dropDownRef}>
+                <mdui-dialog close-on-overlay-click close-on-esc ref={messageJsonDialogRef}>
+                    <ReactJson src={message} />
+                </mdui-dialog>
+                <mdui-dropdown trigger="manual" ref={dropDownRef} open={isDropDownOpen}>
                     <span
                         slot="trigger"
                         id="msg"
@@ -98,15 +116,10 @@ export default function Message({ userId, rawData, renderHTML, message, ...props
                         dangerouslySetInnerHTML={{
                             __html: renderHTML
                         }} />
-                    <mdui-menu>
+                    <mdui-menu onClick={(e) => e.stopPropagation()}>
                         <mdui-menu-item icon="content_copy" onClick={() => copyToClipboard($(dropDownRef.current as HTMLElement).find('#msg').text())}>複製文字</mdui-menu-item>
                         <mdui-menu-item icon="content_copy" onClick={() => copyToClipboard(rawData)}>複製原文</mdui-menu-item>
-                        <mdui-menu-item icon="info" onClick={() => alert({
-                            headline: "消息详情",
-                            description: JSON.stringify(message),
-                            confirmText: "关闭",
-                            onConfirm: () => { },
-                        })}>查看詳情</mdui-menu-item>
+                        <mdui-menu-item icon="info" onClick={() => messageJsonDialogRef.current.open = true}>查看詳情</mdui-menu-item>
                     </mdui-menu>
                 </mdui-dropdown>
             </mdui-card>
