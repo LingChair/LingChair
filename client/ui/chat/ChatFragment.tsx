@@ -33,7 +33,6 @@ const markedInstance = new marked.Marked({
         },
         image({ text, href }) {
             const type = /^(Video|File)=.*/.exec(text)?.[1] || 'Image'
-
             if (/uploaded_files\/[A-Za-z0-9]+$/.test(href)) {
                 return ({
                     Image: `<chat-image src="${href}" alt="${text}"></chat-image>`,
@@ -272,6 +271,8 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                                     const rendeText = DOMPurify.sanitize(markedInstance.parse(msg.text) as string, {
                                         ALLOWED_TAGS: [
                                             "chat-image",
+                                            "chat-video",
+                                            "chat-file",
                                             "span",
                                             "chat-link",
                                         ],
