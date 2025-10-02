@@ -1,7 +1,7 @@
 export default function copyToClipboard(text: string) {
     if (navigator.clipboard)
         return navigator.clipboard.writeText(text)
-    return new Promise((res rej) => {
+    return new Promise((res, rej) => {
         if (document.hasFocus()) {
             const a = document.createElement("textarea")
             document.body.appendChild(a)
@@ -12,7 +12,7 @@ export default function copyToClipboard(text: string) {
             a.select()
             document.execCommand("copy", true)
             document.body.removeChild(a)
-            res()
+            res(null)
         } else {
             rej()
         }
