@@ -144,7 +144,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                         target,
                         data: cachedFiles.current[fileName],
                     }, 5000)
-                    if (checkApiSuccessOrSncakbar(re, `文件[${fileName}] 上傳失敗`)) return
+                    if (checkApiSuccessOrSncakbar(re, `文件[${fileName}] 上傳失敗`)) return setIsMessageSending(false)
                     text = text.replaceAll('(' + fileName + ')', '(' + re.data!.file_path as string + ')')
                 }
             }
@@ -154,7 +154,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                 target,
                 text,
             }, 5000)
-            if (checkApiSuccessOrSncakbar(re, "發送失敗")) return
+            if (checkApiSuccessOrSncakbar(re, "發送失敗")) return setIsMessageSending(false)
             inputRef.current!.value = ''
             cachedFiles.current = {}
         } catch (e) {
