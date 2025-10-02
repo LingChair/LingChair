@@ -23,7 +23,6 @@ customElements.define('chat-file', class extends HTMLElement {
         // deno-lint-ignore no-window
         e.onclick = (e) => {
             e.stopPropagation()
-            window.open(href, '_blank')
         }
         this.appendChild(e)
     }
