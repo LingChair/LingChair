@@ -36,8 +36,8 @@ const markedInstance = new marked.Marked({
             if (/uploaded_files\/[A-Za-z0-9]+$/.test(href)) {
                 return ({
                     Image: `<chat-image src="${href}" alt="${text}"></chat-image>`,
-                    Video: `<chat-video src="${href}" alt="${text}"></chat-video>`,
-                    File: `<chat-file src="${href}" alt="${text}"></chat-file>`,
+                    Video: `<chat-video src="${href}"></chat-video>`,
+                    File: `<chat-file href="${href}" name="${/^Video|File=(.*)/.exec(text)?.[1] || 'Unnamed file'}"></chat-file>`,
                 })?.[type] || ``
             }
             return ``
@@ -280,6 +280,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                                             'src',
                                             'alt',
                                             'href',
+                                            'name',
                                         ],
                                     }).replaceAll('\n', '<br>')
                                     const lastDate = date

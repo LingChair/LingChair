@@ -8,6 +8,7 @@ import ReactDOM from 'react-dom/client'
 
 import './ui/custom-elements/chat-image.ts'
 import './ui/custom-elements/chat-video.ts'
+import './ui/custom-elements/chat-file.ts'
 
 const urlParams = new URL(location.href).searchParams
 
