@@ -353,7 +353,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                                             // 即便是 no-cors 還是殘廢, 因此暫時沒有什麽想法
                                             const re = await fetch(url)
                                             const type = re.headers.get("Content-Type")
-                                            if (type?.startsWith("image/"))
+                                            if (type && re.ok)
                                                 addFile(type as string, getFileNameOrRandom(url), re)
                                         } catch (e) {
                                             snackbar({
