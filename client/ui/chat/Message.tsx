@@ -33,6 +33,9 @@ export default function Message({ userId, rawData, renderHTML, message, ...props
 
     const dropDownRef = React.useRef<Dropdown>(null)
     const messageJsonDialogRef = React.useRef<Dialog>(null)
+    useEventListener(messageJsonDialogRef, 'click', (e) => {
+        e.stopPropagation()
+    })
     
     const [isDropDownOpen, setDropDownOpen] = React.useState(false)
 
@@ -116,7 +119,10 @@ export default function Message({ userId, rawData, renderHTML, message, ...props
                         dangerouslySetInnerHTML={{
                             __html: renderHTML
                         }} />
-                    <mdui-menu onClick={(e) => e.stopPropagation()}>
+                    <mdui-menu onClick={(e) => {
+                        e.stopPropagation()
+                        setDropDownOpen(false)
+                    }}>
                         <mdui-menu-item icon="content_copy" onClick={() => copyToClipboard($(dropDownRef.current as HTMLElement).find('#msg').text())}>複製文字</mdui-menu-item>
                         <mdui-menu-item icon="content_copy" onClick={() => copyToClipboard(rawData)}>複製原文</mdui-menu-item>
                         <mdui-menu-item icon="info" onClick={() => messageJsonDialogRef.current.open = true}>查看詳情</mdui-menu-item>
