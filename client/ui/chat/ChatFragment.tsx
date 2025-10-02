@@ -300,11 +300,14 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                                             {
                                                 (date.getMinutes() != lastDate.getMinutes() || date.getDate() != lastDate.getDate() || date.getMonth() != lastDate.getMonth() || date.getFullYear() != lastDate.getFullYear())
                                                 && <mdui-tooltip content={`${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日  ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`}>
-                                                    <div>
+                                                    <div style={{
+                                                        fontSize: '87%',
+                                                        marginTop: '10px',
+                                                    }}>
                                                         {
                                                             (date.getFullYear() != lastDate.getFullYear() ? `${date.getFullYear()}年` : '')
-                                                            + (date.getMonth() != lastDate.getMonth() ? `${date.getMonth() + 1}月` : '')
-                                                            + (date.getDate() != lastDate.getDate() ? `${date.getDate()}日` : '')
+                                                            + `${date.getMonth() + 1}月`
+                                                            + `${date.getDate()}日`
                                                             + `  ${date.getHours()}:${date.getMinutes()}`
                                                         }
                                                     </div>
