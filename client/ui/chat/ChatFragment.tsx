@@ -75,7 +75,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                 top: 10000000000,
                 behavior: "smooth",
             })
-        }, 100)
+        }, 300)
     }, [target])
 
     const page = React.useRef(0)
