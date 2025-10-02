@@ -45,6 +45,8 @@ app.get('/uploaded_files/:hash', (req, res) => {
         }
     }
 
+    const fileName = encodeURIComponent(file!.getName()?.replaceAll('"', ''))
+    res.setHeader('Content-Disposition', `inline; filename="${fileName}"`)
     res.setHeader('Content-Type', file!.getMime())
     res.sendFile(path.resolve(file!.getFilePath()))
 })
