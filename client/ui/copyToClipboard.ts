@@ -1,14 +1,20 @@
-import { $ } from 'mdui/jq'
-
 export default function copyToClipboard(text: string) {
-    if (navigator.clipboard) {
-        navigator.clipboard.writeText(text)
-    } else {
-        const input = $('#copy_to_clipboard_fallback').get(0) as HTMLInputElement
-        input.value = text
-        input.select()
-        input.setSelectionRange(0, 1145141919810)
-        document.execCommand('copy')
-        input.setSelectionRange(null, null)
-    }
+    if (navigator.clipboard)
+        return navigator.clipboard.writeText(text)
+    return new Promise((res rej) => {
+        if (document.hasFocus()) {
+            const a = document.createElement("textarea")
+            document.body.appendChild(a)
+            a.style.position = "fixed"
+            a.style.clip = "rect(0 0 0 0)"
+            a.style.top = "10px"
+            a.value = text
+            a.select()
+            document.execCommand("copy", true)
+            document.body.removeChild(a)
+            res()
+        } else {
+            rej()
+        }
+    })
 }
