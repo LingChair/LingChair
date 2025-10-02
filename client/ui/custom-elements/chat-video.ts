@@ -11,6 +11,7 @@ customElements.define('chat-video', class extends HTMLElement {
         e.style.height = "100%"
         e.style.borderRadius = "var(--mdui-shape-corner-medium)"
         e.src = $(this).attr('src') as string
+        e.onclick = (e) => e.stopPropagation()
         this.appendChild(e)
     }
 })
