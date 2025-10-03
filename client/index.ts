@@ -29,9 +29,9 @@ ReactDOM.createRoot(document.getElementById('app') as HTMLElement).render(React.
 const onResize = () => setTimeout(() => {
     document.body.style.setProperty('--whitesilk-widget-message-maxwidth', breakpoint().down('md') ? "80%" : "70%")
     // deno-lint-ignore no-window
-    document.body.style.setProperty('--whitesilk-window-width', window.screen.availWidth + 'px')
+    document.body.style.setProperty('--whitesilk-window-width', (isMobileUI() ? window.screen.availWidth : window.innerWidth) + 'px')
     // deno-lint-ignore no-window
-    document.body.style.setProperty('--whitesilk-window-height', window.screen.availHeight + 'px')
+    document.body.style.setProperty('--whitesilk-window-height', (isMobileUI() ? window.screen.availHeight : window.innerHeight) + 'px')
 }, 100)
 // deno-lint-ignore no-window no-window-prefix
 window.addEventListener('resize', onResize)
