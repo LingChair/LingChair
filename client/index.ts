@@ -26,13 +26,13 @@ import AppMobile from './ui/AppMobile.tsx'
 import isMobileUI from "./ui/isMobileUI.ts"
 ReactDOM.createRoot(document.getElementById('app') as HTMLElement).render(React.createElement(isMobileUI() ? AppMobile : App, null))
 
-const onResize = () => {
+const onResize = () => setTimeout(() => {
     document.body.style.setProperty('--whitesilk-widget-message-maxwidth', breakpoint().down('md') ? "80%" : "70%")
     // deno-lint-ignore no-window
-    document.body.style.setProperty('--whitesilk-window-width', window.innerWidth + 'px')
+    document.body.style.setProperty('--whitesilk-window-width', window.screen.availWidth + 'px')
     // deno-lint-ignore no-window
-    document.body.style.setProperty('--whitesilk-window-height', window.innerHeight + 'px')
-}
+    document.body.style.setProperty('--whitesilk-window-height', window.screen.availHeight + 'px')
+}, 100)
 // deno-lint-ignore no-window no-window-prefix
 window.addEventListener('resize', onResize)
 onResize()
