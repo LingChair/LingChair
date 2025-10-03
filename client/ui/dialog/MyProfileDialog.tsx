@@ -10,12 +10,12 @@ import Avatar from "../Avatar.tsx"
 import User from "../../api/client_data/User.ts"
 
 interface Refs {
-    userProfileDialogRef: React.MutableRefObject<Dialog>
+    myProfileDialogRef: React.MutableRefObject<Dialog>
     user: User
 }
 
-export default function UserProfileDialog({
-    userProfileDialogRef,
+export default function MyProfileDialog({
+    myProfileDialogRef,
     user
 }: Refs) {
     const isMySelf = Client.myUserProfile?.id == user?.id
@@ -47,7 +47,7 @@ export default function UserProfileDialog({
         {
             // 公用 - 資料卡
         }
-        <mdui-dialog close-on-overlay-click close-on-esc ref={userProfileDialogRef}>
+        <mdui-dialog close-on-overlay-click close-on-esc ref={myProfileDialogRef}>
             <div style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -66,41 +66,36 @@ export default function UserProfileDialog({
             }}></mdui-divider>
 
             <mdui-list>
-                {!isMySelf && <mdui-list-item icon="edit" rounded>編輯聯絡人訊息</mdui-list-item>}
-                {
-                    isMySelf && <>
-                        <mdui-list-item icon="edit" rounded onClick={() => userProfileEditDialogRef.current!.open = true}>編輯資料</mdui-list-item>
-                        {/*
-                        <mdui-list-item icon="settings" rounded>賬號設定</mdui-list-item>
-                        <mdui-list-item icon="lock" rounded>隱私設定</mdui-list-item>
-                        */}
-                        <mdui-divider style={{
-                            marginTop: "10px",
-                            marginBottom: "10px",
-                        }}></mdui-divider>
-                        <mdui-list-item icon="logout" rounded onClick={() => dialog({
-                            headline: "退出登錄",
-                            description: "確定要退出登錄嗎? (若您的賬號未設定 用戶名, 請無務必複製 用戶 ID, 以免丟失賬號!)",
-                            actions: [
-                                {
-                                    text: "取消",
-                                    onClick: () => {
-                                        return true
-                                    },
-                                },
-                                {
-                                    text: "確定",
-                                    onClick: () => {
-                                        data.access_token = ''
-                                        data.apply()
-                                        location.reload()
-                                        return true
-                                    },
-                                }
-                            ],
-                        })}>退出登錄</mdui-list-item>
-                    </>
-                }
+                <mdui-list-item icon="edit" rounded onClick={() => userProfileEditDialogRef.current!.open = true}>編輯資料</mdui-list-item>
+                {/*
+                <mdui-list-item icon="settings" rounded>賬號設定</mdui-list-item>
+                <mdui-list-item icon="lock" rounded>隱私設定</mdui-list-item>
+                */}
+                <mdui-divider style={{
+                    marginTop: "10px",
+                    marginBottom: "10px",
+                }}></mdui-divider>
+                <mdui-list-item icon="logout" rounded onClick={() => dialog({
+                    headline: "退出登錄",
+                    description: "確定要退出登錄嗎? (若您的賬號未設定 用戶名, 請無務必複製 用戶 ID, 以免丟失賬號!)",
+                    actions: [
+                        {
+                            text: "取消",
+                            onClick: () => {
+                                return true
+                            },
+                        },
+                        {
+                            text: "確定",
+                            onClick: () => {
+                                data.access_token = ''
+                                data.apply()
+                                location.reload()
+                                return true
+                            },
+                        }
+                    ],
+                })}>退出登錄</mdui-list-item>
             </mdui-list>
         </mdui-dialog>
         {

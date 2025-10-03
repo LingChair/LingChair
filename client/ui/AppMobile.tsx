@@ -13,7 +13,7 @@ import { checkApiSuccessOrSncakbar } from "./snackbar.ts"
 
 import RegisterDialog from "./dialog/RegisterDialog.tsx"
 import LoginDialog from "./dialog/LoginDialog.tsx"
-import UserProfileDialog from "./dialog/UserProfileDialog.tsx"
+import MyProfileDialog from "./dialog/MyProfileDialog.tsx"
 import ContactsList from "./main/ContactsList.tsx"
 import RecentsList from "./main/RecentsList.tsx"
 import useAsyncEffect from "./useAsyncEffect.ts"
@@ -51,10 +51,10 @@ export default function AppMobile() {
     const registerInputNickNameRef = React.useRef<TextField>(null)
     const registerInputPasswordRef = React.useRef<TextField>(null)
 
-    const userProfileDialogRef = React.useRef<Dialog>(null)
-    const openMyUserProfileDialogButtonRef = React.useRef<HTMLElement>(null)
-    useEventListener(openMyUserProfileDialogButtonRef, 'click', (_event) => {
-        userProfileDialogRef.current!.open = true
+    const myProfileDialogRef = React.useRef<Dialog>(null)
+    const openMyProfileDialogButtonRef = React.useRef<HTMLElement>(null)
+    useEventListener(openMyProfileDialogButtonRef, 'click', (_event) => {
+        myProfileDialogRef.current!.open = true
     })
     
     const addContactDialogRef = React.useRef<Dialog>(null)
@@ -131,8 +131,8 @@ export default function AppMobile() {
                 loginInputAccountRef={loginInputAccountRef}
                 loginInputPasswordRef={loginInputPasswordRef} />
 
-            <UserProfileDialog
-                userProfileDialogRef={userProfileDialogRef as any}
+            <MyProfileDialog
+                myProfileDialogRef={myProfileDialogRef as any}
                 user={myUserProfileCache} />
 
             <ChatInfoDialog
@@ -164,7 +164,7 @@ export default function AppMobile() {
                 }}></div>
                 <mdui-button-icon icon="settings"></mdui-button-icon>
                 <mdui-button-icon>
-                    <Avatar src={myUserProfileCache?.avatar} text={myUserProfileCache?.nickname} avatarRef={openMyUserProfileDialogButtonRef} />
+                    <Avatar src={myUserProfileCache?.avatar} text={myUserProfileCache?.nickname} avatarRef={openMyProfileDialogButtonRef} />
                 </mdui-button-icon>
             </mdui-top-app-bar>
             {

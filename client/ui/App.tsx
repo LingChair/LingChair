@@ -14,7 +14,7 @@ import { checkApiSuccessOrSncakbar } from "./snackbar.ts"
 
 import RegisterDialog from "./dialog/RegisterDialog.tsx"
 import LoginDialog from "./dialog/LoginDialog.tsx"
-import UserProfileDialog from "./dialog/UserProfileDialog.tsx"
+import MyProfileDialog from "./dialog/MyProfileDialog.tsx"
 import ContactsList from "./main/ContactsList.tsx"
 import RecentsList from "./main/RecentsList.tsx"
 import useAsyncEffect from "./useAsyncEffect.ts"
@@ -52,10 +52,10 @@ export default function App() {
     const registerInputNickNameRef = React.useRef<TextField>(null)
     const registerInputPasswordRef = React.useRef<TextField>(null)
 
-    const userProfileDialogRef = React.useRef<Dialog>(null)
-    const openMyUserProfileDialogButtonRef = React.useRef<HTMLElement>(null)
-    useEventListener(openMyUserProfileDialogButtonRef, 'click', (_event) => {
-        userProfileDialogRef.current!.open = true
+    const myProfileDialogRef = React.useRef<Dialog>(null)
+    const openMyProfileDialogButtonRef = React.useRef<HTMLElement>(null)
+    useEventListener(openMyProfileDialogButtonRef, 'click', (_event) => {
+        myProfileDialogRef.current!.open = true
     })
     
     const addContactDialogRef = React.useRef<Dialog>(null)
@@ -112,8 +112,8 @@ export default function App() {
                 loginInputAccountRef={loginInputAccountRef}
                 loginInputPasswordRef={loginInputPasswordRef} />
 
-            <UserProfileDialog
-                userProfileDialogRef={userProfileDialogRef as any}
+            <MyProfileDialog
+                myProfileDialogRef={myProfileDialogRef as any}
                 user={myUserProfileCache} />
 
             <ChatInfoDialog
@@ -129,7 +129,7 @@ export default function App() {
 
             <mdui-navigation-rail contained value="Recents" ref={navigationRailRef}>
                 <mdui-button-icon slot="top">
-                    <Avatar src={myUserProfileCache?.avatar} text={myUserProfileCache?.nickname} avatarRef={openMyUserProfileDialogButtonRef} />
+                    <Avatar src={myUserProfileCache?.avatar} text={myUserProfileCache?.nickname} avatarRef={openMyProfileDialogButtonRef} />
                 </mdui-button-icon>
 
                 <mdui-navigation-rail-item icon="watch_later--outlined" active-icon="watch_later--filled" value="Recents"></mdui-navigation-rail-item>
