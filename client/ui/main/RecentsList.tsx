@@ -3,18 +3,19 @@ import RecentChat from "../../api/client_data/RecentChat.ts"
 import useEventListener from "../useEventListener.ts"
 import RecentsListItem from "./RecentsListItem.tsx"
 import React from "react"
+import useAsyncEffect from "../useAsyncEffect.ts"
+import Client from "../../api/Client.ts"
+import { checkApiSuccessOrSncakbar } from "../snackbar.ts";
+import data from "../../Data.ts";
+import EventBus from "../../EventBus.ts";
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
-    recentsList: RecentChat[]
-    setRecentsList: React.Dispatch<React.SetStateAction<RecentChat[]>>
     display: boolean
     currentChatId: string
     openChatFragment: (id: string) => void
 }
 
 export default function RecentsList({
-    recentsList,
-    setRecentsList,
     currentChatId,
     display,
     openChatFragment,
@@ -22,9 +23,24 @@ export default function RecentsList({
 }: Args) {
     const searchRef = React.useRef<HTMLElement>(null)
     const [searchText, setSearchText] = React.useState('')
+    const [recentsList, setRecentsList] = React.useState<RecentChat[]>([])
 
     useEventListener(searchRef, 'input', (e) => {
         setSearchText((e.target as unknown as TextField).value)
+    })
+
+    useAsyncEffect(async () => {
+        async function updateRecents() {
+            const re = await Client.invoke("User.getMyRecentChats", {
+                token: data.access_token,
+            })
+            if (re.code != 200)
+                return checkApiSuccessOrSncakbar(re, "获取最近對話列表失败")
+    
+            setRecentsList(re.data!.recent_chats as RecentChat[])
+        }
+        updateRecents()
+        EventBus.on('RecentsList.updateRecents', () => updateRecents())
     })
 
     return <mdui-list style={{
@@ -44,7 +60,7 @@ export default function RecentsList({
                 searchText == '' ||
                 chat.title.includes(searchText) ||
                 chat.id.includes(searchText) ||
-                chat.content?.includes(searchText)
+                chat.content.includes(searchText)
             ).map((v) =>
                 <RecentsListItem
                     active={currentChatId == v.id}

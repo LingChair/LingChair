@@ -207,20 +207,22 @@ export default class UserApi extends BaseApi {
 
             const user = User.findById(token.author) as User
             const recentChats = user.getRecentChats()
+            const recentChatsList = []
+            for (const [chatId, content] of recentChats) {
+                const chat = Chat.findById(chatId)
+                recentChatsList.push({
+                    content,
+                    id: chatId,
+                    title: chat?.getTitle(user) || "未知",
+                    avatar: chat?.getAvatarFileHash(user) ? "uploaded_files/" + chat?.getAvatarFileHash(user) : undefined
+                })
+            }
 
             return {
                 msg: "成功",
                 code: 200,
                 data: {
-                    recent_chats: recentChats.forEach((content: string, chatId: string) => {
-                        const chat = Chat.findById(chatId)
-                        return {
-                            content,
-                            id: chatId,
-                            title: chat?.getTitle(user) || "未知",
-                            avatar: chat?.getAvatarFileHash(user) ? "uploaded_files/" + chat?.getAvatarFileHash(user) : undefined
-                        }
-                    })
+                    recent_chats: recentChatsList.reverse(),
                 }
             }
         })

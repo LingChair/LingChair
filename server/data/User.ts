@@ -132,9 +132,9 @@ export default class User {
         map.set(chatId, content)
         this.setAttr("recent_chats", JSON.stringify(map, MapJson.replacer))
     }
-    getRecentChats() {
+    getRecentChats(): Map<string, string> {
         try {
-            return JSON.parse(this.bean.recent_chats, MapJson.reviver) as Map<string, string>
+            return JSON.parse(this.bean.recent_chats, MapJson.reviver)
         } catch (e) {
             console.log(chalk.yellow(`警告: 最近对话列表解析失敗: ${(e as Error).message}`))
             return new Map()
