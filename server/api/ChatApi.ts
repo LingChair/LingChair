@@ -7,6 +7,7 @@ import UserChatLinker from "../data/UserChatLinker.ts"
 import ApiManager from "./ApiManager.ts"
 import BaseApi from "./BaseApi.ts"
 import TokenManager from "./TokenManager.ts"
+import ChatPrivate from "../data/ChatPrivate.ts";
 
 export default class ChatApi extends BaseApi {
     override getName(): string {
@@ -193,6 +194,40 @@ export default class ChatApi extends BaseApi {
                 data: {
                     file_path: 'uploaded_files/' + file.getHash()
                 },
+            }
+        })
+        /**
+         * 獲取對話訊息
+         * @param token 令牌
+         * @param target 目標對用户
+         */
+        this.registerEvent("Chat.getIdForPrivate", (args, { deviceId }) => {
+            if (this.checkArgsMissing(args, ['token', 'target'])) return {
+                msg: "參數缺失",
+                code: 400,
+            }
+
+            const token = TokenManager.decode(args.token as string)
+            if (!this.checkToken(token, deviceId)) return {
+                code: 401,
+                msg: "令牌無效",
+            }
+            const user = User.findById(token.author) as User
+            const targetUser = User.findById(args.target as string) as User
+            if (targetUser == null) {
+                return {
+                    msg: "找不到用戶",
+                    code: 404,
+                }
+            }
+            const chat = ChatPrivate.findOrCreateForPrivate(user, targetUser)
+
+            return {
+                code: 200,
+                msg: '成功',
+                data: {
+                    chat_id: chat.bean.id,
+                }
             }
         })
     }
