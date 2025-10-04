@@ -10,17 +10,6 @@ import './ui/custom-elements/chat-image.ts'
 import './ui/custom-elements/chat-video.ts'
 import './ui/custom-elements/chat-file.ts'
 
-const urlParams = new URL(location.href).searchParams
-
-// deno-lint-ignore no-window no-window-prefix
-urlParams.get('debug') == 'true' && window.addEventListener('error', ({ message, filename, lineno, colno, error }) => {
-    const m = $("#ErrorDialog_Message")
-    const d = $("#ErrorDialog").get(0) as Dialog
-    const s = d.open
-    d.open = true
-    m.html((s ? `${m.html()}<br/><br/>` : '') + `${message} (${filename || 'unknown'}:${lineno}:${colno})`)
-})
-
 import App from './ui/App.tsx'
 import AppMobile from './ui/AppMobile.tsx'
 import isMobileUI from "./ui/isMobileUI.ts"
