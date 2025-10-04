@@ -1,3 +1,5 @@
+// https://stackoverflow.com/questions/29085197/how-do-you-json-stringify-an-es6-map
+
 export default class MapJson {
     static replacer(key: unknown, value: unknown) {
         if (value instanceof Map) {
