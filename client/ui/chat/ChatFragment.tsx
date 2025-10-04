@@ -14,13 +14,15 @@ import useAsyncEffect from "../useAsyncEffect.ts"
 import * as marked from 'marked'
 import DOMPurify from 'dompurify'
 import randomUUID from "../../randomUUID.ts"
-import EventBus from "../../EventBus.ts";
+import EventBus from "../../EventBus.ts"
+import User from "../../api/client_data/User.ts"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     target: string
     showReturnButton?: boolean
     openChatInfoDialog: (chat: Chat) => void
     onReturnButtonClicked?: () => void
+    openUserInfoDialog: (user: User | string) => void
 }
 
 const markedInstance = new marked.Marked({
@@ -47,7 +49,7 @@ const markedInstance = new marked.Marked({
     }
 })
 
-export default function ChatFragment({ target, showReturnButton, onReturnButtonClicked, openChatInfoDialog, ...props }: Args) {
+export default function ChatFragment({ target, showReturnButton, onReturnButtonClicked, openChatInfoDialog, openUserInfoDialog, ...props }: Args) {
     const [messagesList, setMessagesList] = React.useState([] as Message[])
     const [chatInfo, setChatInfo] = React.useState({
         title: '加載中...'
@@ -305,7 +307,8 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                                         key={msg.id}
                                         slot="trigger"
                                         id={`chat_${target}_message_${msg.id}`}
-                                        userId={msg.user_id} />
+                                        userId={msg.user_id}
+                                        openUserInfoDialog={openUserInfoDialog} />
 
                                     return (
                                         <>

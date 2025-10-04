@@ -20,6 +20,8 @@ import useAsyncEffect from "./useAsyncEffect.ts"
 import ChatInfoDialog from "./dialog/ChatInfoDialog.tsx"
 import Chat from "../api/client_data/Chat.ts"
 import AddContactDialog from './dialog/AddContactDialog.tsx'
+import UserProfileDialog from "./dialog/UserProfileDialog.tsx"
+import DataCaches from "../api/DataCaches.ts"
 
 declare global {
     namespace React {
@@ -60,6 +62,9 @@ export default function AppMobile() {
     const chatInfoDialogRef = React.useRef<Dialog>(null)
     const [chatInfo, setChatInfo] = React.useState(null as unknown as Chat)
 
+    const userProfileDialogRef = React.useRef<Dialog>(null)
+    const [userInfo, setUserInfo] = React.useState(null as unknown as User)
+
     const [myUserProfileCache, setMyUserProfileCache] = React.useState(null as unknown as User)
 
     const [isShowChatFragment, setIsShowChatFragment] = React.useState(false)
@@ -96,6 +101,21 @@ export default function AppMobile() {
         chatInfoDialogRef.current!.open = true
     }
 
+    function openChatFragment(chatId: string) {
+        setCurrentChatId(chatId)
+        setIsShowChatFragment(true)
+    }
+
+    async function openUserInfoDialog(user: User | string) {
+        if (user instanceof User) {
+            setUserInfo(user)
+        } else {
+            setUserInfo(await DataCaches.getUserProfile(user))
+
+        }
+        userProfileDialogRef.current!.open = true
+    }
+
     return (
         <div style={{
             display: "flex",
@@ -114,6 +134,7 @@ export default function AppMobile() {
                 }}>
                     <ChatFragment
                         showReturnButton={true}
+                        openUserInfoDialog={openUserInfoDialog}
                         onReturnButtonClicked={() => setIsShowChatFragment(false)}
                         key={currentChatId}
                         openChatInfoDialog={openChatInfoDialog}
@@ -138,6 +159,10 @@ export default function AppMobile() {
             <MyProfileDialog
                 myProfileDialogRef={myProfileDialogRef as any}
                 user={myUserProfileCache} />
+            <UserProfileDialog
+                userProfileDialogRef={userProfileDialogRef as any}
+                openChatFragment={openChatFragment}
+                user={userInfo} />
 
             <ChatInfoDialog
                 chatInfoDialogRef={chatInfoDialogRef as any}

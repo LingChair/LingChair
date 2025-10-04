@@ -18,8 +18,6 @@ export default function MyProfileDialog({
     myProfileDialogRef,
     user
 }: Refs) {
-    const isMySelf = Client.myUserProfile?.id == user?.id
-
     const editAvatarButtonRef = React.useRef<HTMLElement>(null)
     const chooseAvatarFileRef = React.useRef<HTMLInputElement>(null)
     useEventListener(editAvatarButtonRef, 'click', () => chooseAvatarFileRef.current!.click())

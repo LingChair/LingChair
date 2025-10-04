@@ -21,6 +21,8 @@ import useAsyncEffect from "./useAsyncEffect.ts"
 import ChatInfoDialog from "./dialog/ChatInfoDialog.tsx"
 import Chat from "../api/client_data/Chat.ts"
 import AddContactDialog from './dialog/AddContactDialog.tsx'
+import UserProfileDialog from "./dialog/UserProfileDialog.tsx"
+import DataCaches from "../api/DataCaches.ts"
 
 declare global {
     namespace React {
@@ -55,6 +57,9 @@ export default function App() {
     useEventListener(openMyProfileDialogButtonRef, 'click', (_event) => {
         myProfileDialogRef.current!.open = true
     })
+
+    const userProfileDialogRef = React.useRef<Dialog>(null)
+    const [userInfo, setUserInfo] = React.useState(null as unknown as User)
 
     const addContactDialogRef = React.useRef<Dialog>(null)
 
@@ -94,6 +99,21 @@ export default function App() {
         chatInfoDialogRef.current!.open = true
     }
 
+    function openChatFragment(chatId: string) {
+        setCurrentChatId(chatId)
+        setIsShowChatFragment(true)
+    }
+
+    async function openUserInfoDialog(user: User | string) {
+        if (user instanceof User) {
+            setUserInfo(user)
+        } else {
+            setUserInfo(await DataCaches.getUserProfile(user))
+            
+        }
+        userProfileDialogRef.current!.open = true
+    }
+
     return (
         <div style={{
             display: "flex",
@@ -118,13 +138,14 @@ export default function App() {
             <MyProfileDialog
                 myProfileDialogRef={myProfileDialogRef as any}
                 user={myUserProfileCache} />
+            <UserProfileDialog
+                userProfileDialogRef={userProfileDialogRef as any}
+                openChatFragment={openChatFragment}
+                user={userInfo} />
 
             <ChatInfoDialog
                 chatInfoDialogRef={chatInfoDialogRef as any}
-                openChatFragment={(id) => {
-                    setCurrentChatId(id)
-                    setIsShowChatFragment(true)
-                }}
+                openChatFragment={openChatFragment}
                 chat={chatInfo} />
 
             <AddContactDialog
@@ -147,10 +168,7 @@ export default function App() {
                 {
                     // 最近聊天
                     <RecentsList
-                        openChatFragment={(id) => {
-                            setCurrentChatId(id)
-                            setIsShowChatFragment(true)
-                        }}
+                        openChatFragment={openChatFragment}
                         display={navigationItemSelected == "Recents"}
                         currentChatId={currentChatId} />
                 }
@@ -181,6 +199,7 @@ export default function App() {
                 {
                     isShowChatFragment && <ChatFragment
                         target={currentChatId}
+                        openUserInfoDialog={openUserInfoDialog}
                         openChatInfoDialog={openChatInfoDialog}
                         key={currentChatId} />
                 }

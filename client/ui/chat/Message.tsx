@@ -8,18 +8,19 @@ import copyToClipboard from "../copyToClipboard.ts"
 import useAsyncEffect from "../useAsyncEffect.ts"
 import useEventListener from "../useEventListener.ts"
 import React from "react"
-import useEventListener from "../useEventListener.ts"
 import isMobileUI from "../isMobileUI.ts"
 import ReactJson from 'react-json-view'
+import User from "../../api/client_data/User.ts"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     userId: string
     rawData: string
     renderHTML: string
     message: Data_Message
+    openUserInfoDialog: (user: User | string) => void
 }
 
-export default function Message({ userId, rawData, renderHTML, message, ...props }: Args) {
+export default function Message({ userId, rawData, renderHTML, message, openUserInfoDialog, ...props }: Args) {
     const isAtRight = Client.myUserProfile?.id == userId
 
     const [nickName, setNickName] = React.useState("")
@@ -87,7 +88,8 @@ export default function Message({ userId, rawData, renderHTML, message, ...props
                         width: "43px",
                         height: "43px",
                         margin: "11px"
-                    }} />
+                    }}
+                    onClick={() => openUserInfoDialog(userId)} />
                 {
                     // 发送者昵称(右)
                     !isAtRight && <span
@@ -128,7 +130,7 @@ export default function Message({ userId, rawData, renderHTML, message, ...props
                     }}>
                         <mdui-menu-item icon="content_copy" onClick={() => copyToClipboard($(dropDownRef.current as HTMLElement).find('#msg').text().trim())}>複製文字</mdui-menu-item>
                         <mdui-menu-item icon="content_copy" onClick={() => copyToClipboard(rawData)}>複製原文</mdui-menu-item>
-                        <mdui-menu-item icon="info" onClick={() => messageJsonDialogRef.current.open = true}>查看詳情</mdui-menu-item>
+                        <mdui-menu-item icon="info" onClick={() => messageJsonDialogRef.current!.open = true}>查看詳情</mdui-menu-item>
                     </mdui-menu>
                 </mdui-dropdown>
             </mdui-card>
