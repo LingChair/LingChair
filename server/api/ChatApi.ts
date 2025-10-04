@@ -48,6 +48,7 @@ export default class ChatApi extends BaseApi {
                     code: 200,
                     msg: "成功",
                     data: {
+                        id: args.target as string,
                         type: chat.bean.type,
                         title: chat.getTitle(mine),
                         avatar: chat.getAvatarFileHash(mine) ? "uploaded_files/" + chat.getAvatarFileHash(mine) : undefined
