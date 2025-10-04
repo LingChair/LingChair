@@ -34,8 +34,6 @@ declare global {
 }
 
 export default function App() {
-    const [recentsList, setRecentsList] = React.useState([] as RecentChat[])
-
     const [navigationItemSelected, setNavigationItemSelected] = React.useState('Recents')
 
     const navigationRailRef = React.useRef<NavigationRail>(null)
@@ -57,7 +55,7 @@ export default function App() {
     useEventListener(openMyProfileDialogButtonRef, 'click', (_event) => {
         myProfileDialogRef.current!.open = true
     })
-    
+
     const addContactDialogRef = React.useRef<Dialog>(null)
 
     const chatInfoDialogRef = React.useRef<Dialog>(null)
@@ -91,6 +89,11 @@ export default function App() {
         }
     })
 
+    function openChatInfoDialog(chat: Chat) {
+        setChatInfo(chat)
+        chatInfoDialogRef.current!.open = true
+    }
+
     return (
         <div style={{
             display: "flex",
@@ -123,7 +126,7 @@ export default function App() {
                     setIsShowChatFragment(true)
                 }}
                 chat={chatInfo} />
-            
+
             <AddContactDialog
                 addContactDialogRef={addContactDialogRef} />
 
@@ -149,16 +152,13 @@ export default function App() {
                             setIsShowChatFragment(true)
                         }}
                         display={navigationItemSelected == "Recents"}
-                        currentChatId={currentChatId}
-                        recentsList={recentsList}
-                        setRecentsList={setRecentsList} />
+                        currentChatId={currentChatId} />
                 }
                 {
                     // 對話列表
                     <ContactsList
-                        setChatInfo={setChatInfo}
+                        openChatInfoDialog={openChatInfoDialog}
                         addContactDialogRef={addContactDialogRef as any}
-                        chatInfoDialogRef={chatInfoDialogRef as any}
                         display={navigationItemSelected == "Contacts"} />
                 }
             </div>
@@ -181,6 +181,7 @@ export default function App() {
                 {
                     isShowChatFragment && <ChatFragment
                         target={currentChatId}
+                        openChatInfoDialog={openChatInfoDialog}
                         key={currentChatId} />
                 }
             </div>

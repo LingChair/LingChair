@@ -11,15 +11,13 @@ import EventBus from "../../EventBus.ts"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     display: boolean
-    chatInfoDialogRef: React.MutableRefObject<Dialog>
+    openChatInfoDialog: (chat: Chat) => void
     addContactDialogRef: React.MutableRefObject<Dialog>
-    setChatInfo: React.Dispatch<React.SetStateAction<Chat>>
 }
 
 export default function ContactsList({
     display,
-    setChatInfo,
-    chatInfoDialogRef,
+    openChatInfoDialog,
     addContactDialogRef,
     ...props
 }: Args) {
@@ -84,8 +82,7 @@ export default function ContactsList({
                         /*if (isMultiSelecting)
                             self.active = !self.active
                         else*/
-                        setChatInfo(v)
-                        chatInfoDialogRef.current!.open = true
+                        openChatInfoDialog(v)
                     }} 
                     key={v.id}
                     contact={v} />
