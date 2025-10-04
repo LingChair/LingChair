@@ -35,6 +35,10 @@ export default class ChatApi extends BaseApi {
                 code: 404,
                 msg: "對話不存在",
             }
+            if (!UserChatLinker.checkUserIsLinkedToChat(token.author, chat!.bean.id)) return {
+                code: 400,
+                msg: "用戶無權訪問該對話",
+            }
 
             // 私聊
             if (chat!.bean.type == 'private') {
