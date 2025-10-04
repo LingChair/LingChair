@@ -41,6 +41,7 @@ export default function RecentsList({
         }
         updateRecents()
         EventBus.on('RecentsList.updateRecents', () => updateRecents())
+        setTimeout(() => updateRecents(), 15 * 1000)
     })
 
     return <mdui-list style={{
