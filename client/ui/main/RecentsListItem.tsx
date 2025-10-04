@@ -1,5 +1,7 @@
+import { $ } from "mdui/jq"
 import RecentChat from "../../api/client_data/RecentChat.ts"
 import Avatar from "../Avatar.tsx"
+import React from 'react'
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     recentChat: RecentChat
@@ -9,11 +11,16 @@ interface Args extends React.HTMLAttributes<HTMLElement> {
 
 export default function RecentsListItem({ recentChat, openChatFragment, active }: Args) {
     const { id, title, avatar, content } = recentChat
+
+    const itemRef = React.useRef<HTMLElement>(null)
+    React.useEffect(() => {
+        $(itemRef.current!.shadowRoot).find('.headline').css('margin-top', '3px')
+    })
     return (
         <mdui-list-item rounded style={{
             marginTop: '3px',
             marginBottom: '3px',
-        }} onClick={() => openChatFragment(id)} active={active}>
+        }} onClick={() => openChatFragment(id)} active={active} ref={itemRef}>
             {title}
             <Avatar src={avatar} text={title} slot="icon" />
             <span slot="description"
