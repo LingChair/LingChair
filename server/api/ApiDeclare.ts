@@ -13,6 +13,8 @@ export type CallMethod =
     "User.addContact" |
     "User.removeContacts" |
 
+    "User.getMyRecentChats" | 
+
     "Chat.getInfo" |
     "Chat.sendMessage" |
     "Chat.getMessageHistory" |

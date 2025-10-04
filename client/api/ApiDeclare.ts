@@ -13,17 +13,19 @@ export type CallMethod =
     "User.addContact" |
     "User.removeContacts" |
 
+    "User.getMyRecentChats" | 
+
     "Chat.getInfo" |
     "Chat.sendMessage" |
     "Chat.getMessageHistory" |
 
     "Chat.uploadFile"
 
+export type ClientEvent = 
+    "Client.onMessage"
+
 export const CallableMethodBeforeAuth = [
     "User.auth",
     "User.register",
     "User.login",
 ]
-
-export type ClientEvent = 
-    "Client.onMessage"
