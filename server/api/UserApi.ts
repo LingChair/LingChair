@@ -251,6 +251,7 @@ export default class UserApi extends BaseApi {
                         const chat = Chat.findById(id)
                         return {
                             id,
+                            type: chat.bean.type,
                             title: chat?.getTitle(user) || "未知",
                             avatar: chat?.getAvatarFileHash(user) ? "uploaded_files/" + chat?.getAvatarFileHash(user) : undefined
                         }
