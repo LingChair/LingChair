@@ -126,7 +126,7 @@ export default function Message({ userId, rawData, renderHTML, message, ...props
                         e.stopPropagation()
                         setDropDownOpen(false)
                     }}>
-                        <mdui-menu-item icon="content_copy" onClick={() => copyToClipboard($(dropDownRef.current as HTMLElement).find('#msg').text())}>複製文字</mdui-menu-item>
+                        <mdui-menu-item icon="content_copy" onClick={() => copyToClipboard($(dropDownRef.current as HTMLElement).find('#msg').text().trim())}>複製文字</mdui-menu-item>
                         <mdui-menu-item icon="content_copy" onClick={() => copyToClipboard(rawData)}>複製原文</mdui-menu-item>
                         <mdui-menu-item icon="info" onClick={() => messageJsonDialogRef.current.open = true}>查看詳情</mdui-menu-item>
                     </mdui-menu>
