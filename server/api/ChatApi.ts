@@ -98,6 +98,8 @@ export default class ChatApi extends BaseApi {
             const users: string[] = UserChatLinker.getChatMembers(chat.bean.id)
             for (const user of users) {
                 if (ApiManager.checkUserIsOnline(user)) {
+                    const userInst = User.findById(user)
+                    userInst?.updateRecentChat(chat.bean.id, args.text as string)
                     const sockets = ApiManager.getUserClientSockets(user)
                     for (const socket of Object.keys(sockets))
                         this.emitToClient(sockets[socket], 'Client.onMessage', {
