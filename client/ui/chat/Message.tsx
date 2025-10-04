@@ -89,7 +89,10 @@ export default function Message({ userId, rawData, renderHTML, message, openUser
                         height: "43px",
                         margin: "11px"
                     }}
-                    onClick={() => openUserInfoDialog(userId)} />
+                    onClick={(e) => {
+                        e.stopPropagation()
+                        openUserInfoDialog(userId)
+                    }} />
                 {
                     // 发送者昵称(右)
                     !isAtRight && <span
