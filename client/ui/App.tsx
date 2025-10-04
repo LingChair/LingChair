@@ -135,6 +135,12 @@ export default function App() {
                 loginInputAccountRef={loginInputAccountRef}
                 loginInputPasswordRef={loginInputPasswordRef} />
 
+            <ChatInfoDialog
+                chatInfoDialogRef={chatInfoDialogRef as any}
+                openChatFragment={openChatFragment}
+                openUserInfoDialog={openUserInfoDialog}
+                chat={chatInfo} />
+
             <MyProfileDialog
                 myProfileDialogRef={myProfileDialogRef as any}
                 user={myUserProfileCache} />
@@ -142,11 +148,6 @@ export default function App() {
                 userProfileDialogRef={userProfileDialogRef as any}
                 openChatFragment={openChatFragment}
                 user={userInfo} />
-
-            <ChatInfoDialog
-                chatInfoDialogRef={chatInfoDialogRef as any}
-                openChatFragment={openChatFragment}
-                chat={chatInfo} />
 
             <AddContactDialog
                 addContactDialogRef={addContactDialogRef} />

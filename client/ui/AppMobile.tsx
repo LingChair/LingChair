@@ -156,6 +156,15 @@ export default function AppMobile() {
                 loginInputAccountRef={loginInputAccountRef}
                 loginInputPasswordRef={loginInputPasswordRef} />
 
+            <ChatInfoDialog
+                chatInfoDialogRef={chatInfoDialogRef as any}
+                openUserInfoDialog={openUserInfoDialog}
+                openChatFragment={(id) => {
+                    setCurrentChatId(id)
+                    setIsShowChatFragment(true)
+                }}
+                chat={chatInfo} />
+
             <MyProfileDialog
                 myProfileDialogRef={myProfileDialogRef as any}
                 user={myUserProfileCache} />
@@ -163,14 +172,6 @@ export default function AppMobile() {
                 userProfileDialogRef={userProfileDialogRef as any}
                 openChatFragment={openChatFragment}
                 user={userInfo} />
-
-            <ChatInfoDialog
-                chatInfoDialogRef={chatInfoDialogRef as any}
-                openChatFragment={(id) => {
-                    setCurrentChatId(id)
-                    setIsShowChatFragment(true)
-                }}
-                chat={chatInfo} />
 
             <AddContactDialog
                 addContactDialogRef={addContactDialogRef} />

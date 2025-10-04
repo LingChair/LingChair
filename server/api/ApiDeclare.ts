@@ -16,7 +16,10 @@ export type CallMethod =
     "User.getMyRecentChats" | 
 
     "Chat.getInfo" |
+
     "Chat.getIdForPrivate" |
+    "Chat.getAnotherUserIdFromPrivate" |
+
     "Chat.sendMessage" |
     "Chat.getMessageHistory" |
 

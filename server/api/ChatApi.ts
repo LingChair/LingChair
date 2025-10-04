@@ -197,9 +197,9 @@ export default class ChatApi extends BaseApi {
             }
         })
         /**
-         * 獲取對話訊息
+         * 获取私聊的 ChatId
          * @param token 令牌
-         * @param target 目標對用户
+         * @param target 目標用户
          */
         this.registerEvent("Chat.getIdForPrivate", (args, { deviceId }) => {
             if (this.checkArgsMissing(args, ['token', 'target'])) return {
@@ -228,6 +228,49 @@ export default class ChatApi extends BaseApi {
                 data: {
                     chat_id: chat.bean.id,
                 }
+            }
+        })
+        /**
+         * 从私聊获取对方的 UserId
+         * @param token 令牌
+         * @param target 目標对话
+         */
+        this.registerEvent("Chat.getAnotherUserIdFromPrivate", (args, { deviceId }) => {
+            if (this.checkArgsMissing(args, ['token', 'target'])) return {
+                msg: "參數缺失",
+                code: 400,
+            }
+
+            const token = TokenManager.decode(args.token as string)
+            if (!this.checkToken(token, deviceId)) return {
+                code: 401,
+                msg: "令牌無效",
+            }
+
+            const user = User.findById(token.author) as User
+
+            const chat = Chat.findById(args.target as string)
+            if (chat == null) return {
+                code: 404,
+                msg: "對話不存在",
+            }
+            if (!UserChatLinker.checkUserIsLinkedToChat(token.author, chat!.bean.id)) return {
+                code: 400,
+                msg: "用戶無權訪問該對話",
+            }
+
+            if (chat.bean.type == 'private')
+                return {
+                    code: 200,
+                    msg: '成功',
+                    data: {
+                        user_id: chat.getAnotherUserForPrivate(user)?.bean.id
+                    }
+                }
+            
+            return {
+                code: 403,
+                msg: "非私聊对话",
             }
         })
     }
