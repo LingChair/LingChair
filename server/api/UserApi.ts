@@ -192,6 +192,38 @@ export default class UserApi extends BaseApi {
                 }
             }
         })
+        // 獲取最近对话列表
+        this.registerEvent("User.getMyRecentChats", (args, { deviceId }) => {
+            if (this.checkArgsMissing(args, ['token'])) return {
+                msg: "參數缺失",
+                code: 400,
+            }
+
+            const token = TokenManager.decode(args.token as string)
+            if (!this.checkToken(token, deviceId)) return {
+                code: 401,
+                msg: "令牌無效",
+            }
+
+            const user = User.findById(token.author) as User
+            const recentChats = user.getRecentChats()
+
+            return {
+                msg: "成功",
+                code: 200,
+                data: {
+                    recent_chats: recentChats.forEach((content: string, chatId: string) => {
+                        const chat = Chat.findById(chatId)
+                        return {
+                            content,
+                            id: chatId,
+                            title: chat?.getTitle(user) || "未知",
+                            avatar: chat?.getAvatarFileHash(user) ? "uploaded_files/" + chat?.getAvatarFileHash(user) : undefined
+                        }
+                    })
+                }
+            }
+        })
         // 獲取聯絡人列表
         this.registerEvent("User.getMyContacts", (args, { deviceId }) => {
             if (this.checkArgsMissing(args, ['token'])) return {
