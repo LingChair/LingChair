@@ -1,5 +1,5 @@
 export default function copyToClipboard(text: string) {
-    if (navigator.clipboard)
+    if (!("via" in window) && navigator.clipboard)
         return navigator.clipboard.writeText(text)
     return new Promise((res, rej) => {
         if (document.hasFocus()) {
@@ -10,7 +10,7 @@ export default function copyToClipboard(text: string) {
             a.style.top = "10px"
             a.value = text
             a.select()
-            document.execCommand("copy", true)
+            document.execCommand("cut", true)
             document.body.removeChild(a)
             res(null)
         } else {
