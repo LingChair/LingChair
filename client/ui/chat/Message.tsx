@@ -36,6 +36,9 @@ export default function Message({ userId, rawData, renderHTML, message, ...props
     useEventListener(messageJsonDialogRef, 'click', (e) => {
         e.stopPropagation()
     })
+    useEventListener(dropDownRef, 'closed', (e) => {
+        setDropDownOpen(false)
+    })
     
     const [isDropDownOpen, setDropDownOpen] = React.useState(false)
 
