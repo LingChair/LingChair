@@ -169,6 +169,7 @@ export default function AppMobile() {
                 myProfileDialogRef={myProfileDialogRef as any}
                 user={myUserProfileCache} />
             <UserProfileDialog
+                chatInfoDialogRef={chatInfoDialogRef as any}
                 userProfileDialogRef={userProfileDialogRef as any}
                 openChatFragment={openChatFragment}
                 user={userInfo} />

@@ -11,12 +11,14 @@ import User from "../../api/client_data/User.ts"
 
 interface Refs {
     userProfileDialogRef: React.MutableRefObject<Dialog>
+    chatInfoDialogRef: React.MutableRefObject<Dialog>
     openChatFragment: (id: string) => void
     user: User
 }
 
 export default function UserProfileDialog({
     userProfileDialogRef,
+    chatInfoDialogRef,
     openChatFragment,
     user
 }: Refs) {
@@ -51,6 +53,7 @@ export default function UserProfileDialog({
                     
                     openChatFragment(re.data!.chat_id as string)
                     userProfileDialogRef.current!.open = false
+                    chatInfoDialogRef.current!.open = false
                 }}>对话</mdui-list-item>
             </mdui-list>
         </mdui-dialog>
