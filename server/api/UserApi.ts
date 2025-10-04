@@ -322,7 +322,7 @@ export default class UserApi extends BaseApi {
                     username: user!.getUserName(),
                     nickname: user!.getNickName(),
                     avatar: user!.getAvatarFileHash() ? "uploaded_files/" + user!.getAvatarFileHash() : null,
-                    id: token.author,
+                    id: user.bean.id,
                 }
             }
         })
