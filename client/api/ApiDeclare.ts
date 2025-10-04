@@ -16,6 +16,7 @@ export type CallMethod =
     "User.getMyRecentChats" | 
 
     "Chat.getInfo" |
+    "Chat.getIdForPrivate" |
     "Chat.sendMessage" |
     "Chat.getMessageHistory" |
 
@@ -24,7 +25,7 @@ export type CallMethod =
 export type ClientEvent = 
     "Client.onMessage"
 
-export const CallableMethodBeforeAuth = [
+    export const CallableMethodBeforeAuth = [
     "User.auth",
     "User.register",
     "User.login",
