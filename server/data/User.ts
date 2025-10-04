@@ -14,6 +14,7 @@ import DataWrongError from "../api/DataWrongError.ts"
 import ChatPrivate from "./ChatPrivate.ts"
 import Chat from "./Chat.ts"
 import ChatBean from "./ChatBean.ts"
+import MapJson from "../MapJson.ts";
 
 type UserBeanKey = keyof UserBean
 
@@ -36,7 +37,8 @@ export default class User {
                 /* 用戶名, 可選 */ username TEXT,
                 /* 昵称 */ nickname TEXT NOT NULL,
                 /* 头像, 可选 */ avatar_file_hash TEXT,
-                /* 聯絡人組 */ contacts_list TEXT NOT NULL,
+                /* 聯絡人列表 */ contacts_list TEXT NOT NULL,
+                /* 最近對話 */ recent_chats TEXT NOT NULL,
                 /* 设置 */ settings TEXT NOT NULL
             );
        `)
@@ -66,8 +68,9 @@ export default class User {
                     nickname,
                     avatar_file_hash,
                     contacts_list,
+                    recent_chats,
                     settings
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?);`).run(
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`).run(
                     crypto.randomUUID(),
                     password,
                     Date.now(),
@@ -75,6 +78,7 @@ export default class User {
                     nickName,
                     null,
                     '[]',
+                    JSON.stringify(new Map(), MapJson.replacer),
                     "{}"
                 ).lastInsertRowid
             )[0]
@@ -121,6 +125,20 @@ export default class User {
     }
     setUserName(userName: string) {
         this.setAttr("username", userName)
+    }
+    updateRecentChat(chatId: string, content: string) {
+        const map = JSON.parse(this.bean.recent_chats, MapJson.reviver) as Map<string, string>
+        map.delete(chatId)
+        map.set(chatId, content)
+        this.setAttr("recent_chats", JSON.stringify(map, MapJson.replacer))
+    }
+    getRecentChats() {
+        try {
+            return JSON.parse(this.bean.recent_chats, MapJson.reviver) as Map<string, string>
+        } catch (e) {
+            console.log(chalk.yellow(`警告: 最近对话列表解析失敗: ${(e as Error).message}`))
+            return new Map()
+        }
     }
     addContact(chatId: string) {
         const ls = this.getContactsList()
