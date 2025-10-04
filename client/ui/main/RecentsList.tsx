@@ -8,6 +8,7 @@ import Client from "../../api/Client.ts"
 import { checkApiSuccessOrSncakbar } from "../snackbar.ts";
 import data from "../../Data.ts";
 import EventBus from "../../EventBus.ts";
+import isMobileUI from "../isMobileUI.ts";
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     display: boolean
@@ -64,7 +65,7 @@ export default function RecentsList({
                 chat.content.includes(searchText)
             ).map((v) =>
                 <RecentsListItem
-                    active={currentChatId == v.id}
+                    active={isMobileUI() ? false : currentChatId == v.id}
                     openChatFragment={() => openChatFragment(v.id)}
                     key={v.id}
                     recentChat={v} />
