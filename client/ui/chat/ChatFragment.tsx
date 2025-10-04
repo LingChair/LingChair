@@ -19,6 +19,7 @@ import EventBus from "../../EventBus.ts";
 interface Args extends React.HTMLAttributes<HTMLElement> {
     target: string
     showReturnButton?: boolean
+    openChatInfoDialog: (chat: Chat) => void
     onReturnButtonClicked?: () => void
 }
 
@@ -46,7 +47,7 @@ const markedInstance = new marked.Marked({
     }
 })
 
-export default function ChatFragment({ target, showReturnButton, onReturnButtonClicked, ...props }: Args) {
+export default function ChatFragment({ target, showReturnButton, onReturnButtonClicked, openChatInfoDialog, ...props }: Args) {
     const [messagesList, setMessagesList] = React.useState([] as Message[])
     const [chatInfo, setChatInfo] = React.useState({
         title: '加載中...'
@@ -108,7 +109,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
         }
         function callback(data: unknown) {
             EventBus.emit('RecentsList.updateRecents')
-            
+
             const { chat, msg } = (data as OnMessageData)
             if (target == chat) {
                 setMessagesList(messagesList.concat([msg]))
@@ -226,6 +227,14 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                 }</mdui-tab>
                 <mdui-tab value="Settings">設定</mdui-tab>
                 <mdui-tab value="None" style={{ display: 'none' }}></mdui-tab>
+                <div style={{
+                    flexGrow: '1',
+                }}></div>
+                <mdui-button-icon icon="info" onClick={() => openChatInfoDialog(chatInfo)} style={{
+                    alignSelf: 'center',
+                    marginLeft: '5px',
+                    marginRight: '5px',
+                }}></mdui-button-icon>
 
                 <mdui-tab-panel slot="panel" value="Chat" ref={chatPanelRef} style={{
                     display: tabItemSelected == "Chat" ? "flex" : "none",
