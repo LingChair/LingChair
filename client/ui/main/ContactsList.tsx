@@ -13,12 +13,14 @@ interface Args extends React.HTMLAttributes<HTMLElement> {
     display: boolean
     openChatInfoDialog: (chat: Chat) => void
     addContactDialogRef: React.MutableRefObject<Dialog>
+    createGroupDialogRef: React.MutableRefObject<Dialog>
 }
 
 export default function ContactsList({
     display,
     openChatInfoDialog,
     addContactDialogRef,
+    createGroupDialogRef,
     ...props
 }: Args) {
     const searchRef = React.useRef<HTMLElement>(null)
@@ -62,6 +64,10 @@ export default function ContactsList({
         }} icon="person_add" onClick={() => addContactDialogRef.current!.open = true}>添加對話</mdui-list-item>
         <mdui-list-item rounded style={{
             width: '100%',
+        }} icon="group_add" onClick={() => createGroupDialogRef.current!.open = true}>创建群组</mdui-list-item>
+        <mdui-list-item rounded style={{
+            width: '100%',
+            marginTop: '13px',
             marginBottom: '15px',
         }} icon="refresh" onClick={() => EventBus.emit('ContactsList.updateContacts')}>刷新</mdui-list-item>
         {/* <mdui-list-item rounded style={{
