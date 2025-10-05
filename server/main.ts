@@ -15,6 +15,7 @@ import TokenManager from "./api/TokenManager.ts"
 import UserChatLinker from "./data/UserChatLinker.ts"
 import path from "node:path"
 import cookieParser from 'cookie-parser'
+import fs from 'node:fs/promises'
 
 const app = express()
 app.use('/', express.static(config.data_path + '/page_compiled'))
@@ -53,7 +54,11 @@ app.get('/uploaded_files/:hash', (req, res) => {
 
 const httpServer: HttpServerLike = (
     ((config.server.use == 'http') && http.createServer(app)) ||
-    ((config.server.use == 'https') && https.createServer(config.server.https, app)) ||
+    ((config.server.use == 'https') && https.createServer({
+        ...config.server.https,
+        key: await fs.readFile(config.server.https.key),
+        cert: await fs.readFile(config.server.https.cert),
+    }, app)) ||
     http.createServer(app)
 )
 const io = new SocketIo.Server(httpServer, {
