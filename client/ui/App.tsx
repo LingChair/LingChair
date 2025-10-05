@@ -21,6 +21,7 @@ import useAsyncEffect from "./useAsyncEffect.ts"
 import ChatInfoDialog from "./dialog/ChatInfoDialog.tsx"
 import Chat from "../api/client_data/Chat.ts"
 import AddContactDialog from './dialog/AddContactDialog.tsx'
+import CreateGroupDialog from './dialog/CreateGroupDialog.tsx'
 import UserProfileDialog from "./dialog/UserProfileDialog.tsx"
 import DataCaches from "../api/DataCaches.ts"
 
@@ -62,6 +63,7 @@ export default function App() {
     const [userInfo, setUserInfo] = React.useState(null as unknown as User)
 
     const addContactDialogRef = React.useRef<Dialog>(null)
+    const createGroupDialogRef = React.useRef<Dialog>(null)
 
     const chatInfoDialogRef = React.useRef<Dialog>(null)
     const [chatInfo, setChatInfo] = React.useState(null as unknown as Chat)
@@ -152,6 +154,9 @@ export default function App() {
 
             <AddContactDialog
                 addContactDialogRef={addContactDialogRef} />
+                
+            <CreateGroupDialog
+                createGroupDialogRef={createGroupDialogRef} />
 
             <mdui-navigation-rail contained value="Recents" ref={navigationRailRef}>
                 <mdui-button-icon slot="top">
@@ -179,6 +184,7 @@ export default function App() {
                     <ContactsList
                         openChatInfoDialog={openChatInfoDialog}
                         addContactDialogRef={addContactDialogRef as any}
+                        createGroupDialogRef={createGroupDialogRef}
                         display={navigationItemSelected == "Contacts"} />
                 }
             </div>
