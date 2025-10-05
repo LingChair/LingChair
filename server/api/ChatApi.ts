@@ -7,7 +7,8 @@ import UserChatLinker from "../data/UserChatLinker.ts"
 import ApiManager from "./ApiManager.ts"
 import BaseApi from "./BaseApi.ts"
 import TokenManager from "./TokenManager.ts"
-import ChatPrivate from "../data/ChatPrivate.ts";
+import ChatPrivate from "../data/ChatPrivate.ts"
+import ChatGroup from "../data/ChatGroup.ts"
 
 export default class ChatApi extends BaseApi {
     override getName(): string {
@@ -53,6 +54,18 @@ export default class ChatApi extends BaseApi {
                         type: chat.bean.type,
                         title: chat.getTitle(mine),
                         avatar: chat.getAvatarFileHash(mine) ? "uploaded_files/" + chat.getAvatarFileHash(mine) : undefined
+                    }
+                }
+            }
+            if (chat!.bean.type == 'group') {
+                return {
+                    code: 200,
+                    msg: "成功",
+                    data: {
+                        id: args.target as string,
+                        type: chat.bean.type,
+                        title: chat.getTitle(),
+                        avatar: chat.getAvatarFileHash() ? "uploaded_files/" + chat.getAvatarFileHash() : undefined
                     }
                 }
             }
@@ -221,6 +234,47 @@ export default class ChatApi extends BaseApi {
                 }
             }
             const chat = ChatPrivate.findOrCreateForPrivate(user, targetUser)
+
+            return {
+                code: 200,
+                msg: '成功',
+                data: {
+                    chat_id: chat.bean.id,
+                }
+            }
+        })
+        /**
+         * 创建群组
+         * @param token 令牌
+         * @param title 名称
+         * @param [id] 群组 ID
+         */
+        this.registerEvent("Chat.createGroup", (args, { deviceId }) => {
+            if (this.checkArgsMissing(args, ['token', 'title'])) return {
+                msg: "參數缺失",
+                code: 400,
+            }
+            if (this.checkArgsEmpty(args, ['title'])) return {
+                msg: "參數不得為空",
+                code: 400,
+            }
+
+            const token = TokenManager.decode(args.token as string)
+            if (!this.checkToken(token, deviceId)) return {
+                code: 401,
+                msg: "令牌無效",
+            }
+            const user = User.findById(token.author) as User
+            
+            const haveId = args.id && (args.id as string) != ''
+            if (haveId && Chat.findById(args.id as string) != null) return 
+            
+            const chat = ChatGroup.createGroup(haveId ? undefined : args.id as string)
+            chat.setTitle(args.title as string)
+            chat.addMembers([
+                user.bean.id,
+            ])
+            user.addContact(chat.bean.id)
 
             return {
                 code: 200,
