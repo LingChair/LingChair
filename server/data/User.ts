@@ -10,11 +10,11 @@ import UserBean from './UserBean.ts'
 
 import FileManager from './FileManager.ts'
 import { SQLInputValue } from "node:sqlite"
-import DataWrongError from "../api/DataWrongError.ts"
 import ChatPrivate from "./ChatPrivate.ts"
 import Chat from "./Chat.ts"
 import ChatBean from "./ChatBean.ts"
-import MapJson from "../MapJson.ts";
+import MapJson from "../MapJson.ts"
+import DataWrongError from '../api/DataWrongError.ts'
 
 type UserBeanKey = keyof UserBean
 
@@ -45,18 +45,9 @@ export default class User {
         return db
     }
 
-    static createWithUserNameChecked(userName: string | null, password: string, nickName: string, avatar: Buffer | null) {
+    static create(userName: string | null, password: string, nickName: string, avatar: Buffer | null) {
         if (userName && User.findAllBeansByCondition('username = ?', userName).length > 0)
             throw new DataWrongError(`用户名 ${userName} 已存在`)
-        return User.create(
-            userName,
-            password,
-            nickName,
-            avatar
-        )
-    }
-
-    static create(userName: string | null, password: string, nickName: string, avatar: Buffer | null) {
         const user = new User(
             User.findAllBeansByCondition(
                 'count = ?',
@@ -124,6 +115,8 @@ export default class User {
         return this.bean.username
     }
     setUserName(userName: string) {
+        if (User.findAllBeansByCondition('username = ?', userName).length > 0)
+            throw new DataWrongError(`用户名 ${userName} 已存在`)
         this.setAttr("username", userName)
     }
     updateRecentChat(chatId: string, content: string) {

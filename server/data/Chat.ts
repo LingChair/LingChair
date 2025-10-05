@@ -9,6 +9,7 @@ import chalk from "chalk"
 import User from "./User.ts"
 import ChatType from "./ChatType.ts"
 import UserChatLinker from "./UserChatLinker.ts"
+import DataWrongError from '../api/DataWrongError.ts'
 
 /**
  * Chat.ts - Wrapper and manager
@@ -48,6 +49,8 @@ export default class Chat {
     }
 
     static create(chatId: string, type: ChatType) {
+        if (this.findAllBeansByCondition('id = ?', chatId).length > 0)
+            throw new DataWrongError(`对话ID ${chatId} 已被使用`)
         const chat = new Chat(
             Chat.findAllBeansByCondition(
                 'count = ?',
@@ -100,6 +103,11 @@ export default class Chat {
             return User.findById(user_a_id as string)
 
         return null
+    }
+    setTitle(title: string) {
+        if (this.bean.type == 'private')
+            throw new Error('不允许对私聊进行命名')
+        this.setAttr('title', title)
     }
     getTitle(userMySelf?: User) {
         if (this.bean.type == 'group') return this.bean.title
