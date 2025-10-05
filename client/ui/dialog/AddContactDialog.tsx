@@ -36,7 +36,7 @@ export default function AddContactDialog({
 
     return (
         <mdui-dialog close-on-overlay-click close-on-esc headline="添加對話" ref={addContactDialogRef}>
-            <mdui-text-field style={{ marginTop: "10px", }} clearable label="对话 ID / 用戶 ID / 用戶名" ref={inputTargetRef as any} onKeyDown={(event) => {
+            <mdui-text-field clearable label="对话 ID / 用戶 ID / 用戶名" ref={inputTargetRef as any} onKeyDown={(event) => {
                 if (event.key == 'Enter')
                     addContact()
             }}></mdui-text-field>
