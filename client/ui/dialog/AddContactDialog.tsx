@@ -15,11 +15,11 @@ interface Refs {
 export default function AddContactDialog({
     addContactDialogRef,
 }: Refs) {
-    const inputUserAccountRef = React.useRef<TextField>(null)
+    const inputTargetRef = React.useRef<TextField>(null)
 
     async function addContact() {
         const re = await Client.invoke("User.addContact", {
-            account: inputUserAccountRef.current!.value,
+            target: inputTargetRef.current!.value,
             token: data.access_token,
         })
 
@@ -30,14 +30,13 @@ export default function AddContactDialog({
         })
         EventBus.emit('ContactsList.updateContacts')
 
-        inputUserAccountRef.current!.value = ''
+        inputTargetRef.current!.value = ''
         addContactDialogRef.current!.open = false
     }
 
     return (
         <mdui-dialog close-on-overlay-click close-on-esc headline="添加對話" ref={addContactDialogRef}>
-            現階段只支持添加用戶, 對話敬請期待...
-            <mdui-text-field style={{ marginTop: "10px", }} clearable label="對方的 用戶 ID / 用戶名" ref={inputUserAccountRef as any} onKeyDown={(event) => {
+            <mdui-text-field style={{ marginTop: "10px", }} clearable label="对话 ID / 用戶 ID / 用戶名" ref={inputTargetRef as any} onKeyDown={(event) => {
                 if (event.key == 'Enter')
                     addContact()
             }}></mdui-text-field>
