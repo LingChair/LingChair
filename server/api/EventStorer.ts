@@ -25,7 +25,7 @@ export default class EventStorer {
             CREATE TABLE IF NOT EXISTS ${this.getTableName()} (
                 /* 序号 */ count INTEGER PRIMARY KEY AUTOINCREMENT,
                 /* 事件 */ event_name TEXT NOT NULL,
-                /* 數據 */ data TEXT NOT NULL,
+                /* 数据 */ data TEXT NOT NULL,
             );
        `)
     }

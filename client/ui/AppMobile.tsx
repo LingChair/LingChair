@@ -92,7 +92,7 @@ export default function AppMobile() {
         if (re.code == 401)
             loginDialogRef.current!.open = true
         else if (re.code != 200) {
-            if (checkApiSuccessOrSncakbar(re, "驗證失敗")) return
+            if (checkApiSuccessOrSncakbar(re, "验证失败")) return
         } else if (re.code == 200) {
             setMyUserProfileCache(Client.myUserProfile as User)
         }
@@ -191,8 +191,8 @@ export default function AppMobile() {
             }}>
                 <mdui-top-app-bar-title>{
                     ({
-                        Recents: "最近對話",
-                        Contacts: "所有對話"
+                        Recents: "最近对话",
+                        Contacts: "所有对话"
                     })[navigationItemSelected]
                 }</mdui-top-app-bar-title>
                 <div style={{
@@ -234,8 +234,8 @@ export default function AppMobile() {
                 position: 'sticky',
                 bottom: '0',
             }}>
-                <mdui-navigation-bar-item icon="watch_later--outlined" active-icon="watch_later--filled" value="Recents">最近</mdui-navigation-bar-item>
-                <mdui-navigation-bar-item icon="chat--outlined" active-icon="chat--filled" value="Contacts">對話</mdui-navigation-bar-item>
+                <mdui-navigation-bar-item icon="watch_later--outlined" active-icon="watch_later--filled" value="Recents">最近对话</mdui-navigation-bar-item>
+                <mdui-navigation-bar-item icon="chat--outlined" active-icon="chat--filled" value="Contacts">所有对话</mdui-navigation-bar-item>
             </mdui-navigation-bar>
         </div>
     )

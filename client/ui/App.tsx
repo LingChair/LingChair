@@ -90,7 +90,7 @@ export default function App() {
         if (re.code == 401)
             loginDialogRef.current!.open = true
         else if (re.code != 200) {
-            if (checkApiSuccessOrSncakbar(re, "驗證失敗")) return
+            if (checkApiSuccessOrSncakbar(re, "验证失败")) return
         } else if (re.code == 200) {
             setMyUserProfileCache(Client.myUserProfile as User)
         }
@@ -201,7 +201,7 @@ export default function App() {
                         textAlign: 'center',
                         alignSelf: 'center',
                     }}>
-                        選擇以開始對話...
+                        选择以开始对话......
                     </div>
                 }
                 {

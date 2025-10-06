@@ -75,17 +75,17 @@ export default class ApiManager {
 
             socket.on('disconnect', (_reason) => {
                 if (clientInfo.userId == '')
-                    console.log(chalk.yellow('[斷]') + ` ${ip} disconnected`)
+                    console.log(chalk.yellow('[断]') + ` ${ip} disconnected`)
                 else {
-                    console.log(chalk.green('[斷]') + ` ${ip} disconnected`)
+                    console.log(chalk.green('[断]') + ` ${ip} disconnected`)
                     delete this.clients[clientInfo.userId][deviceId + '_' + sessionId]
                 }
             })
-            console.log(chalk.yellow('[連]') + ` ${ip} connected`)
+            console.log(chalk.yellow('[连]') + ` ${ip} connected`)
 
             socket.on("The_White_Silk", async (name: string, args: { [key: string]: unknown }, callback_: (ret: ApiCallbackMessage) => void) => {
                 function callback(ret: ApiCallbackMessage) {
-                    console.log(chalk.blue('[發]') + ` ${ip} <- ${ret.code == 200 ? chalk.green(ret.msg) : chalk.red(ret.msg)} [${ret.code}]${ret.data ? (' <extras: ' + stringifyNotIncludeArrayBuffer(ret.data) + '>') : ''}`)
+                    console.log(chalk.blue('[发]') + ` ${ip} <- ${ret.code == 200 ? chalk.green(ret.msg) : chalk.red(ret.msg)} [${ret.code}]${ret.data ? (' <extras: ' + stringifyNotIncludeArrayBuffer(ret.data) + '>') : ''}`)
                     return callback_(ret)
                 }
                 async function checkIsPromiseAndAwait(value: Promise<unknown> | unknown) {
@@ -106,11 +106,11 @@ export default class ApiManager {
                     })
                 } catch (e) {
                     const err = e as Error
-                    console.log(chalk.yellow('[壞]') + ` ${err.message} (${err.stack})`)
+                    console.log(chalk.yellow('[坏]') + ` ${err.message} (${err.stack})`)
                     try {
                         callback({
                             code: err instanceof DataWrongError ? 400 : 500,
-                            msg: "錯誤: " + err.message
+                            msg: "错误: " + err.message
                         })
                     } catch (_e) { }
                 }

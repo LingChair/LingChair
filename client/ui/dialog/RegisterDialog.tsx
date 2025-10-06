@@ -34,7 +34,7 @@ export default function RegisterDialog({
             password: CryptoJS.SHA256(registerInputPasswordRef.current!.value).toString(CryptoJS.enc.Hex),
         })
 
-        if (checkApiSuccessOrSncakbar(re, "注冊失敗")) return
+        if (checkApiSuccessOrSncakbar(re, "注册失败")) return
         loginInputAccountRef.current!.value = username == "" ? re.data!.userid as string : username
         loginInputPasswordRef.current!.value = registerInputPasswordRef.current!.value
 
@@ -43,25 +43,25 @@ export default function RegisterDialog({
         registerInputPasswordRef.current!.value = ""
         registerDialogRef.current!.open = false
         snackbar({
-            message: "注冊成功!",
+            message: "注册成功!",
             placement: "top",
         })
     })
     return (
-        <mdui-dialog headline="注冊" ref={registerDialogRef}>
+        <mdui-dialog headline="注册" ref={registerDialogRef}>
 
-            <mdui-text-field label="用戶名 (可選)" ref={registerInputUserNameRef as any}></mdui-text-field>
+            <mdui-text-field label="用户名 (可选)" ref={registerInputUserNameRef as any}></mdui-text-field>
             <div style={{
                 height: "10px",
             }}></div>
-            <mdui-text-field label="昵稱" ref={registerInputNickNameRef as any}></mdui-text-field>
+            <mdui-text-field label="昵称" ref={registerInputNickNameRef as any}></mdui-text-field>
             <div style={{
                 height: "10px",
             }}></div>
             <mdui-text-field label="密码" type="password" toggle-password ref={registerInputPasswordRef as any}></mdui-text-field>
 
             <mdui-button slot="action" variant="text" ref={registerBackButtonRef}>返回</mdui-button>
-            <mdui-button slot="action" variant="text" ref={doRegisterButtonRef}>注冊</mdui-button>
+            <mdui-button slot="action" variant="text" ref={doRegisterButtonRef}>注册</mdui-button>
         </mdui-dialog>
     )
 }

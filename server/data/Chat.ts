@@ -24,11 +24,10 @@ export default class Chat {
         db.exec(`
             CREATE TABLE IF NOT EXISTS ${Chat.table_name} (
                 /* 序号 */ count INTEGER PRIMARY KEY AUTOINCREMENT,
-                /* 類型 */ type TEXT NOT NULL,
-                /* Chat ID */ id TEXT NOT NULL,
-                /* 標題 (群組) */ title TEXT,
-                /* 頭像 (群組) */ avatar BLOB,
-                /* 成員 */ members_list TEXT,
+                /* 类型 */ type TEXT NOT NULL,
+                /*  ID  */ id TEXT NOT NULL,
+                /* 标题 */ title TEXT,
+                /* 头像 */ avatar BLOB,
                 /* 设置 */ settings TEXT NOT NULL
             );
        `)
@@ -50,7 +49,7 @@ export default class Chat {
 
     static create(chatId: string, type: ChatType) {
         if (this.findAllBeansByCondition('id = ?', chatId).length > 0)
-            throw new DataWrongError(`对话ID ${chatId} 已被使用`)
+            throw new DataWrongError(`对话 ID ${chatId} 已被使用`)
         const chat = new Chat(
             Chat.findAllBeansByCondition(
                 'count = ?',

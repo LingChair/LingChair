@@ -28,7 +28,7 @@ export default class MessagesManager {
                 /* 序号, MessageId */ id INTEGER PRIMARY KEY AUTOINCREMENT,
                 /* 消息文本 */ text TEXT NOT NULL,
                 /* 发送者 */ user_id TEXT NOT NULL,
-                /* 發送時間 */ time INT8 NOT NULL
+                /* 发送时间 */ time INT8 NOT NULL
             );
        `)
     }

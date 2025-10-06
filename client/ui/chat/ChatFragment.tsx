@@ -52,7 +52,7 @@ const markedInstance = new marked.Marked({
 export default function ChatFragment({ target, showReturnButton, onReturnButtonClicked, openChatInfoDialog, openUserInfoDialog, ...props }: Args) {
     const [messagesList, setMessagesList] = React.useState([] as Message[])
     const [chatInfo, setChatInfo] = React.useState({
-        title: '加載中...'
+        title: '加载中...'
     } as Chat)
 
     const [tabItemSelected, setTabItemSelected] = React.useState('None')
@@ -68,7 +68,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
             target: target,
         })
         if (re.code != 200)
-            return target != '' && checkApiSuccessOrSncakbar(re, "對話錯誤")
+            return target != '' && checkApiSuccessOrSncakbar(re, "获取对话信息失败")
         setChatInfo(re.data as Chat)
 
         await loadMore()
@@ -90,7 +90,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
             page: page.current,
         })
 
-        if (checkApiSuccessOrSncakbar(re, "拉取歷史記錄失敗")) return
+        if (checkApiSuccessOrSncakbar(re, "拉取对话记录失败")) return
         const returnMsgs = (re.data!.messages as Message[]).reverse()
         page.current++
         if (returnMsgs.length == 0) {
@@ -150,7 +150,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                         target,
                         data: cachedFiles.current[fileName],
                     }, 5000)
-                    if (checkApiSuccessOrSncakbar(re, `文件[${fileName}] 上傳失敗`)) return setIsMessageSending(false)
+                    if (checkApiSuccessOrSncakbar(re, `文件[${fileName}] 上传失败`)) return setIsMessageSending(false)
                     text = text.replaceAll('(' + fileName + ')', '(' + re.data!.file_path as string + ')')
                 }
             }
@@ -160,12 +160,12 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                 target,
                 text,
             }, 5000)
-            if (checkApiSuccessOrSncakbar(re, "發送失敗")) return setIsMessageSending(false)
+            if (checkApiSuccessOrSncakbar(re, "发送失败")) return setIsMessageSending(false)
             inputRef.current!.value = ''
             cachedFiles.current = {}
         } catch (e) {
             snackbar({
-                message: '發送失敗: ' + (e as Error).message,
+                message: '发送失败: ' + (e as Error).message,
                 placement: 'top',
             })
         }
@@ -188,7 +188,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
         cachedFiles.current[name] = await data.arrayBuffer()
         cachedFileNamesCount.current[name] = 1
         if (type.startsWith('image/'))
-            insertText(`![圖片](${name})`)
+            insertText(`![图片](${name})`)
         else if (type.startsWith('video/'))
             insertText(`![Video=${name}](${name})`)
         else
@@ -227,7 +227,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                 <mdui-tab value="Chat">{
                     chatInfo.title
                 }</mdui-tab>
-                <mdui-tab value="Settings">設定</mdui-tab>
+                <mdui-tab value="Settings">设置</mdui-tab>
                 <mdui-tab value="None" style={{ display: 'none' }}></mdui-tab>
                 <div style={{
                     flexGrow: '1',
@@ -265,7 +265,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                             <span style={{
                                 alignSelf: 'center',
                                 paddingLeft: '12px',
-                            }}>加載中...</span>
+                            }}>加载中...</span>
                         </div>
                         <div style={{
                             display: showNoMoreMessagesTip ? undefined : 'none',
@@ -372,7 +372,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                                                 addFile(type as string, getFileNameOrRandom(url), re)
                                         } catch (e) {
                                             snackbar({
-                                                message: '無法解析連結: ' + (e as Error).message,
+                                                message: '无法解析链接: ' + (e as Error).message,
                                                 placement: 'top',
                                             })
                                         }
@@ -385,7 +385,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                             }
                         }
                     }}>
-                        <mdui-text-field variant="outlined" placeholder="喵呜~" autosize ref={inputRef as any} max-rows={6} onChange={() => {
+                        <mdui-text-field variant="outlined" placeholder="(｡･ω･｡)" autosize ref={inputRef as any} max-rows={6} onChange={() => {
                             if (inputRef.current?.value.trim() == '')
                                 cachedFiles.current = {}
                         }} onKeyDown={(event) => {
@@ -415,7 +415,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                         <div style={{
                             display: 'none'
                         }}>
-                            <input accept="*/*" type="file" name="選擇附加文檔" multiple ref={attachFileInputRef}></input>
+                            <input accept="*/*" type="file" name="添加文件" multiple ref={attachFileInputRef}></input>
                         </div>
                     </div>
                 </mdui-tab-panel>

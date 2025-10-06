@@ -36,7 +36,7 @@ export default function RecentsList({
                 token: data.access_token,
             })
             if (re.code != 200)
-                return checkApiSuccessOrSncakbar(re, "获取最近對話列表失败")
+                return checkApiSuccessOrSncakbar(re, "获取最近对话列表失败")
     
             setRecentsList(re.data!.recent_chats as RecentChat[])
         }

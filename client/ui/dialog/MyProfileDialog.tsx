@@ -30,9 +30,9 @@ export default function MyProfileDialog({
             avatar: file
         })
 
-        if (checkApiSuccessOrSncakbar(re, "修改失敗")) return
+        if (checkApiSuccessOrSncakbar(re, "修改失败")) return
         snackbar({
-            message: "修改成功 (刷新頁面以更新)",
+            message: "修改成功 (刷新页面以更新)",
             placement: "top",
         })
     })
@@ -74,8 +74,8 @@ export default function MyProfileDialog({
                     marginBottom: "10px",
                 }}></mdui-divider>
                 <mdui-list-item icon="logout" rounded onClick={() => dialog({
-                    headline: "退出登錄",
-                    description: "確定要退出登錄嗎? (若您的賬號未設定 用戶名, 請無務必複製 用戶 ID, 以免丟失賬號!)",
+                    headline: "退出登录",
+                    description: "请确保在退出登录前, 设定了用户名或者已经记录下了用户 ID, 以免无法登录账号",
                     actions: [
                         {
                             text: "取消",
@@ -84,7 +84,7 @@ export default function MyProfileDialog({
                             },
                         },
                         {
-                            text: "確定",
+                            text: "确定",
                             onClick: () => {
                                 data.access_token = ''
                                 data.apply()
@@ -93,7 +93,7 @@ export default function MyProfileDialog({
                             },
                         }
                     ],
-                })}>退出登錄</mdui-list-item>
+                })}>退出登录</mdui-list-item>
             </mdui-list>
         </mdui-dialog>
         {
@@ -103,7 +103,7 @@ export default function MyProfileDialog({
             <div style={{
                 display: "none"
             }}>
-                <input type="file" name="選擇頭像" ref={chooseAvatarFileRef}
+                <input type="file" name="选择头像" ref={chooseAvatarFileRef}
                     accept="image/*" />
             </div>
 
@@ -115,7 +115,7 @@ export default function MyProfileDialog({
                     width: '50px',
                     height: '50px',
                 }} />
-                <mdui-text-field variant="outlined" placeholder="昵稱" ref={editNickNameRef as any} style={{
+                <mdui-text-field variant="outlined" placeholder="昵称" ref={editNickNameRef as any} style={{
                     marginLeft: "15px",
                 }} value={user?.nickname}></mdui-text-field>
             </div>
@@ -123,12 +123,12 @@ export default function MyProfileDialog({
                 marginTop: "10px",
             }}></mdui-divider>
 
-            <mdui-text-field style={{ marginTop: "10px", }} variant="outlined" label="用戶 ID" value={user?.id || ''} readonly onClick={(e) => {
+            <mdui-text-field style={{ marginTop: "10px", }} variant="outlined" label="用户 ID" value={user?.id || ''} readonly onClick={(e) => {
                 const input = e.target as HTMLInputElement
                 input.select()
                 input.setSelectionRange(0, 1145141919810)
             }}></mdui-text-field>
-            <mdui-text-field style={{ marginTop: "20px", }} variant="outlined" label="用戶名" value={user?.username || ''} ref={editUserNameRef as any}></mdui-text-field>
+            <mdui-text-field style={{ marginTop: "20px", }} variant="outlined" label="用户名" value={user?.username || ''} ref={editUserNameRef as any}></mdui-text-field>
 
             <mdui-button slot="action" variant="text" onClick={() => userProfileEditDialogRef.current!.open = false}>取消</mdui-button>
             <mdui-button slot="action" variant="text" onClick={async () => {
@@ -138,9 +138,9 @@ export default function MyProfileDialog({
                     username: editUserNameRef.current?.value,
                 })
 
-                if (checkApiSuccessOrSncakbar(re, "修改失敗")) return
+                if (checkApiSuccessOrSncakbar(re, "修改失败")) return
                 snackbar({
-                    message: "修改成功 (刷新頁面以更新)",
+                    message: "修改成功 (刷新页面以更新)",
                     placement: "top",
                 })
                 userProfileEditDialogRef.current!.open = false

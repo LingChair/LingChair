@@ -1,4 +1,4 @@
-import { Dropdown, Dialog } from "mdui"
+import { Dropdown, Dialog, dialog } from "mdui"
 import { $ } from "mdui/jq"
 import Client from "../../api/Client.ts"
 import Data_Message from "../../api/client_data/Message.ts"
@@ -131,9 +131,9 @@ export default function Message({ userId, rawData, renderHTML, message, openUser
                         e.stopPropagation()
                         setDropDownOpen(false)
                     }}>
-                        <mdui-menu-item icon="content_copy" onClick={() => copyToClipboard($(dropDownRef.current as HTMLElement).find('#msg').text().trim())}>複製文字</mdui-menu-item>
-                        <mdui-menu-item icon="content_copy" onClick={() => copyToClipboard(rawData)}>複製原文</mdui-menu-item>
-                        <mdui-menu-item icon="info" onClick={() => messageJsonDialogRef.current!.open = true}>查看詳情</mdui-menu-item>
+                        <mdui-menu-item icon="content_copy" onClick={() => copyToClipboard($(dropDownRef.current as HTMLElement).find('#msg').text().trim())}>复制文字</mdui-menu-item>
+                        <mdui-menu-item icon="content_copy" onClick={() => copyToClipboard(rawData)}>复制原文</mdui-menu-item>
+                        <mdui-menu-item icon="info" onClick={() => messageJsonDialogRef.current!.open = true}>JSON</mdui-menu-item>
                     </mdui-menu>
                 </mdui-dropdown>
             </mdui-card>

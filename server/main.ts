@@ -70,10 +70,10 @@ ApiManager.initEvents()
 ApiManager.initAllApis()
 
 httpServer.listen(config.server.listen)
-console.log(chalk.green("API & Web 服務已經開始運作"))
+console.log(chalk.green("API & Web 服务已启动"))
 function help() {
-    console.log(chalk.yellow("===== TheWhiteSilk Server ====="))
-    console.log(chalk.yellow("b - 重新編譯前端"))
+    console.log(chalk.yellow("===== LingChair Server ====="))
+    console.log(chalk.yellow("b - 重新编译前端"))
 }
 help()
 
@@ -83,11 +83,10 @@ const rl = readline.createInterface({
 })
 rl.on('line', (text) => {
     if (text == 'b') {
-        console.log(chalk.green("重新編譯..."))
+        console.log(chalk.green("重新编译..."))
         child_process.spawnSync("deno", ["task", "build"], {
             stdio: [process.stdin, process.stdout, process.stderr]
         })
-        console.log(chalk.green("✓ 編譯完畢"))
         help()
     }
 })

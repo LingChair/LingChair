@@ -32,13 +32,13 @@ export default class User {
             CREATE TABLE IF NOT EXISTS ${User.table_name} (
                 /* 序号 */ count INTEGER PRIMARY KEY AUTOINCREMENT,
                 /* 用户 ID, UUID */ id TEXT,
-                /* 密碼, 哈希 */ password TEXT,
-                /* 注册时间, 时间戳 */ registered_time INT8 NOT NULL,
-                /* 用戶名, 可選 */ username TEXT,
+                /* 密码摘要 */ password TEXT,
+                /* 注册时间 */ registered_time INT8 NOT NULL,
+                /* 用户名 */ username TEXT,
                 /* 昵称 */ nickname TEXT NOT NULL,
                 /* 头像, 可选 */ avatar_file_hash TEXT,
-                /* 聯絡人列表 */ contacts_list TEXT NOT NULL,
-                /* 最近對話 */ recent_chats TEXT NOT NULL,
+                /* 对话列表 */ contacts_list TEXT NOT NULL,
+                /* 最近对话 */ recent_chats TEXT NOT NULL,
                 /* 设置 */ settings TEXT NOT NULL
             );
        `)
@@ -147,7 +147,7 @@ export default class User {
         try {
             return JSON.parse(this.bean.contacts_list) as string[]
         } catch (e) {
-            console.log(chalk.yellow(`警告: 聯絡人組解析失敗: ${(e as Error).message}`))
+            console.log(chalk.yellow(`警告: 所有对话解析失败: ${(e as Error).message}`))
             return []
         }
     }

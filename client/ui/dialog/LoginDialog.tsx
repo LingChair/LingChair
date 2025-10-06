@@ -32,20 +32,20 @@ export default function LoginDialog({
             password: CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex),
         })
 
-        if (checkApiSuccessOrSncakbar(re, "登錄失敗")) return
+        if (checkApiSuccessOrSncakbar(re, "登录失败")) return
 
         data.access_token = re.data!.access_token as string
         data.apply()
         location.reload()
     })
     return (
-        <mdui-dialog headline="登錄" ref={loginDialogRef}>
+        <mdui-dialog headline="登录" ref={loginDialogRef}>
 
-            <mdui-text-field label="用戶 ID / 用戶名" ref={loginInputAccountRef as any}></mdui-text-field>
+            <mdui-text-field label="用户 ID / 用户名" ref={loginInputAccountRef as any}></mdui-text-field>
             <div style={{
                 height: "10px",
             }}></div>
-            <mdui-text-field label="密碼" type="password" toggle-password ref={loginInputPasswordRef as any}></mdui-text-field>
+            <mdui-text-field label="密码" type="password" toggle-password ref={loginInputPasswordRef as any}></mdui-text-field>
 
             <mdui-button slot="action" variant="text" ref={registerButtonRef}>注册</mdui-button>
             <mdui-button slot="action" variant="text" ref={loginButtonRef}>登录</mdui-button>

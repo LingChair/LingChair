@@ -26,7 +26,7 @@ export default function ChatInfoDialog({ chat, chatInfoDialogRef, openChatFragme
             target: chat.id,
         })
         if (re.code != 200)
-            return checkApiSuccessOrSncakbar(re, '獲取對話訊息失敗')
+            return checkApiSuccessOrSncakbar(re, '获取对话信息失败')
         setChatInfo(re.data!.chat_info as Chat)
     })
 

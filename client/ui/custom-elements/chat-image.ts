@@ -20,10 +20,10 @@ customElements.define('chat-image', class extends HTMLElement {
         e.onerror = () => {
             const src = $(this).attr('src')
             $(this).html(`<mdui-icon name="broken_image" style="font-size: 2rem;"></mdui-icon>`)
-            $(this).attr('alt', '無法加載圖像')
+            $(this).attr('alt', '无法加载: ' + $(this).attr('alt'))
             $(this).on('click', () => {
                 snackbar({
-                    message: `圖片 (${src}) 無法加載!`,
+                    message: `图片 (${src}) 无法加载!`,
                     placement: 'top'
                 })
             })

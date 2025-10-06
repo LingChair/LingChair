@@ -38,7 +38,7 @@ export default function ContactsList({
                 token: data.access_token,
             })
             if (re.code != 200)
-                return checkApiSuccessOrSncakbar(re, "获取對話列表失败")
+                return checkApiSuccessOrSncakbar(re, "获取所有对话列表失败")
     
             setContactsList(re.data!.contacts_list as Chat[])
         }
@@ -61,7 +61,7 @@ export default function ContactsList({
         <mdui-list-item rounded style={{
             width: '100%',
             marginTop: '13px',
-        }} icon="person_add" onClick={() => addContactDialogRef.current!.open = true}>添加對話</mdui-list-item>
+        }} icon="person_add" onClick={() => addContactDialogRef.current!.open = true}>添加对话</mdui-list-item>
         <mdui-list-item rounded style={{
             width: '100%',
         }} icon="group_add" onClick={() => createGroupDialogRef.current!.open = true}>创建群组</mdui-list-item>

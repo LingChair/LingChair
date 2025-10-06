@@ -79,7 +79,7 @@ export default class FileManager {
                 /* 文件名称 */ name TEXT NOT NULL,
                 /* 文件哈希 */ hash TEXT NOT NULL,
                 /* MIME 类型 */ mime TEXT NOT NULL,
-                /* 来源 Chat, 可為空 */ chatid TEXT,
+                /* 来源对话 */ chatid TEXT,
                 /* 上传时间 */ upload_time INT8 NOT NULL,
                 /* 最后使用时间 */ last_used_time INT8 NOT NULL
             );

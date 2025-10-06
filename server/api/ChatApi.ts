@@ -22,24 +22,24 @@ export default class ChatApi extends BaseApi {
          */
         this.registerEvent("Chat.getInfo", (args, { deviceId }) => {
             if (this.checkArgsMissing(args, ['token', 'target'])) return {
-                msg: "參數缺失",
+                msg: "参数缺失",
                 code: 400,
             }
 
             const token = TokenManager.decode(args.token as string)
             if (!this.checkToken(token, deviceId)) return {
                 code: 401,
-                msg: "令牌無效",
+                msg: "令牌无效",
             }
 
             const chat = Chat.findById(args.target as string)
             if (chat == null) return {
                 code: 404,
-                msg: "對話不存在",
+                msg: "对话不存在",
             }
             if (!UserChatLinker.checkUserIsLinkedToChat(token.author, chat!.bean.id)) return {
                 code: 400,
-                msg: "用戶無權訪問該對話",
+                msg: "用户无权访问此对话",
             }
 
             // 私聊
@@ -83,24 +83,24 @@ export default class ChatApi extends BaseApi {
          */
         this.registerEvent("Chat.sendMessage", (args, { deviceId }) => {
             if (this.checkArgsMissing(args, ['token', 'target', 'text'])) return {
-                msg: "參數缺失",
+                msg: "参数缺失",
                 code: 400,
             }
 
             const token = TokenManager.decode(args.token as string)
             if (!this.checkToken(token, deviceId)) return {
                 code: 401,
-                msg: "令牌無效",
+                msg: "令牌无效",
             }
 
             const chat = Chat.findById(args.target as string)
             if (chat == null) return {
                 code: 404,
-                msg: "對話不存在",
+                msg: "对话不存在",
             }
             if (!UserChatLinker.checkUserIsLinkedToChat(token.author, chat!.bean.id)) return {
                 code: 400,
-                msg: "用戶無權訪問該對話",
+                msg: "用户无权访问此对话",
             }
 
             const msg = {
@@ -142,24 +142,24 @@ export default class ChatApi extends BaseApi {
          */
         this.registerEvent("Chat.getMessageHistory", (args, { deviceId }) => {
             if (this.checkArgsMissing(args, ['token', 'target', 'page'])) return {
-                msg: "參數缺失",
+                msg: "参数缺失",
                 code: 400,
             }
 
             const token = TokenManager.decode(args.token as string)
             if (!this.checkToken(token, deviceId)) return {
                 code: 401,
-                msg: "令牌無效",
+                msg: "令牌无效",
             }
 
             const chat = Chat.findById(args.target as string)
             if (chat == null) return {
                 code: 404,
-                msg: "對話不存在",
+                msg: "对话不存在",
             }
             if (!UserChatLinker.checkUserIsLinkedToChat(token.author, chat!.bean.id)) return {
                 code: 400,
-                msg: "用戶無權訪問該對話",
+                msg: "用户无权访问此对话",
             }
 
             return {
@@ -179,24 +179,24 @@ export default class ChatApi extends BaseApi {
          */
         this.registerEvent("Chat.uploadFile", async (args, { deviceId }) => {
             if (this.checkArgsMissing(args, ['token', 'target', 'data', 'file_name'])) return {
-                msg: "參數缺失",
+                msg: "参数缺失",
                 code: 400,
             }
 
             const token = TokenManager.decode(args.token as string)
             if (!this.checkToken(token, deviceId)) return {
                 code: 401,
-                msg: "令牌無效",
+                msg: "令牌无效",
             }
 
             const chat = Chat.findById(args.target as string)
             if (chat == null) return {
                 code: 404,
-                msg: "對話不存在",
+                msg: "对话不存在",
             }
             if (!UserChatLinker.checkUserIsLinkedToChat(token.author, chat!.bean.id)) return {
                 code: 400,
-                msg: "用戶無權訪問該對話",
+                msg: "用户无权访问此对话",
             }
 
             const file = await FileManager.uploadFile(args.file_name as string, args.data as Buffer<ArrayBufferLike>, args.target as string)
@@ -216,20 +216,20 @@ export default class ChatApi extends BaseApi {
          */
         this.registerEvent("Chat.getIdForPrivate", (args, { deviceId }) => {
             if (this.checkArgsMissing(args, ['token', 'target'])) return {
-                msg: "參數缺失",
+                msg: "参数缺失",
                 code: 400,
             }
 
             const token = TokenManager.decode(args.token as string)
             if (!this.checkToken(token, deviceId)) return {
                 code: 401,
-                msg: "令牌無效",
+                msg: "令牌无效",
             }
             const user = User.findById(token.author) as User
             const targetUser = User.findById(args.target as string) as User
             if (targetUser == null) {
                 return {
-                    msg: "找不到用戶",
+                    msg: "找不到用户",
                     code: 404,
                 }
             }
@@ -251,18 +251,18 @@ export default class ChatApi extends BaseApi {
          */
         this.registerEvent("Chat.createGroup", (args, { deviceId }) => {
             if (this.checkArgsMissing(args, ['token', 'title'])) return {
-                msg: "參數缺失",
+                msg: "参数缺失",
                 code: 400,
             }
             if (this.checkArgsEmpty(args, ['title'])) return {
-                msg: "參數不得為空",
+                msg: "参数不得为空",
                 code: 400,
             }
 
             const token = TokenManager.decode(args.token as string)
             if (!this.checkToken(token, deviceId)) return {
                 code: 401,
-                msg: "令牌無效",
+                msg: "令牌无效",
             }
             const user = User.findById(token.author) as User
             
@@ -291,14 +291,14 @@ export default class ChatApi extends BaseApi {
          */
         this.registerEvent("Chat.getAnotherUserIdFromPrivate", (args, { deviceId }) => {
             if (this.checkArgsMissing(args, ['token', 'target'])) return {
-                msg: "參數缺失",
+                msg: "参数缺失",
                 code: 400,
             }
 
             const token = TokenManager.decode(args.token as string)
             if (!this.checkToken(token, deviceId)) return {
                 code: 401,
-                msg: "令牌無效",
+                msg: "令牌无效",
             }
 
             const user = User.findById(token.author) as User
@@ -306,11 +306,11 @@ export default class ChatApi extends BaseApi {
             const chat = Chat.findById(args.target as string)
             if (chat == null) return {
                 code: 404,
-                msg: "對話不存在",
+                msg: "对话不存在",
             }
             if (!UserChatLinker.checkUserIsLinkedToChat(token.author, chat!.bean.id)) return {
                 code: 400,
-                msg: "用戶無權訪問該對話",
+                msg: "用户无权访问此对话",
             }
 
             if (chat.bean.type == 'private')
