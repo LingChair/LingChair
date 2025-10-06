@@ -51,14 +51,32 @@ class Client {
             })
         }
         return new Promise((resolve) => {
-            this.socket!.timeout(timeout).emit("The_White_Silk", method, args, (err: Error, res: ApiCallbackMessage) => {
+            this.socket!.timeout(timeout).emit("The_White_Silk", method, args, async (err: Error, res: ApiCallbackMessage) => {
                 if (err) return resolve({
                     code: -1,
                     msg: err.message.indexOf("timed out") != -1 ? "請求超時" : err.message,
                 })
-                resolve(res)
+                if (res.code == 401) {
+                    const token = await this.refreshAccessToken()
+                    if (token) {
+                        data.access_token = token
+                        data.apply()
+                        resolve(await this.invoke(method, {
+                            ...args,
+                            token
+                        }, timeout))
+                    } else
+                        resolve(res)
+                } else
+                    resolve(res)
             })
         })
+    }
+    static async refreshAccessToken() {
+        const re = await this.invoke("User.refreshAccessToken", {
+            refresh_token: data.refresh_token 
+        })
+        return re.data?.access_token
     }
     static async auth(token: string, timeout: number = 5000) {
         const re = await this.invoke("User.auth", {

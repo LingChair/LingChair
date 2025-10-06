@@ -57,6 +57,49 @@ export default class UserApi extends BaseApi {
                     throw e
             }
         })
+        // 刷新访问令牌
+        this.registerEvent("User.refreshAccessToken", (args, clientInfo) => {
+            if (this.checkArgsMissing(args, ['refresh_token'])) return {
+                msg: "参数缺失",
+                code: 400,
+            }
+            const { deviceId } = clientInfo
+            try {
+                const refresh_token = TokenManager.decode(args.refresh_token as string)
+
+                if (refresh_token.expired_time < Date.now()) return {
+                    msg: "登录令牌失效",
+                    code: 401,
+                }
+                if (!refresh_token.author || !User.findById(refresh_token.author)) return {
+                    msg: "账号不存在",
+                    code: 401,
+                }
+                if (refresh_token.device_id != deviceId) return {
+                    msg: "验证失败",
+                    code: 401,
+                }
+                
+                const user = User.findById(refresh_token.author) as User
+
+                return {
+                    msg: "成功",
+                    code: 200,
+                    data: {
+                        access_token: TokenManager.make(user, null, deviceId)
+                    }
+                }
+            } catch (e) {
+                const err = e as Error
+                if (err.message.indexOf("JSON") != -1)
+                    return {
+                        msg: "无效的用户令牌",
+                        code: 401,
+                    }
+                else
+                    throw e
+            }
+        })
         // 登錄
         this.registerEvent("User.login", (args, { deviceId }) => {
             if (this.checkArgsMissing(args, ['account', 'password'])) return {
@@ -78,7 +121,8 @@ export default class UserApi extends BaseApi {
                 msg: "成功",
                 code: 200,
                 data: {
-                    access_token: TokenManager.make(user, null, deviceId)
+                    refresh_token: TokenManager.make(user, null, deviceId, 'refresh_token'),
+                    access_token: TokenManager.make(user, null, deviceId),
                 },
             }
 
