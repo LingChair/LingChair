@@ -1,7 +1,8 @@
 <div align="center">
-  <img style="width: 50px; height: 50px;" src="./icon.png" alt="logo" />
   <h1> 铃之椅 </h1>
 </div>
+
+<br>
 
 铃之椅, 一个普通的即时通讯项目——简单, 轻量, 纯粹, 时而天真
 
