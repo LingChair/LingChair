@@ -1,8 +1,15 @@
-## 铃之椅
+<div align="center">
+  <img style="width: 128px; height: 128px;" src="./icon.png" alt="logo" />
+  <h1> 铃之椅 </h1>
+</div>
 
-一个普通的即时通讯项目——简单, 轻量, 纯粹, 时而天真
+---
 
-*仍在积极开发中, 又名: the_white_silk*
+铃之椅, 一个普通的即时通讯项目——简单, 轻量, 纯粹, 时而天真
+
+*目前还没有发布正式版本, 仍在积极开发中*
+
+项目代号: TheWhiteSilk
 
 ### 基本功能
 
@@ -80,7 +87,9 @@ deno task server
 
 ### 使用的项目 / 技术栈
 
-本项目由 Deno 驱动
+本项目由 Deno 强力驱动 
+
+*当然, 由于没有使用 Deno Api, 只有 Node Api, 因此理论上 Node.js 也能运行, 但需要另外安装依赖*
 
 - 前端
   - 编译
