@@ -56,10 +56,7 @@ class Client {
                     code: -1,
                     msg: err.message.indexOf("timed out") != -1 ? "請求超時" : err.message,
                 })
-                if ([
-                    "User.refreshAccessToken",
-                    "User.auth",
-                ].indexOf(method) == -1 && res.code == 401) {
+                if (!["User.refreshAccessToken", ...CallableMethodBeforeAuth].includes(method) && res.code == 401) {
                     const token = await this.refreshAccessToken()
                     if (token) {
                         data.access_token = token
