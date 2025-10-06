@@ -1,81 +1,105 @@
 ## 铃之椅
 
-一个即时通讯项目——简单, 轻量, 纯粹, 时而天真
+一个普通的即时通讯项目——简单, 轻量, 纯粹, 时而天真
 
-__仍在积极开发中, 又名: the_white_silk__
+*仍在积极开发中, 又名: the_white_silk*
 
-### 目前實現了什麽?
+### 基本功能
 
 <details>
-  <summary>客戶端實現</summary>
+  <summary>客户端</summary>
 
 - 消息
-  - [x] 收發消息
+  - [x] 收发消息
   - [x] 富文本 (based on Marked)
-    - [x] 圖片
-    - [x] 視頻
+    - [x] 图片
+    - [x] 视频
     - [x] 文件
+    - [ ] 测试其他 Markdown 语法的可用性
   - [ ] 撤回消息
   - [ ] 修改消息
 
-- 對話
-  - [x] 最近對話
-  - [x] 添加對話
-    - [x] 添加用戶
-    - [x] 添加群組
+- 对话
+  - [x] 最近对话
+  - [x] 添加对话
+    - [x] 添加用户
+    - [x] 添加群组
   - [ ] 群组管理
 
-- 賬號
-  - [x] 登錄注冊 (廢話)
-  - [x] 資料編輯
-    - [x] 用戶名
-    - [x] 昵稱
-    - [x] 頭像
-  - [ ] 賬號管理
-    - [ ] 重設密碼
-    - [ ] 綁定郵箱
+- 帐号
+  - [x] 登录注册
+  - [x] 资料编辑
+    - [x] 用户名
+    - [x] 昵称
+    - [x] 头像
+  - [ ] 帐号管理
+    - [ ] 重设密码
+    - [ ] 绑定邮箱
 
 </details>
 
 <details>
-  <summary>伺服器端實現</summary>
+  <summary>服务端</summary>
 
-- 基本對話類型
-  - [x] 雙用戶私聊
-  - [x] 群組
+- 基本对话类型
+  - [x] 私聊
+  - [x] 群组
 
 - 消息
-  - [x] 收發消息
+  - [x] 收发消息
   - [ ] 撤回消息
   - [ ] 修改消息
 
-- 對話
-  - [x] 最近對話
-  - [x] 添加對話
+- 对话
+  - [x] 最近对话
+  - [x] 添加对话
 
-- 賬號
-  - [x] 登錄注冊
-  - [x] 資料編輯
-  - [ ] 賬號管理
-    - [ ] 重設密碼
-    - [ ] 綁定郵箱
+- 帐号
+  - [x] 登录注册
+  - [x] 资料编辑
+  - [ ] 帐号管理
+    - [ ] 重设密码
+    - [ ] 绑定邮箱
 
 </details>
 
-### 伺服器端運行
+### 快速上手
 
 ```bash
 git clone https://codeberg.org/CrescentLeaf/LingChair
 cd LingChair
-# 編譯前端網頁
+# 编译前端
 deno task build
-# 運行服務
+# 运行服务
 deno task server
 ```
 
 #### 配置
 
-[thewhitesilk_config.json 是怎麽來的, 又有什麽用?](./server/config.ts)
+[thewhitesilk_config.json 是什么?](./server/config.ts)
+
+### 使用的项目 / 技术栈
+
+本项目由 Deno 驱动
+
+- 前端
+  - 编译
+    - vite
+    - vite-plugin-babel
+  - react
+  - socket.io-client
+  - mdui
+  - split.js
+  - react-json-view
+  - dompurify
+  - marked
+
+- 后端
+  - express
+  - socket.io
+  - chalk
+  - file-type
+  - cookie-parser
 
 ### License
 
