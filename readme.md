@@ -2,7 +2,7 @@
 
 一个即时通讯项目——简单, 轻量, 纯粹, 时而天真
 
-_仍在积极开发中. 目前是第四代, 版本代号为: the_white_silk_
+__仍在积极开发中, 又名: the_white_silk__
 
 ### 目前實現了什麽?
 
@@ -65,7 +65,7 @@ _仍在积极开发中. 目前是第四代, 版本代号为: the_white_silk_
 ### 伺服器端運行
 
 ```bash
-git clone https://codeberg.org/LingChair/LingChair
+git clone https://codeberg.org/CrescentLeaf/LingChair
 cd LingChair
 # 編譯前端網頁
 deno task build
