@@ -2,7 +2,7 @@ import { DatabaseSync } from "node:sqlite"
 import path from 'node:path'
 
 import config from "../config.ts"
-import { SQLInputValue } from "node:sqlite";
+import { SQLInputValue } from "node:sqlite"
 export default class UserChatLinker {
     static database: DatabaseSync = this.init()
 
