@@ -5,6 +5,7 @@ export default class Chat {
     declare id: string
     declare title: string
     declare avatar?: string
+    declare settings?: { [key: string]: unknown }
 
     [key: string]: unknown
 }

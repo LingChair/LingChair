@@ -18,6 +18,8 @@ export type CallMethod =
 
     "Chat.getInfo" |
 
+    "Chat.updateSettings" |
+
     "Chat.createGroup" |
 
     "Chat.getIdForPrivate" |

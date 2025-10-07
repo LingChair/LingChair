@@ -17,6 +17,8 @@ export type CallMethod =
     "User.getMyRecentChats" | 
 
     "Chat.getInfo" |
+    
+    "Chat.updateSettings" |
 
     "Chat.createGroup" |
 

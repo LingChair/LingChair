@@ -24,6 +24,7 @@ import SwitchPreference from '../preference/SwitchPreference.tsx'
 import SelectPreference from '../preference/SelectPreference.tsx'
 import TextFieldPreference from '../preference/TextFieldPreference.tsx'
 import Preference from '../preference/Preference.tsx'
+import GroupSettings from "../../api/client_data/GroupSettings.ts"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     target: string
@@ -64,6 +65,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
     } as Chat)
 
     const [tabItemSelected, setTabItemSelected] = React.useState('None')
+    const [groupPreferenceDefaultValue, setGroupPreferenceDefaultValue] = React.useState<GroupSettings>({})
     const tabRef = React.useRef<Tab>(null)
     const chatPanelRef = React.useRef<HTMLElement>(null)
     useEventListener(tabRef, 'change', () => {
@@ -82,6 +84,11 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
         await loadMore()
 
         setTabItemSelected("Chat")
+        if (re.data!.type == 'group') {
+            setGroupPreferenceDefaultValue(re.data!.settings as GroupSettings)
+            groupPreferenceStore.setter(re.data!.settings as GroupSettings)
+            console.log(re.data!.settings as GroupSettings)
+        }
         setTimeout(() => {
             chatPanelRef.current!.scrollTo({
                 top: 10000000000,
@@ -210,9 +217,22 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
             addFile(file.type, file.name, file)
         }
     })
-    
-    const groupPreferenceStore = new PreferenceStore()
-    
+
+    const groupPreferenceStore = new PreferenceStore<GroupSettings>()
+    groupPreferenceStore.setOnUpdate(async (value) => {
+        const re = await Client.invoke("Chat.updateSettings", {
+            token: data.access_token,
+            target,
+            settings: value,
+        })
+        if (checkApiSuccessOrSncakbar(re, "更新设定失败")) return
+
+        setChatInfo(JSON.parse(JSON.stringify({
+            ...chatInfo,
+            settings: value as object,
+        })))
+    })
+
     return (
         <div style={{
             width: '100%',
@@ -448,14 +468,14 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                             <SwitchPreference
                                 title="允许入群"
                                 icon="person_add"
-                                defaultState={false}
+                                defaultState={groupPreferenceDefaultValue.allow_new_member_join || false}
                                 updater={groupPreferenceStore.updater('allow_new_member_join')} />
                             <SwitchPreference
                                 title="允许成员邀请"
                                 description="目前压根没有这项功能, 甚至还不能查看成员列表, 以后再说吧"
                                 icon="_"
                                 disabled={true}
-                                defaultState={false}
+                                defaultState={groupPreferenceDefaultValue.allow_new_member_from_invitation || false}
                                 updater={groupPreferenceStore.updater('allow_new_member_from_invitation')} />
                             <SelectPreference
                                 title="入群验证方式"
@@ -467,14 +487,14 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                                 }}
                                 disabled={!groupPreferenceStore.value.allow_new_member_join}
                                 updater={groupPreferenceStore.updater('new_member_join_method')}
-                                defaultCheckedId="disabled" />
+                                defaultCheckedId={groupPreferenceDefaultValue.new_member_join_method || 'disabled'} />
                             {
                                 groupPreferenceStore.value.new_member_join_method == 'answered_and_allowed_by_admin'
                                 && <TextFieldPreference
                                     title="设置问题"
                                     icon="_"
                                     description="WIP"
-                                    defaultState=""
+                                    defaultState={groupPreferenceDefaultValue.answered_and_allowed_by_admin_question || ''}
                                     disabled={true}
                                     updater={groupPreferenceStore.updater('answered_and_allowed_by_admin_question')} />
                             }
