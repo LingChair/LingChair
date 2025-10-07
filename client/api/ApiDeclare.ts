@@ -28,8 +28,9 @@ export type CallMethod =
 export type ClientEvent = 
     "Client.onMessage"
 
-    export const CallableMethodBeforeAuth = [
+export const CallableMethodBeforeAuth = [
     "User.auth",
     "User.register",
     "User.login",
+    "User.refreshAccessToken",
 ]

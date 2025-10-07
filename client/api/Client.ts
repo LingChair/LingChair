@@ -25,12 +25,10 @@ class Client {
             },
         })
         this.socket!.on("connect", async () => {
-            const re = await this.invoke("User.auth", {
-                access_token: data.access_token
-            }, 1000)
-            if (re.code != 200)
-                checkApiSuccessOrSncakbar(re, "重連失敗")
             this.connected = true
+            const re = await this.auth(data.access_token)
+            if (re.code != 200)
+                checkApiSuccessOrSncakbar(re, "重连失败")
         })
         this.socket!.on("disconnect", () => {
             this.connected = false
@@ -44,27 +42,41 @@ class Client {
             }
         })
     }
-    static invoke(method: CallMethod, args: unknown = {}, timeout: number = 5000): Promise<ApiCallbackMessage> {
+    static invoke(method: CallMethod, args: unknown = {}, timeout: number = 5000, refreshAndRetryLimit: number = 3, forceRefreshAndRetry: boolean = false): Promise<ApiCallbackMessage> {
+        // 在 未初始化 / 未建立连接且调用非可调用接口 的时候进行延迟
+        console.log(this.connected, method)
         if (this.socket == null || (!this.connected && !CallableMethodBeforeAuth.includes(method))) {
             return new Promise((reslove) => {
                 setTimeout(async () => reslove(await this.invoke(method, args, timeout)), 500)
             })
         }
+        // 反之, 返回 Promise
         return new Promise((resolve) => {
             this.socket!.timeout(timeout).emit("The_White_Silk", method, args, async (err: Error, res: ApiCallbackMessage) => {
+                // 错误处理
                 if (err) return resolve({
                     code: -1,
                     msg: err.message.indexOf("timed out") != -1 ? "請求超時" : err.message,
                 })
-                if (!["User.refreshAccessToken", ...CallableMethodBeforeAuth].includes(method) && res.code == 401) {
+                // 在特殊的方法之中, 不予进行: 令牌刷新并重试
+                // 附带 retry 次数限制
+                if (
+                    (
+                        forceRefreshAndRetry ||
+                        (
+                            !CallableMethodBeforeAuth.includes(method)
+                            && res.code == 401
+                        )
+                    ) && refreshAndRetryLimit > 0
+                ) {
                     const token = await this.refreshAccessToken()
                     if (token) {
                         data.access_token = token
                         data.apply()
                         resolve(await this.invoke(method, {
                             ...args,
-                            token
-                        }, timeout))
+                            [method == "User.auth" ? "access_token" : "token"]: token,
+                        }, timeout, refreshAndRetryLimit - 1))
                     } else
                         resolve(res)
                 } else
@@ -81,7 +93,7 @@ class Client {
     static async auth(token: string, timeout: number = 5000) {
         const re = await this.invoke("User.auth", {
             access_token: token
-        }, timeout)
+        }, timeout, 1, true)
         if (re.code == 200) {
             await this.updateCachedProfile()
             document.cookie = 'token=' + token
