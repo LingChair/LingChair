@@ -17,6 +17,14 @@ import randomUUID from "../../randomUUID.ts"
 import EventBus from "../../EventBus.ts"
 import User from "../../api/client_data/User.ts"
 
+import PreferenceLayout from '../preference/PreferenceLayout.tsx'
+import PreferenceHeader from '../preference/PreferenceHeader.tsx'
+import PreferenceStore from '../preference/PreferenceStore.ts'
+import SwitchPreference from '../preference/SwitchPreference.tsx'
+import SelectPreference from '../preference/SelectPreference.tsx'
+import TextFieldPreference from '../preference/TextFieldPreference.tsx'
+import Preference from '../preference/Preference.tsx'
+
 interface Args extends React.HTMLAttributes<HTMLElement> {
     target: string
     showReturnButton?: boolean
@@ -202,7 +210,9 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
             addFile(file.type, file.name, file)
         }
     })
-
+    
+    const groupPreferenceStore = new PreferenceStore()
+    
     return (
         <div style={{
             width: '100%',
@@ -424,7 +434,57 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                     flexDirection: "column",
                     height: "100%",
                 }}>
-                    Work in progress...
+                    {
+                        chatInfo.type == 'group' && <PreferenceLayout>
+                            <PreferenceHeader
+                                title="群组管理" />
+                            <Preference
+                                title="群组成员列表"
+                                icon="group"
+                                disabled={true}
+                                description="别看了, 还没做" />
+                            <PreferenceHeader
+                                title="入群设定" />
+                            <SwitchPreference
+                                title="允许入群"
+                                icon="person_add"
+                                updater={groupPreferenceStore.updater('allow_new_member_join')} />
+                            <SwitchPreference
+                                title="允许成员邀请"
+                                description="目前压根没有这项功能, 甚至还不能查看成员列表, 以后再说吧"
+                                icon="_"
+                                disabled={true}
+                                updater={groupPreferenceStore.updater('allow_new_member_from_invitation')} />
+                            <SelectPreference
+                                title="入群验证方式"
+                                icon="_"
+                                selections={{
+                                    disabled: "无需验证",
+                                    allowed_by_admin: "只需要管理员批准 (WIP)",
+                                    answered_and_allowed_by_admin: "需要回答问题并获得管理员批准 (WIP)",
+                                }}
+                                disabled={!groupPreferenceStore.value.allow_new_member_join}
+                                updater={groupPreferenceStore.updater('new_member_join_method')}
+                                defaultCheckedId="disabled" />
+                            {
+                                groupPreferenceStore.value.new_member_join_method == 'answered_and_allowed_by_admin'
+                                && <TextFieldPreference
+                                    title="设置问题"
+                                    icon="_"
+                                    description="WIP"
+                                    defaultValue=""
+                                    disabled={true}
+                                    updater={groupPreferenceStore.updater('answered_and_allowed_by_admin_question')} />
+                            }
+                        </PreferenceLayout>
+                    }
+                    {
+                        chatInfo.type == 'private' && (
+                            <div>
+                                未制作
+                            </div>
+                        )
+                    }
                 </mdui-tab-panel>
                 <mdui-tab-panel slot="panel" value="None">
                 </mdui-tab-panel>
