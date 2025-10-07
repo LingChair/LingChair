@@ -9,6 +9,7 @@ import BaseApi from "./BaseApi.ts"
 import TokenManager from "./TokenManager.ts"
 import ChatPrivate from "../data/ChatPrivate.ts"
 import ChatGroup from "../data/ChatGroup.ts"
+import GroupSettingsBean from "../data/GroupSettingsBean.ts"
 
 export default class ChatApi extends BaseApi {
     override getName(): string {
@@ -53,7 +54,8 @@ export default class ChatApi extends BaseApi {
                         id: args.target as string,
                         type: chat.bean.type,
                         title: chat.getTitle(mine),
-                        avatar: chat.getAvatarFileHash(mine) ? "uploaded_files/" + chat.getAvatarFileHash(mine) : undefined
+                        avatar: chat.getAvatarFileHash(mine) ? "uploaded_files/" + chat.getAvatarFileHash(mine) : undefined,
+                        settings: JSON.parse(chat.bean.settings),
                     }
                 }
             }
@@ -65,7 +67,8 @@ export default class ChatApi extends BaseApi {
                         id: args.target as string,
                         type: chat.bean.type,
                         title: chat.getTitle(),
-                        avatar: chat.getAvatarFileHash() ? "uploaded_files/" + chat.getAvatarFileHash() : undefined
+                        avatar: chat.getAvatarFileHash() ? "uploaded_files/" + chat.getAvatarFileHash() : undefined,
+                        settings: JSON.parse(chat.bean.settings),
                     }
                 }
             }
@@ -285,6 +288,39 @@ export default class ChatApi extends BaseApi {
                 data: {
                     chat_id: chat.bean.id,
                 }
+            }
+        })
+        /**
+         * 更新设定
+         * @param token 令牌
+         * @param title 名称
+         * @param [id] 群组 ID
+         */
+        this.registerEvent("Chat.updateSettings", (args, { deviceId }) => {
+            if (this.checkArgsMissing(args, ['token', 'target', 'settings'])) return {
+                msg: "参数缺失",
+                code: 400,
+            }
+
+            const token = TokenManager.decode(args.token as string)
+            if (!this.checkToken(token, deviceId)) return {
+                code: 401,
+                msg: "令牌无效",
+            }
+            const user = User.findById(token.author) as User
+            
+            const chat = Chat.findById(args.target as string)
+            if (chat == null) return {
+                code: 404,
+                msg: "对话不存在",
+            }
+
+            if (chat.bean.type == 'group')
+                ChatGroup.fromChat(chat).getSettings().update(args.settings as GroupSettingsBean)
+
+            return {
+                code: 200,
+                msg: '成功',
             }
         })
         /**
