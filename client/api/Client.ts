@@ -26,7 +26,7 @@ class Client {
         })
         this.socket!.on("connect", async () => {
             this.connected = true
-            const re = await this.auth(data.access_token)
+            const re = await this.auth(data.access_token as string)
             if (re.code != 200)
                 checkApiSuccessOrSncakbar(re, "重连失败")
         })
@@ -42,7 +42,7 @@ class Client {
             }
         })
     }
-    static invoke(method: CallMethod, args: unknown = {}, timeout: number = 5000, refreshAndRetryLimit: number = 3, forceRefreshAndRetry: boolean = false): Promise<ApiCallbackMessage> {
+    static invoke(method: CallMethod, args: object = {}, timeout: number = 5000, refreshAndRetryLimit: number = 3, forceRefreshAndRetry: boolean = false): Promise<ApiCallbackMessage> {
         // 在 未初始化 / 未建立连接且调用非可调用接口 的时候进行延迟
         if (this.socket == null || (!this.connected && !CallableMethodBeforeAuth.includes(method))) {
             return new Promise((reslove) => {
@@ -87,7 +87,7 @@ class Client {
         const re = await this.invoke("User.refreshAccessToken", {
             refresh_token: data.refresh_token 
         })
-        return re.data?.access_token
+        return re.data?.access_token as string
     }
     static async auth(token: string, timeout: number = 5000) {
         const re = await this.invoke("User.auth", {

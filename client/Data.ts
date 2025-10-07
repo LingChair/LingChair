@@ -21,6 +21,7 @@ const _data_cached = JSON.parse(_dec)
 declare global {
     interface Window {
         data: {
+            refresh_token?: string
             split_sizes: number[]
             apply(): void
             access_token?: string
@@ -29,6 +30,7 @@ declare global {
     }
 }
 
+// @ts-ignore: 忽略...
 // deno-lint-ignore no-window
 (window.data == null) && (window.data = new Proxy({
     apply() {}

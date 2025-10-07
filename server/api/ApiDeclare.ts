@@ -2,6 +2,7 @@ export type CallMethod =
     "User.auth" |
     "User.register" |
     "User.login" |
+    "User.refreshAccessToken" |
 
     "User.setAvatar" |
     "User.updateProfile" |
@@ -16,6 +17,8 @@ export type CallMethod =
     "User.getMyRecentChats" | 
 
     "Chat.getInfo" |
+
+    "Chat.createGroup" |
 
     "Chat.getIdForPrivate" |
     "Chat.getAnotherUserIdFromPrivate" |

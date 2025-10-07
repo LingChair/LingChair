@@ -32,15 +32,15 @@ export default class TokenManager {
         }
     }
 
-    static make(user: User, time_: number | null | undefined, device_id: string, type: TokenType = "access_token") {
+    static make(user: User, time_: number | null | undefined, device_id: string, tokenType: TokenType = "access_token") {
         const time = (time_ || Date.now())
         return this.encode({
             author: user.bean.id,
             auth: this.makeAuth(user),
             made_time: time,
-            expired_time: time + (type == 'access_token' ? (1000 * 60 * 60 * 2) : (40 * 1000 * 60 * 60 * 24)),
+            expired_time: time + (tokenType == 'access_token' ? (1000 * 60 * 60 * 2) : (40 * 1000 * 60 * 60 * 24)),
             device_id: device_id,
-            type
+            type: tokenType
         })
     }
     /**
