@@ -1,13 +1,22 @@
-import { $ } from 'mdui/jq'
 import { Switch } from 'mdui'
 import React from 'react'
-import useEventListener from '../useEventListener.ts'
 
-export default function SwitchPreference({ title, icon, updater, disabled, description } = {
-    disabled: false,
-}) {
+interface Args extends React.HTMLAttributes<HTMLElement> {
+    title: string
+    description?: string
+    icon: string
+    updater: (value: unknown) => void
+    defaultState: boolean
+    disabled?: boolean
+}
+
+export default function SwitchPreference({ title, icon, updater, disabled, description, defaultState }: Args) {
     const switchRef = React.useRef<Switch>(null)
     
+    React.useEffect(() => {
+        switchRef.current!.checked = defaultState
+    }, [defaultState])
+
     return <mdui-list-item disabled={disabled ? true : undefined} rounded icon={icon} onClick={() => {
         switchRef.current!.checked = !switchRef.current!.checked
         updater(switchRef.current!.checked)

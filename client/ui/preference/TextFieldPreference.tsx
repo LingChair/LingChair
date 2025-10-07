@@ -1,12 +1,17 @@
-import { $ } from 'mdui/jq'
 import React from 'react'
-import { TextField, prompt } from 'mdui'
-import useEventListener from '../useEventListener.ts'
+import { prompt } from 'mdui'
 
-export default function TextFieldPreference({ title, icon, description, updater, defaultValue, disabled } = {
-    disabled: false,
-}) {
-    const [ text, setText ] = React.useState(defaultValue)
+interface Args extends React.HTMLAttributes<HTMLElement> {
+    title: string
+    description?: string
+    icon: string
+    updater: (value: unknown) => void
+    defaultState: string
+    disabled?: boolean
+}
+
+export default function TextFieldPreference({ title, icon, description, updater, defaultState, disabled }: Args) {
+    const [ text, setText ] = React.useState(defaultState)
     
     return <mdui-list-item icon={icon} rounded disabled={disabled ? true : undefined} onClick={() => {
         prompt({
