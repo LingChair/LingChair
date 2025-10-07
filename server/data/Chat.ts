@@ -10,6 +10,7 @@ import User from "./User.ts"
 import ChatType from "./ChatType.ts"
 import UserChatLinker from "./UserChatLinker.ts"
 import DataWrongError from '../api/DataWrongError.ts'
+import ChatAdminLinker from "./ChatAdminLinker.ts"
 
 /**
  * Chat.ts - Wrapper and manager
@@ -80,6 +81,10 @@ export default class Chat {
         this.bean[key] = value
     }
 
+    addAdmin(userId: string, permission: string[] | string) {
+        ChatAdminLinker.linkAdminAndChat(userId, this.bean.id)
+        ChatAdminLinker.updatePermissions(userId, this.bean.id, permission instanceof Array ? JSON.stringify(permission) : permission)
+    }
     getMembersList() {
         return UserChatLinker.getChatMembers(this.bean.id)
     }
