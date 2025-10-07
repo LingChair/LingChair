@@ -1,11 +1,11 @@
 import React from 'react'
 
-export default class PreferenceStore {
-    declare value: { [key: string]: unknown }
-    declare setter: React.Dispatch<React.SetStateAction<{ [key: string]: unknown }>>
+export default class PreferenceStore<T extends object> {
+    declare value: T
+    declare setter: React.Dispatch<React.SetStateAction<T>>
     declare onUpdate: (value: unknown) => void
     constructor() {
-        const _ = React.useState<{ [key: string]: unknown }>({})
+        const _ = React.useState<T>({} as T)
         this.value = _[0]
         this.setter = _[1]
     }
