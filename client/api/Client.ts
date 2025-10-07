@@ -44,7 +44,6 @@ class Client {
     }
     static invoke(method: CallMethod, args: unknown = {}, timeout: number = 5000, refreshAndRetryLimit: number = 3, forceRefreshAndRetry: boolean = false): Promise<ApiCallbackMessage> {
         // 在 未初始化 / 未建立连接且调用非可调用接口 的时候进行延迟
-        console.log(this.connected, method)
         if (this.socket == null || (!this.connected && !CallableMethodBeforeAuth.includes(method))) {
             return new Promise((reslove) => {
                 setTimeout(async () => reslove(await this.invoke(method, args, timeout)), 500)
@@ -95,6 +94,7 @@ class Client {
             access_token: token
         }, timeout, 1, true)
         if (re.code == 200) {
+            // 灵车: 你应该先 connected = true 再调用
             await this.updateCachedProfile()
             document.cookie = 'token=' + token
             document.cookie = 'device_id=' + data.device_id
