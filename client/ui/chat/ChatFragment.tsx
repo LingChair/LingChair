@@ -448,12 +448,14 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                             <SwitchPreference
                                 title="允许入群"
                                 icon="person_add"
+                                defaultState={false}
                                 updater={groupPreferenceStore.updater('allow_new_member_join')} />
                             <SwitchPreference
                                 title="允许成员邀请"
                                 description="目前压根没有这项功能, 甚至还不能查看成员列表, 以后再说吧"
                                 icon="_"
                                 disabled={true}
+                                defaultState={false}
                                 updater={groupPreferenceStore.updater('allow_new_member_from_invitation')} />
                             <SelectPreference
                                 title="入群验证方式"
@@ -472,7 +474,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                                     title="设置问题"
                                     icon="_"
                                     description="WIP"
-                                    defaultValue=""
+                                    defaultState=""
                                     disabled={true}
                                     updater={groupPreferenceStore.updater('answered_and_allowed_by_admin_question')} />
                             }
