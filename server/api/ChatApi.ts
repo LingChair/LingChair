@@ -267,7 +267,10 @@ export default class ChatApi extends BaseApi {
             const user = User.findById(token.author) as User
             
             const haveId = args.id && (args.id as string) != ''
-            if (haveId && Chat.findById(args.id as string) != null) return 
+            if (haveId && Chat.findById(args.id as string) != null) return {
+                msg: "对话 ID 已被占用",
+                code: 403,
+            }
             
             const chat = ChatGroup.createGroup(haveId ? undefined : args.id as string)
             chat.setTitle(args.title as string)
