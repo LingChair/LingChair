@@ -324,6 +324,7 @@ export default class ChatApi extends BaseApi {
                 AdminPermissions.OWNER,
             ])
             user.addContact(chat.bean.id)
+            MessagesManager.getInstanceForChat(chat).addSystemMessage("群组已创建")
 
             return {
                 code: 200,
