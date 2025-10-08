@@ -1,3 +1,6 @@
+type ErrorCausedBy =
+    'NOT_IN_THIS_CHAT_MEMBER_LIST'
+
 type ApiCallbackMessage = {
     msg: string,
     /**
@@ -11,5 +14,6 @@ type ApiCallbackMessage = {
      */
     code: 200 | 400 | 401 | 403 | 404 | 500 | 501,
     data?: { [key: string]: unknown },
+    caused_by?: ErrorCausedBy,
 }
 export default ApiCallbackMessage
