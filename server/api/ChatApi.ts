@@ -10,6 +10,8 @@ import TokenManager from "./TokenManager.ts"
 import ChatPrivate from "../data/ChatPrivate.ts"
 import ChatGroup from "../data/ChatGroup.ts"
 import GroupSettingsBean from "../data/GroupSettingsBean.ts"
+import ChatAdminLinker from "../data/ChatAdminLinker.ts"
+import AdminPermissions from "../data/AdminPermissions.ts"
 
 export default class ChatApi extends BaseApi {
     override getName(): string {
@@ -280,6 +282,9 @@ export default class ChatApi extends BaseApi {
             chat.addMembers([
                 user.bean.id,
             ])
+            chat.addAdmin(user.bean.id, [
+                AdminPermissions.OWNER,
+            ])
             user.addContact(chat.bean.id)
 
             return {
@@ -316,7 +321,13 @@ export default class ChatApi extends BaseApi {
             }
 
             if (chat.bean.type == 'group')
-                ChatGroup.fromChat(chat).getSettings().update(args.settings as GroupSettingsBean)
+                if (ChatAdminLinker.checkAdminIsLinkedToChat(user.bean.id, chat.bean.id))
+                    ChatGroup.fromChat(chat).getSettings().update(args.settings as GroupSettingsBean)
+                else
+                    return {
+                        code: 403,
+                        msg: "没有此权限",
+                    }
 
             return {
                 code: 200,
