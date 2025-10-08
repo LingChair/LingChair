@@ -223,13 +223,13 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
     })
 
     const groupPreferenceStore = new PreferenceStore<GroupSettings>()
-    groupPreferenceStore.setOnUpdate(async (value) => {
+    groupPreferenceStore.setOnUpdate(async (value, oldvalue) => {
         const re = await Client.invoke("Chat.updateSettings", {
             token: data.access_token,
             target,
             settings: value,
         })
-        if (checkApiSuccessOrSncakbar(re, "更新设定失败")) return
+        if (checkApiSuccessOrSncakbar(re, "更新设定失败")) return groupPreferenceStore.setState(oldvalue)
     })
 
     return (
@@ -256,6 +256,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                 <mdui-tab value="Chat">{
                     chatInfo.title
                 }</mdui-tab>
+                {chatInfo.type == 'group' && <mdui-tab value="NewMemberRequests">入群申请</mdui-tab>}
                 <mdui-tab value="Settings">设置</mdui-tab>
                 <mdui-tab value="None" style={{ display: 'none' }}></mdui-tab>
                 <div style={{
@@ -329,7 +330,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                                     const lastDate = date
                                     date = new Date(msg.time)
 
-                                    const msgElement = msg.user_id == null ? <SystemMessage>{msg.text}</SystemMessage> :<Element_Message
+                                    const msgElement = msg.user_id == null ? <SystemMessage>{msg.text}</SystemMessage> : <Element_Message
                                         rawData={msg.text}
                                         renderHTML={rendeText}
                                         message={msg}
@@ -449,6 +450,15 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                         </div>
                     </div>
                 </mdui-tab-panel>
+                {
+                    chatInfo.type == 'group' && <mdui-tab-panel slot="panel" value="NewMemberRequests" style={{
+                        display: tabItemSelected == "NewMemberRequests" ? "flex" : "none",
+                        flexDirection: "column",
+                        height: "100%",
+                    }}>
+                        未制作
+                    </mdui-tab-panel>
+                }
                 <mdui-tab-panel slot="panel" value="Settings" style={{
                     display: tabItemSelected == "Settings" ? "flex" : "none",
                     flexDirection: "column",
