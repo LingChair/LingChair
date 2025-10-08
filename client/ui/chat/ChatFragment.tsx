@@ -25,7 +25,8 @@ import SelectPreference from '../preference/SelectPreference.tsx'
 import TextFieldPreference from '../preference/TextFieldPreference.tsx'
 import Preference from '../preference/Preference.tsx'
 import GroupSettings from "../../api/client_data/GroupSettings.ts"
-import PreferenceUpdater from "../preference/PreferenceUpdater.ts";
+import PreferenceUpdater from "../preference/PreferenceUpdater.ts"
+import SystemMessage from "./SystemMessage.tsx"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     target: string
@@ -323,7 +324,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                                     const lastDate = date
                                     date = new Date(msg.time)
 
-                                    const msgElement = <Element_Message
+                                    const msgElement = msg.user_id == null ? <SystemMessage>{msg.text}</SystemMessage> :<Element_Message
                                         rawData={msg.text}
                                         renderHTML={rendeText}
                                         message={msg}
@@ -336,6 +337,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                                     return (
                                         <>
                                             {
+                                                msg.user_id != null &&
                                                 (date.getMinutes() != lastDate.getMinutes() || date.getDate() != lastDate.getDate() || date.getMonth() != lastDate.getMonth() || date.getFullYear() != lastDate.getFullYear())
                                                 && <mdui-tooltip content={`${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日  ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`}>
                                                     <div style={{

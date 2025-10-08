@@ -1,8 +1,5 @@
-/**
- * 一条系统提示消息
- * @returns { React.JSX.Element }
- */
-export default function SystemMessage({ children } = {}) {
+
+export default function SystemMessage({ children }: React.HTMLAttributes<HTMLElement>) {
     return (
         <div style={{
             width: '100%',
