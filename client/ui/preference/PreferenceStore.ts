@@ -1,7 +1,7 @@
 import React from 'react'
 
 export default class PreferenceStore<T extends object> {
-    declare onUpdate: (value: T) => void
+    declare onUpdate: (value: T, oldvalue: T) => void
     declare state: T
     declare setState: React.Dispatch<React.SetStateAction<T>>
     constructor() {
@@ -12,15 +12,16 @@ export default class PreferenceStore<T extends object> {
 
     createUpdater() {
         return (key: string, value: unknown) => {
+            const oldvalue = this.state
             const newValue = {
                 ...this.state,
                 [key]: value,
             }
             this.setState(newValue)
-            this.onUpdate?.(newValue)
+            this.onUpdate?.(newValue, oldvalue)
         }
     }
-    setOnUpdate(onUpdate: (value: T) => void) {
+    setOnUpdate(onUpdate: (value: T, oldvalue: T) => void) {
         this.onUpdate = onUpdate
     }
 }
