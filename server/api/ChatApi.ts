@@ -40,10 +40,6 @@ export default class ChatApi extends BaseApi {
                 code: 404,
                 msg: "对话不存在",
             }
-            if (!UserChatLinker.checkUserIsLinkedToChat(token.author, chat!.bean.id)) return {
-                code: 403,
-                msg: "用户无权访问此对话",
-            }
 
             // 私聊
             if (chat!.bean.type == 'private') {
@@ -165,6 +161,7 @@ export default class ChatApi extends BaseApi {
             if (!UserChatLinker.checkUserIsLinkedToChat(token.author, chat!.bean.id)) return {
                 code: 403,
                 msg: "用户无权访问此对话",
+                caused_by: 'NOT_IN_THIS_CHAT_MEMBER_LIST',
             }
 
             return {
@@ -253,7 +250,7 @@ export default class ChatApi extends BaseApi {
          * @param token 令牌
          * @param target ID
          */
-        this.registerEvent("Chat.requestToBeMemberOfGroup", (args, { deviceId }) => {
+        this.registerEvent("Chat.requestJoinGroup", (args, { deviceId }) => {
             if (this.checkArgsMissing(args, ['token', 'target'])) return {
                 msg: "参数缺失",
                 code: 400,
