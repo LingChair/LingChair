@@ -83,7 +83,13 @@ export default class Chat {
 
     addAdmin(userId: string, permission: string[] | string) {
         ChatAdminLinker.linkAdminAndChat(userId, this.bean.id)
+        this.setAdminPermissions(userId, permission)
+    }
+    setAdminPermissions(userId: string, permission: string[] | string) {
         ChatAdminLinker.updatePermissions(userId, this.bean.id, permission instanceof Array ? JSON.stringify(permission) : permission)
+    }
+    removeAdmins(userIds: string[]) {
+        userIds.forEach((v) => ChatAdminLinker.unlinkAdminAndChat(v, this.bean.id))
     }
     getMembersList() {
         return UserChatLinker.getChatMembers(this.bean.id)
