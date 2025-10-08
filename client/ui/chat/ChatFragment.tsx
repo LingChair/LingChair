@@ -25,6 +25,7 @@ import SelectPreference from '../preference/SelectPreference.tsx'
 import TextFieldPreference from '../preference/TextFieldPreference.tsx'
 import Preference from '../preference/Preference.tsx'
 import GroupSettings from "../../api/client_data/GroupSettings.ts"
+import PreferenceUpdater from "../preference/PreferenceUpdater.ts";
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     target: string
@@ -65,7 +66,6 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
     } as Chat)
 
     const [tabItemSelected, setTabItemSelected] = React.useState('None')
-    const [groupPreferenceDefaultValue, setGroupPreferenceDefaultValue] = React.useState<GroupSettings>({})
     const tabRef = React.useRef<Tab>(null)
     const chatPanelRef = React.useRef<HTMLElement>(null)
     useEventListener(tabRef, 'change', () => {
@@ -85,9 +85,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
 
         setTabItemSelected("Chat")
         if (re.data!.type == 'group') {
-            setGroupPreferenceDefaultValue(re.data!.settings as GroupSettings)
-            groupPreferenceStore.setter(re.data!.settings as GroupSettings)
-            console.log(re.data!.settings as GroupSettings)
+            groupPreferenceStore.setState(re.data!.settings as GroupSettings)
         }
         setTimeout(() => {
             chatPanelRef.current!.scrollTo({
@@ -226,11 +224,6 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
             settings: value,
         })
         if (checkApiSuccessOrSncakbar(re, "更新设定失败")) return
-
-        setChatInfo(JSON.parse(JSON.stringify({
-            ...chatInfo,
-            settings: value as object,
-        })))
     })
 
     return (
@@ -456,48 +449,50 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                 }}>
                     {
                         chatInfo.type == 'group' && <PreferenceLayout>
-                            <PreferenceHeader
-                                title="群组管理" />
-                            <Preference
-                                title="群组成员列表"
-                                icon="group"
-                                disabled={true}
-                                description="别看了, 还没做" />
-                            <PreferenceHeader
-                                title="入群设定" />
-                            <SwitchPreference
-                                title="允许入群"
-                                icon="person_add"
-                                defaultState={groupPreferenceDefaultValue.allow_new_member_join || false}
-                                updater={groupPreferenceStore.updater('allow_new_member_join')} />
-                            <SwitchPreference
-                                title="允许成员邀请"
-                                description="目前压根没有这项功能, 甚至还不能查看成员列表, 以后再说吧"
-                                icon="_"
-                                disabled={true}
-                                defaultState={groupPreferenceDefaultValue.allow_new_member_from_invitation || false}
-                                updater={groupPreferenceStore.updater('allow_new_member_from_invitation')} />
-                            <SelectPreference
-                                title="入群验证方式"
-                                icon="_"
-                                selections={{
-                                    disabled: "无需验证",
-                                    allowed_by_admin: "只需要管理员批准 (WIP)",
-                                    answered_and_allowed_by_admin: "需要回答问题并获得管理员批准 (WIP)",
-                                }}
-                                disabled={!groupPreferenceStore.value.allow_new_member_join}
-                                updater={groupPreferenceStore.updater('new_member_join_method')}
-                                defaultCheckedId={groupPreferenceDefaultValue.new_member_join_method || 'disabled'} />
-                            {
-                                groupPreferenceStore.value.new_member_join_method == 'answered_and_allowed_by_admin'
-                                && <TextFieldPreference
-                                    title="设置问题"
-                                    icon="_"
-                                    description="WIP"
-                                    defaultState={groupPreferenceDefaultValue.answered_and_allowed_by_admin_question || ''}
+                            <PreferenceUpdater.Provider value={groupPreferenceStore.createUpdater()}>
+                                <PreferenceHeader
+                                    title="群组管理" />
+                                <Preference
+                                    title="群组成员列表"
+                                    icon="group"
                                     disabled={true}
-                                    updater={groupPreferenceStore.updater('answered_and_allowed_by_admin_question')} />
-                            }
+                                    description="别看了, 还没做" />
+                                <PreferenceHeader
+                                    title="入群设定" />
+                                <SwitchPreference
+                                    title="允许入群"
+                                    icon="person_add"
+                                    id="allow_new_member_join"
+                                    state={groupPreferenceStore.state.allow_new_member_join || false} />
+                                <SwitchPreference
+                                    title="允许成员邀请"
+                                    description="目前压根没有这项功能, 甚至还不能查看成员列表, 以后再说吧"
+                                    id="allow_new_member_from_invitation"
+                                    icon="_"
+                                    disabled={true}
+                                    state={groupPreferenceStore.state.allow_new_member_from_invitation || false} />
+                                <SelectPreference
+                                    title="入群验证方式"
+                                    icon="_"
+                                    id="new_member_join_method"
+                                    selections={{
+                                        disabled: "无需验证",
+                                        allowed_by_admin: "只需要管理员批准 (WIP)",
+                                        answered_and_allowed_by_admin: "需要回答问题并获得管理员批准 (WIP)",
+                                    }}
+                                    disabled={!groupPreferenceStore.state.allow_new_member_join}
+                                    state={groupPreferenceStore.state.new_member_join_method || 'disabled'} />
+                                {
+                                    groupPreferenceStore.state.new_member_join_method == 'answered_and_allowed_by_admin'
+                                    && <TextFieldPreference
+                                        title="设置问题"
+                                        icon="_"
+                                        id="answered_and_allowed_by_admin_question"
+                                        description="WIP"
+                                        state={groupPreferenceStore.state.answered_and_allowed_by_admin_question || ''}
+                                        disabled={true} />
+                                }
+                            </PreferenceUpdater.Provider>
                         </PreferenceLayout>
                     }
                     {
