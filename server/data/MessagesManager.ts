@@ -27,7 +27,7 @@ export default class MessagesManager {
             CREATE TABLE IF NOT EXISTS ${this.getTableName()} (
                 /* 序号, MessageId */ id INTEGER PRIMARY KEY AUTOINCREMENT,
                 /* 消息文本 */ text TEXT NOT NULL,
-                /* 发送者 */ user_id TEXT NOT NULL,
+                /* 发送者 */ user_id TEXT,
                 /* 发送时间 */ time INT8 NOT NULL
             );
        `)
