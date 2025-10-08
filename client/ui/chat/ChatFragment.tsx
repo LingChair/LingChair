@@ -104,7 +104,12 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
             page: page.current,
         })
 
-        if (checkApiSuccessOrSncakbar(re, "拉取对话记录失败")) return
+        if (re.caused_by == 'NOT_IN_THIS_CHAT_MEMBER_LIST')
+            return setMessagesList([{
+                text: '您未在群成员之中, 请等待管理员审批...',
+            }] as Message[])
+        else if(checkApiSuccessOrSncakbar(re, "拉取对话记录失败"))
+             return
         const returnMsgs = (re.data!.messages as Message[]).reverse()
         page.current++
         if (returnMsgs.length == 0) {
