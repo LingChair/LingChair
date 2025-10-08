@@ -1,26 +1,26 @@
 import React from 'react'
 
 export default class PreferenceStore<T extends object> {
-    declare value: T
-    declare setter: React.Dispatch<React.SetStateAction<T>>
-    declare onUpdate: (value: unknown) => void
+    declare onUpdate: (value: T) => void
+    declare state: T
+    declare setState: React.Dispatch<React.SetStateAction<T>>
     constructor() {
-        const _ = React.useState<T>({} as T)
-        this.value = _[0]
-        this.setter = _[1]
+        const _ = React.useState({} as T)
+        this.state = _[0]
+        this.setState = _[1]
     }
-    // 创建一个用于子选项的更新函数
-    updater(key: string) {
-        return (value: unknown) => {
-            const newValue = JSON.parse(JSON.stringify({
-                ...this.value,
+
+    createUpdater() {
+        return (key: string, value: unknown) => {
+            const newValue = {
+                ...this.state,
                 [key]: value,
-            }))
-            this.setter(newValue)
+            }
+            this.setState(newValue)
             this.onUpdate?.(newValue)
         }
     }
-    setOnUpdate(onUpdate: (value: unknown) => void) {
+    setOnUpdate(onUpdate: (value: T) => void) {
         this.onUpdate = onUpdate
     }
 }

@@ -1,18 +1,19 @@
 import React from 'react'
 import { Dropdown } from 'mdui'
 import useEventListener from '../useEventListener.ts'
+import PreferenceUpdater from "./PreferenceUpdater.ts"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     title: string
     icon: string
+    id: string
     disabled?: boolean
-    updater: (value: unknown) => void
     selections: { [id: string]: string }
-    defaultCheckedId: string
+    state: string
 }
 
-export default function SelectPreference({ title, icon, updater, selections, defaultCheckedId, disabled }: Args) {
-    const [checkedId, setCheckedId] = React.useState(defaultCheckedId)
+export default function SelectPreference({ title, icon, id: preferenceId, selections, state, disabled }: Args) {
+    const updater = React.useContext(PreferenceUpdater)
 
     const dropDownRef = React.useRef<Dropdown>(null)
     const [isDropDownOpen, setDropDownOpen] = React.useState(false)
@@ -30,14 +31,13 @@ export default function SelectPreference({ title, icon, updater, selections, def
                 {
                     Object.keys(selections).map((id) =>
                         // @ts-ignore: selected 确实存在, 但是并不对外公开使用
-                        <mdui-menu-item key={id} selected={checkedId == id ? true : undefined} onClick={() => {
-                            setCheckedId(id)
-                            updater(id)
+                        <mdui-menu-item key={id} selected={state == id ? true : undefined} onClick={() => {
+                            updater(preferenceId, id)
                         }}>{selections[id]}</mdui-menu-item>
                     )
                 }
             </mdui-menu>
         </mdui-dropdown>
-        <span slot="description">{selections[checkedId]}</span>
+        <span slot="description">{selections[state]}</span>
     </mdui-list-item>
 }

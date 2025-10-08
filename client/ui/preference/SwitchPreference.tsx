@@ -1,25 +1,27 @@
 import { Switch } from 'mdui'
 import React from 'react'
+import PreferenceUpdater from "./PreferenceUpdater.ts"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     title: string
+    id: string
     description?: string
     icon: string
-    updater: (value: unknown) => void
-    defaultState: boolean
+    state: boolean
     disabled?: boolean
 }
 
-export default function SwitchPreference({ title, icon, updater, disabled, description, defaultState }: Args) {
+export default function SwitchPreference({ title, icon, id, disabled, description, state }: Args) {
+    const updater = React.useContext(PreferenceUpdater)
+
     const switchRef = React.useRef<Switch>(null)
     
     React.useEffect(() => {
-        switchRef.current!.checked = defaultState
-    }, [defaultState])
+        switchRef.current!.checked = state
+    }, [state])
 
     return <mdui-list-item disabled={disabled ? true : undefined} rounded icon={icon} onClick={() => {
-        switchRef.current!.checked = !switchRef.current!.checked
-        updater(switchRef.current!.checked)
+        updater(id, !state)
     }}>
         {title}
         {description && <span slot="description">{description}</span>}

@@ -1,17 +1,18 @@
 import React from 'react'
 import { prompt } from 'mdui'
+import PreferenceUpdater from "./PreferenceUpdater.ts"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     title: string
     description?: string
     icon: string
-    updater: (value: unknown) => void
-    defaultState: string
+    id: string
+    state: string
     disabled?: boolean
 }
 
-export default function TextFieldPreference({ title, icon, description, updater, defaultState, disabled }: Args) {
-    const [ text, setText ] = React.useState(defaultState)
+export default function TextFieldPreference({ title, icon, description, id, state, disabled }: Args) {
+    const updater = React.useContext(PreferenceUpdater)
     
     return <mdui-list-item icon={icon} rounded disabled={disabled ? true : undefined} onClick={() => {
         prompt({
@@ -19,13 +20,12 @@ export default function TextFieldPreference({ title, icon, description, updater,
             confirmText: "确定",
             cancelText: "取消",
             onConfirm: (value) => {
-                setText(value)
-                updater(value)
+                updater(id, value)
             },
             onCancel: () => {},
             textFieldOptions: {
                 label: description,
-                value: text,
+                value: state,
             },
         })
     }}>
