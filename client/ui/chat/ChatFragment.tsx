@@ -63,7 +63,9 @@ const markedInstance = new marked.Marked({
 export default function ChatFragment({ target, showReturnButton, onReturnButtonClicked, openChatInfoDialog, openUserInfoDialog, ...props }: Args) {
     const [messagesList, setMessagesList] = React.useState([] as Message[])
     const [chatInfo, setChatInfo] = React.useState({
-        title: '加载中...'
+        title: '加载中...',
+        is_member: true,
+        is_admin: true,
     } as Chat)
 
     const [tabItemSelected, setTabItemSelected] = React.useState('None')
