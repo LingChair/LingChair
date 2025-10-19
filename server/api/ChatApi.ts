@@ -10,7 +10,6 @@ import TokenManager from "./TokenManager.ts"
 import ChatPrivate from "../data/ChatPrivate.ts"
 import ChatGroup from "../data/ChatGroup.ts"
 import GroupSettingsBean from "../data/GroupSettingsBean.ts"
-import ChatAdminLinker from "../data/ChatAdminLinker.ts"
 import AdminPermissions from "../data/AdminPermissions.ts"
 
 export default class ChatApi extends BaseApi {
@@ -169,7 +168,6 @@ export default class ChatApi extends BaseApi {
             if (!UserChatLinker.checkUserIsLinkedToChat(token.author, chat!.bean.id)) return {
                 code: 403,
                 msg: "用户无权访问此对话",
-                caused_by: 'NOT_IN_THIS_CHAT_MEMBER_LIST',
             }
 
             return {
@@ -365,7 +363,7 @@ export default class ChatApi extends BaseApi {
             }
 
             if (chat.bean.type == 'group')
-                if (ChatAdminLinker.checkAdminIsLinkedToChat(user.bean.id, chat.bean.id))
+                if (chat.checkUserIsAdmin(user.bean.id))
                     ChatGroup.fromChat(chat).getSettings().update(args.settings as GroupSettingsBean)
                 else
                     return {
