@@ -7,5 +7,8 @@ export default class Chat {
     declare avatar?: string
     declare settings?: { [key: string]: unknown }
 
+    declare is_member: boolean
+    declare is_admin: boolean
+
     [key: string]: unknown
 }

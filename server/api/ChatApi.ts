@@ -58,6 +58,8 @@ export default class ChatApi extends BaseApi {
                         title: chat.getTitle(mine),
                         avatar: chat.getAvatarFileHash(mine) ? "uploaded_files/" + chat.getAvatarFileHash(mine) : undefined,
                         settings: JSON.parse(chat.bean.settings),
+                        is_member: true,
+                        is_admin: true,
                     }
                 }
             }
@@ -71,13 +73,15 @@ export default class ChatApi extends BaseApi {
                         title: chat.getTitle(),
                         avatar: chat.getAvatarFileHash() ? "uploaded_files/" + chat.getAvatarFileHash() : undefined,
                         settings: JSON.parse(chat.bean.settings),
+                        is_member: UserChatLinker.checkUserIsLinkedToChat(token.author, chat!.bean.id),
+                        is_admin: chat.checkUserIsAdmin(token.author),
                     }
                 }
             }
 
             return {
-                code: 501,
-                msg: "not implmented",
+                code: 404,
+                msg: "找不到对话",
             }
         })
         /**
