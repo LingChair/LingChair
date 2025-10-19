@@ -472,7 +472,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                                 <Preference
                                     title="群组成员列表"
                                     icon="group"
-                                    disabled={true}
+                                    disabled={true || !chatInfo.is_admin}
                                     description="别看了, 还没做" />
                                 <PreferenceHeader
                                     title="入群设定" />
@@ -480,13 +480,14 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                                     title="允许入群"
                                     icon="person_add"
                                     id="allow_new_member_join"
+                                    disabled={!chatInfo.is_admin}
                                     state={groupPreferenceStore.state.allow_new_member_join || false} />
                                 <SwitchPreference
                                     title="允许成员邀请"
                                     description="目前压根没有这项功能, 甚至还不能查看成员列表, 以后再说吧"
                                     id="allow_new_member_from_invitation"
                                     icon="_"
-                                    disabled={true}
+                                    disabled={true || !chatInfo.is_admin}
                                     state={groupPreferenceStore.state.allow_new_member_from_invitation || false} />
                                 <SelectPreference
                                     title="入群验证方式"
@@ -497,7 +498,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                                         allowed_by_admin: "只需要管理员批准 (WIP)",
                                         answered_and_allowed_by_admin: "需要回答问题并获得管理员批准 (WIP)",
                                     }}
-                                    disabled={!groupPreferenceStore.state.allow_new_member_join}
+                                    disabled={!chatInfo.is_admin || !groupPreferenceStore.state.allow_new_member_join}
                                     state={groupPreferenceStore.state.new_member_join_method || 'disabled'} />
                                 {
                                     groupPreferenceStore.state.new_member_join_method == 'answered_and_allowed_by_admin'
@@ -507,7 +508,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                                         id="answered_and_allowed_by_admin_question"
                                         description="WIP"
                                         state={groupPreferenceStore.state.answered_and_allowed_by_admin_question || ''}
-                                        disabled={true} />
+                                        disabled={true || !chatInfo.is_admin} />
                                 }
                             </PreferenceUpdater.Provider>
                         </PreferenceLayout>
