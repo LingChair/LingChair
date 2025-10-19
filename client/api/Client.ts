@@ -42,7 +42,7 @@ class Client {
             }
         })
     }
-    static invoke(method: CallMethod, args: object = {}, timeout: number = 5000, refreshAndRetryLimit: number = 3, forceRefreshAndRetry: boolean = false): Promise<ApiCallbackMessage> {
+    static invoke(method: CallMethod, args: object = {}, timeout: number = 10000, refreshAndRetryLimit: number = 3, forceRefreshAndRetry: boolean = false): Promise<ApiCallbackMessage> {
         // 在 未初始化 / 未建立连接且调用非可调用接口 的时候进行延迟
         if (this.socket == null || (!this.connected && !CallableMethodBeforeAuth.includes(method))) {
             return new Promise((reslove) => {
@@ -89,7 +89,7 @@ class Client {
         })
         return re.data?.access_token as string
     }
-    static async auth(token: string, timeout: number = 5000) {
+    static async auth(token: string, timeout: number) {
         const re = await this.invoke("User.auth", {
             access_token: token
         }, timeout, 1, true)
