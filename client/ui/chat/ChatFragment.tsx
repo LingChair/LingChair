@@ -80,13 +80,14 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
         })
         if (re.code != 200)
             return target != '' && checkApiSuccessOrSncakbar(re, "获取对话信息失败")
-        setChatInfo(re.data as Chat)
+        const chatInfo = re.data as Chat
+        setChatInfo(chatInfo)
 
         await loadMore()
 
-        setTabItemSelected("Chat")
+        setTabItemSelected(chatInfo.is_member ? "Chat" : "RequestJoin")
         if (re.data!.type == 'group') {
-            groupPreferenceStore.setState(re.data!.settings as GroupSettings)
+            groupPreferenceStore.setState(chatInfo.settings as GroupSettings)
         }
         setTimeout(() => {
             chatPanelRef.current!.scrollTo({
