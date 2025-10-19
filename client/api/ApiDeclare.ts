@@ -17,13 +17,17 @@ export type CallMethod =
     "User.getMyRecentChats" | 
 
     "Chat.getInfo" |
-
+    
     "Chat.updateSettings" |
 
     "Chat.createGroup" |
 
     "Chat.getIdForPrivate" |
     "Chat.getAnotherUserIdFromPrivate" |
+
+    "Chat.processJoinRequest" |
+    "Chat.sendJoinRequest" |
+    "Chat.getJoinRequests" |
 
     "Chat.sendMessage" |
     "Chat.getMessageHistory" |

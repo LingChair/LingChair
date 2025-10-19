@@ -18,71 +18,10 @@ export default class ChatApi extends BaseApi {
     }
     override onInit(): void {
         /**
-         * 獲取對話訊息
-         * @param token 令牌
-         * @param target 目標對話
+         * ======================================================
+         *                        对话消息
+         * ======================================================
          */
-        this.registerEvent("Chat.getInfo", (args, { deviceId }) => {
-            if (this.checkArgsMissing(args, ['token', 'target'])) return {
-                msg: "参数缺失",
-                code: 400,
-            }
-
-            const token = TokenManager.decode(args.token as string)
-            if (!this.checkToken(token, deviceId)) return {
-                code: 401,
-                msg: "令牌无效",
-            }
-
-            const chat = Chat.findById(args.target as string)
-            if (chat == null) return {
-                code: 404,
-                msg: "对话不存在",
-            }
-
-            // 私聊
-            if (chat!.bean.type == 'private') {
-                if (!UserChatLinker.checkUserIsLinkedToChat(token.author, chat!.bean.id)) return {
-                    code: 403,
-                    msg: "用户无权访问此对话",
-                }
-                const mine = User.findById(token.author) as User
-
-                return {
-                    code: 200,
-                    msg: "成功",
-                    data: {
-                        id: args.target as string,
-                        type: chat.bean.type,
-                        title: chat.getTitle(mine),
-                        avatar: chat.getAvatarFileHash(mine) ? "uploaded_files/" + chat.getAvatarFileHash(mine) : undefined,
-                        settings: JSON.parse(chat.bean.settings),
-                        is_member: true,
-                        is_admin: true,
-                    }
-                }
-            }
-            if (chat!.bean.type == 'group') {
-                return {
-                    code: 200,
-                    msg: "成功",
-                    data: {
-                        id: args.target as string,
-                        type: chat.bean.type,
-                        title: chat.getTitle(),
-                        avatar: chat.getAvatarFileHash() ? "uploaded_files/" + chat.getAvatarFileHash() : undefined,
-                        settings: JSON.parse(chat.bean.settings),
-                        is_member: UserChatLinker.checkUserIsLinkedToChat(token.author, chat!.bean.id),
-                        is_admin: chat.checkUserIsAdmin(token.author),
-                    }
-                }
-            }
-
-            return {
-                code: 404,
-                msg: "找不到对话",
-            }
-        })
         /**
          * 發送訊息
          * @param token 令牌
@@ -218,6 +157,146 @@ export default class ChatApi extends BaseApi {
             }
         })
         /**
+         * ======================================================
+         *                       加入对话申请
+         * ======================================================
+         */
+        /**
+         * 获取所有的加入对话申请
+         * @param token 令牌
+         * @param target ID
+         */
+        this.registerEvent("Chat.getJoinRequests", (args, { deviceId }) => {
+            if (this.checkArgsMissing(args, ['token', 'target'])) return {
+                msg: "参数缺失",
+                code: 400,
+            }
+
+            const token = TokenManager.decode(args.token as string)
+            if (!this.checkToken(token, deviceId)) return {
+                code: 401,
+                msg: "令牌无效",
+            }
+
+            const chat = Chat.findById(args.target as string)
+            if (chat == null) return {
+                code: 404,
+                msg: "对话不存在",
+            }
+            if (!chat.checkUserIsAdmin(token.author)) return {
+                code: 403,
+                msg: "没有此权限",
+            }
+
+            return {
+                code: 200,
+                msg: '成功',
+                data: {
+                    join_requests: chat.getJoinRequests().map((v) => {
+                        const user = User.findById(v.user_id as string)
+                        return {
+                            user_id: user?.bean.id,
+                            reason: v.reason,
+                            title: user!.getNickName(),
+                            avatar: user!.getAvatarFileHash() ? "uploaded_files/" + user!.getAvatarFileHash() : null,
+                        }
+                    }),
+                }
+            }
+        })
+        /**
+         * 处理加入对话申请
+         * @param token 令牌
+         */
+        this.registerEvent("Chat.processJoinRequest", (args, { deviceId }) => {
+            if (this.checkArgsMissing(args, ['token', 'chat_id', 'user_id', 'action'])) return {
+                msg: "参数缺失",
+                code: 400,
+            }
+            const action = args.action as string
+
+            const token = TokenManager.decode(args.token as string)
+            if (!this.checkToken(token, deviceId)) return {
+                code: 401,
+                msg: "令牌无效",
+            }
+
+            const chat = Chat.findById(args.chat_id as string)
+            if (chat == null) return {
+                code: 404,
+                msg: "对话不存在",
+            }
+            if (!chat.checkUserIsAdmin(token.author)) return {
+                code: 403,
+                msg: "没有此权限",
+            }
+
+            const admin = User.findById(token.author)
+
+            if (chat.getJoinRequests().map((v) => v.user_id).indexOf(args.user_id as string) != -1) {
+                const user = User.findById(args.user_id as string)
+                if (user == null) {
+                    chat.removeJoinRequests([
+                        args.user_id as string,
+                    ])
+                } else {
+                    if (action == 'accept') {
+                        chat.addMembers([
+                            args.user_id as string,
+                        ])
+                        MessagesManager.getInstanceForChat(chat).addSystemMessage(`${user.getNickName()} 经 ${admin?.getNickName()} 批准加入了对话`)
+                    }
+                    if (action == 'accept' || action == 'remove')
+                        chat.removeJoinRequests([
+                            args.user_id as string,
+                        ])
+                }
+            }
+
+            return {
+                code: 200,
+                msg: '成功',
+            }
+        })
+        /**
+         * 加入群组
+         * @param token 令牌
+         * @param target ID
+         */
+        this.registerEvent("Chat.sendJoinRequest", (args, { deviceId }) => {
+            if (this.checkArgsMissing(args, ['token', 'target'])) return {
+                msg: "参数缺失",
+                code: 400,
+            }
+
+            const token = TokenManager.decode(args.token as string)
+            if (!this.checkToken(token, deviceId)) return {
+                code: 401,
+                msg: "令牌无效",
+            }
+
+            const chat = Chat.findById(args.target as string)
+            if (chat == null) return {
+                code: 404,
+                msg: "对话不存在",
+            }
+
+            chat.addJoinRequest(token.author, args.reason as string)
+
+            return {
+                code: 200,
+                msg: '成功',
+                data: {
+                    chat_id: chat.bean.id,
+                }
+            }
+        })
+        /**
+         * ======================================================
+         *                       创建对话
+         * ======================================================
+         */
+        /**
          * 获取私聊的 ChatId
          * @param token 令牌
          * @param target 目標用户
@@ -252,44 +331,6 @@ export default class ChatApi extends BaseApi {
             }
         })
         /**
-         * 加入群组
-         * @param token 令牌
-         * @param target ID
-         */
-        this.registerEvent("Chat.requestJoinGroup", (args, { deviceId }) => {
-            if (this.checkArgsMissing(args, ['token', 'target'])) return {
-                msg: "参数缺失",
-                code: 400,
-            }
-
-            const token = TokenManager.decode(args.token as string)
-            if (!this.checkToken(token, deviceId)) return {
-                code: 401,
-                msg: "令牌无效",
-            }
-            const user = User.findById(token.author) as User
-            
-            const chat = Chat.findById(args.target as string)
-            if (chat == null) return {
-                code: 404,
-                msg: "对话不存在",
-            }
-            if (!UserChatLinker.checkUserIsLinkedToChat(token.author, chat!.bean.id)) return {
-                code: 403,
-                msg: "用户无权访问此对话",
-            }
-            
-            
-
-            return {
-                code: 200,
-                msg: '成功',
-                data: {
-                    chat_id: chat.bean.id,
-                }
-            }
-        })
-        /**
          * 创建群组
          * @param token 令牌
          * @param title 名称
@@ -311,14 +352,14 @@ export default class ChatApi extends BaseApi {
                 msg: "令牌无效",
             }
             const user = User.findById(token.author) as User
-            
-            const haveId = args.id && (args.id as string) != ''
+
+            const haveId = args.id && ((args.id as string) != '')
             if (haveId && Chat.findById(args.id as string) != null) return {
                 msg: "对话 ID 已被占用",
                 code: 403,
             }
-            
-            const chat = ChatGroup.createGroup(haveId ? undefined : args.id as string)
+
+            const chat = ChatGroup.createGroup(haveId ? args.id as string : undefined)
             chat.setTitle(args.title as string)
             chat.addMembers([
                 user.bean.id,
@@ -335,6 +376,77 @@ export default class ChatApi extends BaseApi {
                 data: {
                     chat_id: chat.bean.id,
                 }
+            }
+        })
+        /**
+         * ======================================================
+         *                       对话信息
+         * ======================================================
+         */
+        /**
+         * 獲取對話訊息
+         * @param token 令牌
+         * @param target 目標對話
+         */
+        this.registerEvent("Chat.getInfo", (args, { deviceId }) => {
+            if (this.checkArgsMissing(args, ['token', 'target'])) return {
+                msg: "参数缺失",
+                code: 400,
+            }
+
+            const token = TokenManager.decode(args.token as string)
+            if (!this.checkToken(token, deviceId)) return {
+                code: 401,
+                msg: "令牌无效",
+            }
+
+            const chat = Chat.findById(args.target as string)
+            if (chat == null) return {
+                code: 404,
+                msg: "对话不存在",
+            }
+
+            // 私聊
+            if (chat!.bean.type == 'private') {
+                if (!UserChatLinker.checkUserIsLinkedToChat(token.author, chat!.bean.id)) return {
+                    code: 403,
+                    msg: "用户无权访问此对话",
+                }
+                const mine = User.findById(token.author) as User
+
+                return {
+                    code: 200,
+                    msg: "成功",
+                    data: {
+                        id: args.target as string,
+                        type: chat.bean.type,
+                        title: chat.getTitle(mine),
+                        avatar: chat.getAvatarFileHash(mine) ? "uploaded_files/" + chat.getAvatarFileHash(mine) : undefined,
+                        settings: JSON.parse(chat.bean.settings),
+                        is_member: true,
+                        is_admin: true,
+                    }
+                }
+            }
+            if (chat!.bean.type == 'group') {
+                return {
+                    code: 200,
+                    msg: "成功",
+                    data: {
+                        id: args.target as string,
+                        type: chat.bean.type,
+                        title: chat.getTitle(),
+                        avatar: chat.getAvatarFileHash() ? "uploaded_files/" + chat.getAvatarFileHash() : undefined,
+                        settings: JSON.parse(chat.bean.settings),
+                        is_member: UserChatLinker.checkUserIsLinkedToChat(token.author, chat!.bean.id),
+                        is_admin: chat.checkUserIsAdmin(token.author),
+                    }
+                }
+            }
+
+            return {
+                code: 404,
+                msg: "找不到对话",
             }
         })
         /**
@@ -355,7 +467,7 @@ export default class ChatApi extends BaseApi {
                 msg: "令牌无效",
             }
             const user = User.findById(token.author) as User
-            
+
             const chat = Chat.findById(args.target as string)
             if (chat == null) return {
                 code: 404,
@@ -413,7 +525,7 @@ export default class ChatApi extends BaseApi {
                         user_id: chat.getAnotherUserForPrivate(user)?.bean.id
                     }
                 }
-            
+
             return {
                 code: 403,
                 msg: "非私聊对话",

@@ -17,12 +17,11 @@ import DataWrongError from '../api/DataWrongError.ts'
  * Manage the database by itself (static)
  */
 export default class Chat {
-    static table_name: string = "Chat"
     private static database: DatabaseSync = Chat.init()
     private static init(): DatabaseSync {
         const db: DatabaseSync = new DatabaseSync(path.join(config.data_path, 'Chats.db'))
         db.exec(`
-            CREATE TABLE IF NOT EXISTS ${Chat.table_name} (
+            CREATE TABLE IF NOT EXISTS Chat (
                 /* 序号 */ count INTEGER PRIMARY KEY AUTOINCREMENT,
                 /* 类型 */ type TEXT NOT NULL,
                 /*  ID  */ id TEXT NOT NULL,
@@ -31,23 +30,15 @@ export default class Chat {
                 /* 设置 */ settings TEXT NOT NULL
             );
        `)
-       db.exec(`
-            CREATE TABLE IF NOT EXISTS ChatAdmin (
-                /* 序号 */ count INTEGER PRIMARY KEY AUTOINCREMENT,
-                /* 用戶 ID */ user_id TEXT NOT NULL,
-                /* Chat ID */ chat_id TEXT NOT NULL,
-                /* 管理权限 */ permissions TEXT NOT NULL
-            );
-       `)
         return db
     }
 
-    protected static findAllBeansByCondition(condition: string, ...args: SQLInputValue[]): ChatBean[] {
-        return this.database.prepare(`SELECT * FROM ${Chat.table_name} WHERE ${condition}`).all(...args) as unknown as ChatBean[]
+    protected static findAllChatBeansByCondition(condition: string, ...args: SQLInputValue[]): ChatBean[] {
+        return this.database.prepare(`SELECT * FROM Chat WHERE ${condition}`).all(...args) as unknown as ChatBean[]
     }
 
     static findById(id: string) {
-        const beans = this.findAllBeansByCondition('id = ?', id)
+        const beans = this.findAllChatBeansByCondition('id = ?', id)
         if (beans.length == 0)
             return null
         else if (beans.length > 1)
@@ -56,12 +47,12 @@ export default class Chat {
     }
 
     static create(chatId: string, type: ChatType) {
-        if (this.findAllBeansByCondition('id = ?', chatId).length > 0)
+        if (this.findAllChatBeansByCondition('id = ?', chatId).length > 0)
             throw new DataWrongError(`对话 ID ${chatId} 已被使用`)
         const chat = new Chat(
-            Chat.findAllBeansByCondition(
+            Chat.findAllChatBeansByCondition(
                 'count = ?',
-                Chat.database.prepare(`INSERT INTO ${Chat.table_name} (
+                Chat.database.prepare(`INSERT INTO Chat (
                     type,
                     id,
                     title,
@@ -82,46 +73,101 @@ export default class Chat {
     declare bean: ChatBean
     constructor(bean: ChatBean) {
         this.bean = bean
+
+        Chat.database.exec(`
+            CREATE TABLE IF NOT EXISTS ${this.getAdminsTableName()} (
+                /* 序号 */ count INTEGER PRIMARY KEY AUTOINCREMENT,
+                /* 用戶 ID */ user_id TEXT NOT NULL,
+                /* 管理权限 */ permissions TEXT NOT NULL
+            );
+       `)
+        Chat.database.exec(`
+            CREATE TABLE IF NOT EXISTS ${this.getJoinRequestsTableName()} (
+                /* 序号 */ count INTEGER PRIMARY KEY AUTOINCREMENT,
+                /* 用戶 ID */ user_id TEXT NOT NULL,
+                /* 请求原因 */ reason TEXT
+            );
+       `)
+    }
+    protected getAdminsTableName() {
+        return 'admins_' + this.bean.id.replaceAll('-', '_')
+    }
+    protected getJoinRequestsTableName() {
+        return 'join_requests_' + this.bean.id.replaceAll('-', '_')
     }
     setAttr(key: string, value: SQLInputValue): void {
-        Chat.database.prepare(`UPDATE ${Chat.table_name} SET ${key} = ? WHERE id = ?`).run(value, this.bean.id)
+        Chat.database.prepare(`UPDATE Chat SET ${key} = ? WHERE id = ?`).run(value, this.bean.id)
         this.bean[key] = value
     }
 
+    /**
+     * ======================================================
+     *                     加入对话请求
+     * ======================================================
+     */
+
+    addJoinRequest(userId: string, reason?: string) {
+        if (this.findAllJoinRequestsByCondition('user_id = ?', userId).length == 0)
+            Chat.database.prepare(`INSERT INTO ${this.getJoinRequestsTableName()} (
+                user_id,
+                reason
+            ) VALUES (?, ?);`).run(
+                userId,
+                reason || null
+            )
+    }
+    removeJoinRequests(userIds: string[]) {
+        userIds.forEach((userId) => Chat.database.prepare(`DELETE FROM ${this.getJoinRequestsTableName()} WHERE user_id = ?`).run(userId))
+    }
+    getJoinRequests() {
+        return Chat.database.prepare(`SELECT * FROM ${this.getJoinRequestsTableName()}`).all()
+    }
+    protected findAllJoinRequestsByCondition(condition: string, ...args: SQLInputValue[]) {
+        return Chat.database.prepare(`SELECT * FROM ${this.getAdminsTableName()} WHERE ${condition}`).all(...args)
+    }
+
+    /**
+     * ======================================================
+     *                       对话管理员
+     * ======================================================
+     */
+
     addAdmin(userId: string, permission: string[] | string) {
         if (!this.checkUserIsAdmin(userId))
-            Chat.database.prepare(`INSERT INTO ChatAdmin (
+            Chat.database.prepare(`INSERT INTO ${this.getAdminsTableName()} (
                 user_id,
-                chat_id,
                 permissions
-            ) VALUES (?, ?, ?);`).run(
+            ) VALUES (?, ?);`).run(
                 userId,
-                this.bean.id,
                 '[]'
             )
         this.setAdminPermissions(userId, permission)
     }
-
     checkUserIsAdmin(userId: string) {
-        return Chat.findAllAdminsByCondition('user_id = ? AND chat_id = ?', userId, this.bean.id).length != 0
+        return this.findAllAdminsByCondition('user_id = ?', userId).length != 0
     }
     getAdmins() {
-        return Chat.findAllAdminsByCondition('chat_id = ?', this.bean.id).map((v) => v.user_id) as string[]
+        return Chat.database.prepare(`SELECT * FROM ${this.getAdminsTableName()}`).all().map((v) => v.user_id) as string[]
     }
-    protected static findAllAdminsByCondition(condition: string, ...args: SQLInputValue[]) {
-        return this.database.prepare(`SELECT * FROM ChatAdmin WHERE ${condition}`).all(...args)
+    protected findAllAdminsByCondition(condition: string, ...args: SQLInputValue[]) {
+        return Chat.database.prepare(`SELECT * FROM ${this.getAdminsTableName()} WHERE ${condition}`).all(...args)
     }
-
     setAdminPermissions(userId: string, permission: string[] | string) {
-        Chat.database.prepare(`UPDATE ChatAdmin SET permissions = ? WHERE user_id = ? AND chat_id = ?`).run(
-            userId, 
-            this.bean.id,
-             permission instanceof Array ? JSON.stringify(permission) : permission
+        Chat.database.prepare(`UPDATE ${this.getAdminsTableName()} SET permissions = ? WHERE user_id = ?`).run(
+            userId,
+            permission instanceof Array ? JSON.stringify(permission) : permission
         )
     }
     removeAdmins(userIds: string[]) {
-        userIds.forEach((v) => Chat.database.prepare(`DELETE FROM ChatAdmin WHERE user_id = ? AND chat_id = ?`).run(v, this.bean.id))
+        userIds.forEach((v) => Chat.database.prepare(`DELETE FROM ${this.getAdminsTableName()} WHERE user_id = ?`).run(v))
     }
+
+    /**
+     * ======================================================
+     *                       对话成员
+     * ======================================================
+     */
+
     getMembersList() {
         return UserChatLinker.getChatMembers(this.bean.id)
     }
@@ -131,6 +177,13 @@ export default class Chat {
     removeMembers(userIds: string[]) {
         userIds.forEach((v) => UserChatLinker.unlinkUserAndChat(v, this.bean.id))
     }
+
+    /**
+     * ======================================================
+     *                       对话信息
+     * ======================================================
+     */
+
     getAnotherUserForPrivate(userMySelf: User) {
         const members = this.getMembersList()
         const user_a_id = members[0]

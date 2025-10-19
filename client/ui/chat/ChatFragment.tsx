@@ -27,6 +27,7 @@ import Preference from '../preference/Preference.tsx'
 import GroupSettings from "../../api/client_data/GroupSettings.ts"
 import PreferenceUpdater from "../preference/PreferenceUpdater.ts"
 import SystemMessage from "./SystemMessage.tsx"
+import JoinRequestsList from "./JoinRequestsList.tsx";
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     target: string
@@ -86,7 +87,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
         setChatInfo(chatInfo)
 
         if (chatInfo.is_member)
-        await loadMore()
+            await loadMore()
 
         setTabItemSelected(chatInfo.is_member ? "Chat" : "RequestJoin")
         if (re.data!.type == 'group') {
@@ -253,10 +254,13 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                         marginRight: '5px',
                     }}></mdui-button-icon>
                 }
-                <mdui-tab value="Chat">{
-                    chatInfo.title
-                }</mdui-tab>
-                {chatInfo.type == 'group' && <mdui-tab value="NewMemberRequests">入群申请</mdui-tab>}
+                {
+                    chatInfo.is_member ? <>
+                        <mdui-tab value="Chat">{chatInfo.title}</mdui-tab>
+                        {chatInfo.type == 'group' && chatInfo.is_admin && <mdui-tab value="NewMemberRequests">加入请求</mdui-tab>}
+                    </>
+                        : <mdui-tab value="RequestJoin">{chatInfo.title}</mdui-tab>
+                }
                 <mdui-tab value="Settings">设置</mdui-tab>
                 <mdui-tab value="None" style={{ display: 'none' }}></mdui-tab>
                 <div style={{
@@ -268,6 +272,29 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                     marginRight: '5px',
                 }}></mdui-button-icon>
 
+                <mdui-tab-panel slot="panel" value="RequestJoin" style={{
+                    display: tabItemSelected == "RequestJoin" ? "flex" : "none",
+                    flexDirection: "column",
+                    height: "100%",
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}>
+                    <div>
+                        <mdui-button onClick={async () => {
+                            const re = await Client.invoke("Chat.sendJoinRequest", {
+                                token: data.access_token,
+                                target: target,
+                            })
+                            if (re.code != 200)
+                                return checkApiSuccessOrSncakbar(re, "发送加入请求失败")
+
+                            snackbar({
+                                message: '发送成功!',
+                                placement: 'top',
+                            })
+                        }}>请求加入对话</mdui-button>
+                    </div>
+                </mdui-tab-panel>
                 <mdui-tab-panel slot="panel" value="Chat" ref={chatPanelRef} style={{
                     display: tabItemSelected == "Chat" ? "flex" : "none",
                     flexDirection: "column",
@@ -457,7 +484,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                         flexDirection: "column",
                         height: "100%",
                     }}>
-                        未制作
+                        {tabItemSelected == "NewMemberRequests" && <JoinRequestsList target={target} />}
                     </mdui-tab-panel>
                 }
                 <mdui-tab-panel slot="panel" value="Settings" style={{

@@ -25,6 +25,10 @@ export type CallMethod =
     "Chat.getIdForPrivate" |
     "Chat.getAnotherUserIdFromPrivate" |
 
+    "Chat.processJoinRequest" |
+    "Chat.sendJoinRequest" |
+    "Chat.getJoinRequests" |
+
     "Chat.sendMessage" |
     "Chat.getMessageHistory" |
 
