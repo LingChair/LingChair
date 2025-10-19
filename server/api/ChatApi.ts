@@ -43,6 +43,10 @@ export default class ChatApi extends BaseApi {
 
             // 私聊
             if (chat!.bean.type == 'private') {
+                if (!UserChatLinker.checkUserIsLinkedToChat(token.author, chat!.bean.id)) return {
+                    code: 403,
+                    msg: "用户无权访问此对话",
+                }
                 const mine = User.findById(token.author) as User
 
                 return {
