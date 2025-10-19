@@ -85,6 +85,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
         const chatInfo = re.data as Chat
         setChatInfo(chatInfo)
 
+        if (chatInfo.is_member)
         await loadMore()
 
         setTabItemSelected(chatInfo.is_member ? "Chat" : "RequestJoin")
@@ -272,6 +273,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                     flexDirection: "column",
                     height: "100%",
                 }} onScroll={async (e) => {
+                    if (!chatInfo.is_member) return
                     const scrollTop = (e.target as HTMLDivElement).scrollTop
                     if (scrollTop == 0 && !showLoadingMoreMessagesTip) {
                         setShowLoadingMoreMessagesTip(true)
