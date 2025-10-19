@@ -10,7 +10,6 @@ import User from "./User.ts"
 import ChatType from "./ChatType.ts"
 import UserChatLinker from "./UserChatLinker.ts"
 import DataWrongError from '../api/DataWrongError.ts'
-import ChatAdminLinker from "./ChatAdminLinker.ts"
 
 /**
  * Chat.ts - Wrapper and manager
@@ -30,6 +29,14 @@ export default class Chat {
                 /* 标题 */ title TEXT,
                 /* 头像 */ avatar BLOB,
                 /* 设置 */ settings TEXT NOT NULL
+            );
+       `)
+       db.exec(`
+            CREATE TABLE IF NOT EXISTS ChatAdmin (
+                /* 序号 */ count INTEGER PRIMARY KEY AUTOINCREMENT,
+                /* 用戶 ID */ user_id TEXT NOT NULL,
+                /* Chat ID */ chat_id TEXT NOT NULL,
+                /* 管理权限 */ permissions TEXT NOT NULL
             );
        `)
         return db
@@ -82,14 +89,38 @@ export default class Chat {
     }
 
     addAdmin(userId: string, permission: string[] | string) {
-        ChatAdminLinker.linkAdminAndChat(userId, this.bean.id)
+        if (!this.checkUserIsAdmin(userId))
+            Chat.database.prepare(`INSERT INTO ChatAdmin (
+                user_id,
+                chat_id,
+                permissions
+            ) VALUES (?, ?, ?);`).run(
+                userId,
+                this.bean.id,
+                '[]'
+            )
         this.setAdminPermissions(userId, permission)
     }
+
+    checkUserIsAdmin(userId: string) {
+        return Chat.findAllAdminsByCondition('user_id = ? AND chat_id = ?', userId, this.bean.id).length != 0
+    }
+    getAdmins() {
+        return Chat.findAllAdminsByCondition('chat_id = ?', this.bean.id).map((v) => v.user_id) as string[]
+    }
+    protected static findAllAdminsByCondition(condition: string, ...args: SQLInputValue[]) {
+        return this.database.prepare(`SELECT * FROM ChatAdmin WHERE ${condition}`).all(...args)
+    }
+
     setAdminPermissions(userId: string, permission: string[] | string) {
-        ChatAdminLinker.updatePermissions(userId, this.bean.id, permission instanceof Array ? JSON.stringify(permission) : permission)
+        Chat.database.prepare(`UPDATE ChatAdmin SET permissions = ? WHERE user_id = ? AND chat_id = ?`).run(
+            userId, 
+            this.bean.id,
+             permission instanceof Array ? JSON.stringify(permission) : permission
+        )
     }
     removeAdmins(userIds: string[]) {
-        userIds.forEach((v) => ChatAdminLinker.unlinkAdminAndChat(v, this.bean.id))
+        userIds.forEach((v) => Chat.database.prepare(`DELETE FROM ChatAdmin WHERE user_id = ? AND chat_id = ?`).run(v, this.bean.id))
     }
     getMembersList() {
         return UserChatLinker.getChatMembers(this.bean.id)
