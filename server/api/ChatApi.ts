@@ -437,7 +437,12 @@ export default class ChatApi extends BaseApi {
                         type: chat.bean.type,
                         title: chat.getTitle(),
                         avatar_file_hash: chat.getAvatarFileHash() ? chat.getAvatarFileHash() : undefined,
-                        settings: JSON.parse(chat.bean.settings),
+                        settings: {
+                            ...JSON.parse(chat.bean.settings),
+                            // 下面两个比较特殊, 用于群设置
+                            group_id: chat.bean.id,
+                            group_title: chat.getTitle(),
+                        },
                         is_member: UserChatLinker.checkUserIsLinkedToChat(token.author, chat!.bean.id),
                         is_admin: chat.checkUserIsAdmin(token.author),
                     }
@@ -449,8 +454,44 @@ export default class ChatApi extends BaseApi {
                 msg: "找不到对话",
             }
         })
+        // 更新頭像
+        this.registerEvent("Chat.setAvatar", (args, { deviceId }) => {
+            if (this.checkArgsMissing(args, ['avatar', 'token'])) return {
+                msg: "参数缺失",
+                code: 400,
+            }
+            if (!(args.avatar instanceof Buffer)) return {
+                msg: "参数不合法",
+                code: 400,
+            }
+            const token = TokenManager.decode(args.token as string)
+
+            const user = User.findById(token.author) as User
+
+            const chat = Chat.findById(args.target as string)
+            if (chat == null) return {
+                code: 404,
+                msg: "对话不存在",
+            }
+
+            if (chat.bean.type == 'group')
+                if (chat.checkUserIsAdmin(user.bean.id)) {
+                    const avatar: Buffer = args.avatar as Buffer
+                    if (avatar)
+                        chat.setAvatar(avatar)
+                } else
+                    return {
+                        code: 403,
+                        msg: "没有此权限",
+                    }
+
+            return {
+                msg: "成功",
+                code: 200,
+            }
+        })
         /**
-         * 更新设定
+         * 更新设定 (包括资料)
          * @param token 令牌
          * @param title 名称
          * @param [id] 群组 ID
@@ -475,9 +516,15 @@ export default class ChatApi extends BaseApi {
             }
 
             if (chat.bean.type == 'group')
-                if (chat.checkUserIsAdmin(user.bean.id))
+                if (chat.checkUserIsAdmin(user.bean.id)) {
                     ChatGroup.fromChat(chat).getSettings().update(args.settings as GroupSettingsBean)
-                else
+
+                    const settings = args.settings as any
+                    if (settings.group_title != null)
+                        chat.setTitle(settings.group_title)
+                    if (settings.group_id != null)
+                        chat.setId(settings.group_id)
+                } else
                     return {
                         code: 403,
                         msg: "没有此权限",

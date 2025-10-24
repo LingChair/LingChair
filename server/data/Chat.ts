@@ -200,10 +200,8 @@ export default class Chat {
 
         return null
     }
-    getId() {
-        return this.bean.id
-    }
     setId(id: string) {
+        if (this.bean.id == id) return
         if (Chat.findAllChatBeansByCondition('id = ?', id).length > 0)
             throw new DataWrongError(`对话ID ${id} 已被使用`)
         this.setAttr("id", id)

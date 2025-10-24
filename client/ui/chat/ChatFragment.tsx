@@ -195,6 +195,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
     }
 
     const attachFileInputRef = React.useRef<HTMLInputElement>(null)
+    const uploadChatAvatarRef = React.useRef<HTMLInputElement>(null)
 
     function insertText(text: string) {
         const input = inputRef.current!.shadowRoot!.querySelector('[part=input]') as HTMLTextAreaElement
@@ -223,6 +224,22 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
         for (const file of files) {
             addFile(file.type, file.name, file)
         }
+    })
+    useEventListener(uploadChatAvatarRef, 'change', async (_e) => {
+        const file = uploadChatAvatarRef.current!.files?.[0] as File
+        if (file == null) return
+
+        const re = await Client.invoke("Chat.setAvatar", {
+            token: data.access_token,
+            target: target,
+            avatar: file
+        })
+
+        if (checkApiSuccessOrSncakbar(re, "修改失败")) return
+        snackbar({
+            message: "修改成功 (刷新页面以更新)",
+            placement: "top",
+        })
     })
 
     const groupPreferenceStore = new PreferenceStore<GroupSettings>()
@@ -494,9 +511,35 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                     flexDirection: "column",
                     height: "100%",
                 }}>
+                    <div style={{
+                        display: 'none'
+                    }}>
+                        <input accept="image/*" type="file" name="上传对话头像" ref={uploadChatAvatarRef}></input>
+                    </div>
                     {
                         chatInfo.type == 'group' && <PreferenceLayout>
                             <PreferenceUpdater.Provider value={groupPreferenceStore.createUpdater()}>
+                                <PreferenceHeader
+                                    title="群组资料" />
+                                <Preference
+                                    title="上传新的头像"
+                                    icon="image"
+                                    disabled={!chatInfo.is_admin}
+                                    onClick={() => {
+                                        uploadChatAvatarRef.current!.click()
+                                    }} />
+                                <TextFieldPreference
+                                    title="设置群名称"
+                                    icon="edit"
+                                    id="group_title"
+                                    state={groupPreferenceStore.state.group_title || ''}
+                                    disabled={!chatInfo.is_admin} />
+                                <TextFieldPreference
+                                    title="设置群 ID"
+                                    icon="edit"
+                                    id="group_id"
+                                    state={groupPreferenceStore.state.group_id || ''}
+                                    disabled={!chatInfo.is_admin} />
                                 <PreferenceHeader
                                     title="群组管理" />
                                 <Preference

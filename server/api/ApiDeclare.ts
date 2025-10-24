@@ -19,6 +19,7 @@ export type CallMethod =
     "Chat.getInfo" |
     
     "Chat.updateSettings" |
+    "Chat.setAvatar" |
 
     "Chat.createGroup" |
 

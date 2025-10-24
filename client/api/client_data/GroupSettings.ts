@@ -4,6 +4,10 @@ interface GroupSettings {
     new_member_join_method?: 'disabled' | 'allowed_by_admin' | 'answered_and_allowed_by_admin'
     answered_and_allowed_by_admin_question?: string
 
+    // 下面两个比较特殊, 由服务端给予
+    group_title: string
+    group_id: string
+
     [key: string]: unknown
 }
 
