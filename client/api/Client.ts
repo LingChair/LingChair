@@ -89,7 +89,7 @@ class Client {
         })
         return re.data?.access_token as string
     }
-    static async auth(token: string, timeout: number) {
+    static async auth(token: string, timeout?: number) {
         const re = await this.invoke("User.auth", {
             access_token: token
         }, timeout, 1, true)
