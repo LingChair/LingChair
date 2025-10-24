@@ -40,7 +40,7 @@ export default class ChatGroup extends Chat {
         return new ChatGroup(chat.bean)
     }
 
-    static createGroup(chatId?: string) {
-        return this.create(chatId || crypto.randomUUID(), 'group')
+    static createGroup(group_name?: string) {
+        return this.create(group_name, 'group')
     }
 }

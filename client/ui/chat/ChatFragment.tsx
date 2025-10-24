@@ -535,10 +535,11 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                                     state={groupPreferenceStore.state.group_title || ''}
                                     disabled={!chatInfo.is_admin} />
                                 <TextFieldPreference
-                                    title="设置群 ID"
+                                    title="设置群别名"
                                     icon="edit"
-                                    id="group_id"
-                                    state={groupPreferenceStore.state.group_id || ''}
+                                    id="group_name"
+                                    description="以便于添加, 可留空"
+                                    state={groupPreferenceStore.state.group_name || ''}
                                     disabled={!chatInfo.is_admin} />
                                 {/* <PreferenceHeader
                                     title="群组管理" />

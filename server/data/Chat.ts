@@ -27,8 +27,9 @@ export default class Chat {
                 /* 序号 */ count INTEGER PRIMARY KEY AUTOINCREMENT,
                 /* 类型 */ type TEXT NOT NULL,
                 /*  ID  */ id TEXT NOT NULL,
+                /* 检索 */ name TEXT,
                 /* 标题 */ title TEXT,
-                /* 头像 */ avatar_file_hash BLOB,
+                /* 头像 */ avatar_file_hash TEXT,
                 /* 设置 */ settings TEXT NOT NULL
             );
        `)
@@ -48,21 +49,32 @@ export default class Chat {
         return new Chat(beans[0])
     }
 
-    static create(chatId: string, type: ChatType) {
-        if (this.findAllChatBeansByCondition('id = ?', chatId).length > 0)
-            throw new DataWrongError(`对话 ID ${chatId} 已被使用`)
+    static findByName(name: string) {
+        const beans = this.findAllChatBeansByCondition('name = ?', name)
+        if (beans.length == 0)
+            return null
+        else if (beans.length > 1)
+            console.error(chalk.red(`警告: 查询 name = ${name} 时, 查询到多个相同 name 的 Chat`))
+        return new Chat(beans[0])
+    }
+
+    static create(chatName: string | undefined, type: ChatType) {
+        if (this.findAllChatBeansByCondition('id = ?', chatName || null).length > 0)
+            throw new DataWrongError(`对话名称 ${chatName} 已被使用`)
         const chat = new Chat(
             Chat.findAllChatBeansByCondition(
                 'count = ?',
                 Chat.database.prepare(`INSERT INTO Chat (
                     type,
                     id,
+                    name,
                     title,
                     avatar_file_hash,
                     settings
-                ) VALUES (?, ?, ?, ?, ?);`).run(
+                ) VALUES (?, ?, ?, ?, ?, ?);`).run(
                     type,
-                    chatId,
+                    crypto.randomUUID(),
+                    chatName || null,
                     null,
                     null,
                     "{}"
@@ -200,11 +212,11 @@ export default class Chat {
 
         return null
     }
-    setId(id: string) {
-        if (this.bean.id == id) return
-        if (Chat.findAllChatBeansByCondition('id = ?', id).length > 0)
-            throw new DataWrongError(`对话ID ${id} 已被使用`)
-        this.setAttr("id", id)
+    setName(name: string) {
+        if (this.bean.name == name) return
+        if (name != null && Chat.findAllChatBeansByCondition('name = ?', name).length > 0)
+            throw new DataWrongError(`对话名称 ${name} 已被使用`)
+        this.setAttr("name", name)
     }
     setTitle(title: string) {
         if (this.bean.type == 'private')

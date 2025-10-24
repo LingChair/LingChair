@@ -15,13 +15,13 @@ interface Refs {
 export default function CreateGroupDialog({
     createGroupDialogRef,
 }: Refs) {
+    const inputGroupTitleRef = React.useRef<TextField>(null)
     const inputGroupNameRef = React.useRef<TextField>(null)
-    const inputGroupIdRef = React.useRef<TextField>(null)
 
     async function createGroup() {
         const re = await Client.invoke("Chat.createGroup", {
-            title: inputGroupNameRef.current!.value,
-            id: inputGroupIdRef.current!.value,
+            title: inputGroupTitleRef.current!.value,
+            name: inputGroupNameRef.current!.value,
             token: data.access_token,
         })
 
@@ -32,18 +32,18 @@ export default function CreateGroupDialog({
         })
         EventBus.emit('ContactsList.updateContacts')
 
+        inputGroupTitleRef.current!.value = ''
         inputGroupNameRef.current!.value = ''
-        inputGroupIdRef.current!.value = ''
         createGroupDialogRef.current!.open = false
     }
 
     return (
         <mdui-dialog close-on-overlay-click close-on-esc headline="创建群组" ref={createGroupDialogRef}>
-            <mdui-text-field clearable label="群组名称" ref={inputGroupNameRef as any} onKeyDown={(event) => {
+            <mdui-text-field clearable label="群组名称" ref={inputGroupTitleRef as any} onKeyDown={(event) => {
                 if (event.key == 'Enter')
-                    inputGroupIdRef.current!.click()
+                    inputGroupNameRef.current!.click()
             }}></mdui-text-field>
-            <mdui-text-field style={{ marginTop: "10px", }} clearable label="群组 ID (可选)" ref={inputGroupIdRef as any} onKeyDown={(event) => {
+            <mdui-text-field style={{ marginTop: "10px", }} clearable label="群组别名 (可选, 供查询)" ref={inputGroupNameRef as any} onKeyDown={(event) => {
                 if (event.key == 'Enter')
                     createGroup()
             }}></mdui-text-field>

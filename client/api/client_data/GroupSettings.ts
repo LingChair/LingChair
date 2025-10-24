@@ -6,7 +6,7 @@ interface GroupSettings {
 
     // 下面两个比较特殊, 由服务端给予
     group_title: string
-    group_id: string
+    group_name: string
 
     [key: string]: unknown
 }

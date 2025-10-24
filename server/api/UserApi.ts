@@ -317,7 +317,7 @@ export default class UserApi extends BaseApi {
             }
 
             const user = User.findById(token.author) as User
-            const chat = Chat.findById(args.target as string)
+            const chat = Chat.findById(args.target as string) || Chat.findByName(args.target as string)
             const targetUser = User.findByAccount(args.target as string) as User
             if (chat)
                 user!.addContact(chat.bean.id)

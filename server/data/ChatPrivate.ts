@@ -8,11 +8,12 @@ export default class ChatPrivate extends Chat {
     }
 
     static getChatIdByUsersId(userIdA: string, userIdB: string) {
-        return [userIdA, userIdB].sort().join('------')
+        return 'priv_' + [userIdA, userIdB].sort().join('__').replaceAll('-', '_')
     }
 
     static createForPrivate(userA: User, userB: User) {
-        const chat = this.create(this.getChatIdByUsersId(userA.bean.id, userB.bean.id), 'private')
+        const chat = this.create(undefined, 'private')
+        chat.setAttr('id', this.getChatIdByUsersId(userA.bean.id, userB.bean.id))
         chat.addMembers([
             userA.bean.id,
             userB.bean.id

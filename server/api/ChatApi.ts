@@ -334,7 +334,7 @@ export default class ChatApi extends BaseApi {
          * 创建群组
          * @param token 令牌
          * @param title 名称
-         * @param [id] 群组 ID
+         * @param [name] 群组别名
          */
         this.registerEvent("Chat.createGroup", (args, { deviceId }) => {
             if (this.checkArgsMissing(args, ['token', 'title'])) return {
@@ -353,13 +353,7 @@ export default class ChatApi extends BaseApi {
             }
             const user = User.findById(token.author) as User
 
-            const haveId = args.id && ((args.id as string) != '')
-            if (haveId && Chat.findById(args.id as string) != null) return {
-                msg: "对话 ID 已被占用",
-                code: 403,
-            }
-
-            const chat = ChatGroup.createGroup(haveId ? args.id as string : undefined)
+            const chat = ChatGroup.createGroup(args.name as string)
             chat.setTitle(args.title as string)
             chat.addMembers([
                 user.bean.id,
@@ -419,6 +413,7 @@ export default class ChatApi extends BaseApi {
                     msg: "成功",
                     data: {
                         id: args.target as string,
+                        name: chat.bean.name,
                         type: chat.bean.type,
                         title: chat.getTitle(mine),
                         avatar_file_hash: chat.getAvatarFileHash(mine) ? chat.getAvatarFileHash(mine) : undefined,
@@ -434,13 +429,14 @@ export default class ChatApi extends BaseApi {
                     msg: "成功",
                     data: {
                         id: args.target as string,
+                        name: chat.bean.name,
                         type: chat.bean.type,
                         title: chat.getTitle(),
                         avatar_file_hash: chat.getAvatarFileHash() ? chat.getAvatarFileHash() : undefined,
                         settings: {
                             ...JSON.parse(chat.bean.settings),
                             // 下面两个比较特殊, 用于群设置
-                            group_id: chat.bean.id,
+                            group_name: chat.bean.name,
                             group_title: chat.getTitle(),
                         },
                         is_member: UserChatLinker.checkUserIsLinkedToChat(token.author, chat!.bean.id),
@@ -522,8 +518,8 @@ export default class ChatApi extends BaseApi {
                     const settings = args.settings as any
                     if (settings.group_title != null)
                         chat.setTitle(settings.group_title)
-                    if (settings.group_id != null)
-                        chat.setId(settings.group_id)
+                    if (settings.group_name != null)
+                        chat.setName(settings.group_name == '' ? null : settings.group_name)
                 } else
                     return {
                         code: 403,
