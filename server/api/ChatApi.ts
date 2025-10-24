@@ -58,23 +58,17 @@ export default class ChatApi extends BaseApi {
             const id = MessagesManager.getInstanceForChat(chat).addMessage(msg)
 
             const users: string[] = UserChatLinker.getChatMembers(chat.bean.id)
-            for (const user of users) {
-                if (ApiManager.checkUserIsOnline(user)) {
-                    const userInst = User.findById(user)
-                    userInst?.updateRecentChat(chat.bean.id, args.text as string)
-                    const sockets = ApiManager.getUserClientSockets(user)
-                    for (const socket of Object.keys(sockets))
-                        this.emitToClient(sockets[socket], 'Client.onMessage', {
-                            chat: chat.bean.id,
-                            msg: {
-                                ...msg,
-                                id
-                            }
-                        })
-                } else {
-                    // TODO: EventStore
+            users.forEach((id) => {
+                const userInst = User.findById(id)
+                userInst?.updateRecentChat(chat.bean.id, args.text as string)
+            })
+            this.boardcastToUsers(users, 'Client.onMessage', {
+                chat: chat.bean.id,
+                msg: {
+                    ...msg,
+                    id
                 }
-            }
+            })
 
             return {
                 code: 200,
@@ -241,10 +235,19 @@ export default class ChatApi extends BaseApi {
                     ])
                 } else {
                     if (action == 'accept') {
+                        const msg = `${user.getNickName()} 经 ${admin?.getNickName()} 批准加入了对话`
+                        MessagesManager.getInstanceForChat(chat).addSystemMessage(msg)
+                        const users: string[] = UserChatLinker.getChatMembers(chat.bean.id)
+                        this.boardcastToUsers(users, 'Client.onMessage', {
+                            chat: chat.bean.id,
+                            msg: {
+                                text: msg,
+                                time: Date.now(),
+                            },
+                        })
                         chat.addMembers([
                             args.user_id as string,
                         ])
-                        MessagesManager.getInstanceForChat(chat).addSystemMessage(`${user.getNickName()} 经 ${admin?.getNickName()} 批准加入了对话`)
                     }
                     if (action == 'accept' || action == 'remove')
                         chat.removeJoinRequests([

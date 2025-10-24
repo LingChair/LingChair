@@ -34,4 +34,15 @@ export default abstract class BaseApi {
     emitToClient(client: SocketIo.Socket, name: ClientEvent, args: { [key: string]: unknown }) {
         client.emit("The_White_Silk", name, args)
     }
+    boardcastToUsers(users: string[], name: ClientEvent, args: { [key: string]: unknown }) {
+        for (const user of users) {
+            if (ApiManager.checkUserIsOnline(user)) {
+                const sockets = ApiManager.getUserClientSockets(user)
+                for (const socket of Object.keys(sockets))
+                    this.emitToClient(sockets[socket], name, args)
+            } else {
+                // TODO: EventStore
+            }
+        }
+    }
 }
