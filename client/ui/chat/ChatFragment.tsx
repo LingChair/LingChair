@@ -132,8 +132,6 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
             msg: Message
         }
         function callback(data: unknown) {
-            EventBus.emit('RecentsList.updateRecents')
-
             const { chat, msg } = (data as OnMessageData)
             if (target == chat) {
                 setMessagesList(messagesList.concat([msg]))

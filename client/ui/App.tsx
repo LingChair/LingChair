@@ -25,6 +25,8 @@ import CreateGroupDialog from './dialog/CreateGroupDialog.tsx'
 import UserProfileDialog from "./dialog/UserProfileDialog.tsx"
 import DataCaches from "../api/DataCaches.ts"
 import getUrlForFileByHash from "../getUrlForFileByHash.ts"
+import Message from "../api/client_data/Message.ts"
+import EventBus from "../EventBus.ts"
 
 declare global {
     namespace React {
@@ -112,10 +114,35 @@ export default function App() {
             setUserInfo(user)
         } else {
             setUserInfo(await DataCaches.getUserProfile(user))
-            
+
         }
         userProfileDialogRef.current!.open = true
     }
+
+    Notification.requestPermission()
+    React.useEffect(() => {
+        interface OnMessageData {
+            chat: string
+            msg: Message
+        }
+        async function onMessage(_event: unknown) {
+            EventBus.emit('RecentsList.updateRecents')
+
+            const event = _event as OnMessageData
+            if (currentChatId != event.chat) {
+                const chat = await DataCaches.getChatInfo(event.chat)
+                const user = await DataCaches.getUserProfile(event.msg.user_id)
+                new Notification(`${user.nickname} (对话: ${chat.title})`, {
+                    icon: getUrlForFileByHash(chat.avatar_file_hash),
+                    body: event.msg.text,
+                })
+            }
+        }
+        Client.on('Client.onMessage', onMessage)
+        return () => {
+            Client.off('Client.onMessage', onMessage)
+        }
+    }, [currentChatId])
 
     return (
         <div style={{
@@ -155,7 +182,7 @@ export default function App() {
 
             <AddContactDialog
                 addContactDialogRef={addContactDialogRef} />
-                
+
             <CreateGroupDialog
                 createGroupDialogRef={createGroupDialogRef} />
 
