@@ -540,13 +540,13 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                                     id="group_id"
                                     state={groupPreferenceStore.state.group_id || ''}
                                     disabled={!chatInfo.is_admin} />
-                                <PreferenceHeader
+                                {/* <PreferenceHeader
                                     title="群组管理" />
                                 <Preference
                                     title="群组成员列表"
                                     icon="group"
                                     disabled={true || !chatInfo.is_admin}
-                                    description="别看了, 还没做" />
+                                    description="别看了, 还没做" /> */}
                                 <PreferenceHeader
                                     title="入群设定" />
                                 <SwitchPreference
@@ -555,7 +555,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                                     id="allow_new_member_join"
                                     disabled={!chatInfo.is_admin}
                                     state={groupPreferenceStore.state.allow_new_member_join || false} />
-                                <SwitchPreference
+                                {/* <SwitchPreference
                                     title="允许成员邀请"
                                     description="目前压根没有这项功能, 甚至还不能查看成员列表, 以后再说吧"
                                     id="allow_new_member_from_invitation"
@@ -582,7 +582,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                                         description="WIP"
                                         state={groupPreferenceStore.state.answered_and_allowed_by_admin_question || ''}
                                         disabled={true || !chatInfo.is_admin} />
-                                }
+                                } */}
                             </PreferenceUpdater.Provider>
                         </PreferenceLayout>
                     }
