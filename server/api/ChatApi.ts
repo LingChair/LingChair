@@ -152,7 +152,7 @@ export default class ChatApi extends BaseApi {
                 code: 200,
                 msg: "成功",
                 data: {
-                    file_path: 'uploaded_files/' + file.getHash()
+                    file_hash: file.getHash()
                 },
             }
         })

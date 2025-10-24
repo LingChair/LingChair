@@ -27,7 +27,8 @@ import Preference from '../preference/Preference.tsx'
 import GroupSettings from "../../api/client_data/GroupSettings.ts"
 import PreferenceUpdater from "../preference/PreferenceUpdater.ts"
 import SystemMessage from "./SystemMessage.tsx"
-import JoinRequestsList from "./JoinRequestsList.tsx";
+import JoinRequestsList from "./JoinRequestsList.tsx"
+import getUrlForFileByHash from "../../getUrlForFileByHash.ts"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     target: string
@@ -49,11 +50,12 @@ const markedInstance = new marked.Marked({
         },
         image({ text, href }) {
             const type = /^(Video|File)=.*/.exec(text)?.[1] || 'Image'
-            if (/uploaded_files\/[A-Za-z0-9]+$/.test(href)) {
+            if (/tws:\/\/file\?hash=[A-Za-z0-9]+$/.test(href)) {
+                const url = getUrlForFileByHash(/^tws:\/\/file\?hash=(.*)/.exec(href)?.[1])
                 return ({
-                    Image: `<chat-image src="${href}" alt="${text}"></chat-image>`,
-                    Video: `<chat-video src="${href}"></chat-video>`,
-                    File: `<chat-file href="${href}" name="${/^Video|File=(.*)/.exec(text)?.[1] || 'Unnamed file'}"></chat-file>`,
+                    Image: `<chat-image src="${url}" alt="${text}"></chat-image>`,
+                    Video: `<chat-video src="${url}"></chat-video>`,
+                    File: `<chat-file href="${url}" name="${/^Video|File=(.*)/.exec(text)?.[1] || 'Unnamed file'}"></chat-file>`,
                 })?.[type] || ``
             }
             return ``
@@ -171,7 +173,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                         data: cachedFiles.current[fileName],
                     }, 5000)
                     if (checkApiSuccessOrSncakbar(re, `文件[${fileName}] 上传失败`)) return setIsMessageSending(false)
-                    text = text.replaceAll('(' + fileName + ')', '(' + re.data!.file_path as string + ')')
+                    text = text.replaceAll('(' + fileName + ')', '(tws://file?hash=' + re.data!.file_hash as string + ')')
                 }
             }
 
