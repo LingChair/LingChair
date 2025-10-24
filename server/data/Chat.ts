@@ -10,6 +10,8 @@ import User from "./User.ts"
 import ChatType from "./ChatType.ts"
 import UserChatLinker from "./UserChatLinker.ts"
 import DataWrongError from '../api/DataWrongError.ts'
+import { Buffer } from "node:buffer"
+import FileManager from "./FileManager.ts"
 
 /**
  * Chat.ts - Wrapper and manager
@@ -26,7 +28,7 @@ export default class Chat {
                 /* 类型 */ type TEXT NOT NULL,
                 /*  ID  */ id TEXT NOT NULL,
                 /* 标题 */ title TEXT,
-                /* 头像 */ avatar BLOB,
+                /* 头像 */ avatar_file_hash BLOB,
                 /* 设置 */ settings TEXT NOT NULL
             );
        `)
@@ -56,7 +58,7 @@ export default class Chat {
                     type,
                     id,
                     title,
-                    avatar,
+                    avatar_file_hash,
                     settings
                 ) VALUES (?, ?, ?, ?, ?);`).run(
                     type,
@@ -95,8 +97,8 @@ export default class Chat {
     protected getJoinRequestsTableName() {
         return 'join_requests_' + this.bean.id.replaceAll('-', '_')
     }
-    setAttr(key: string, value: SQLInputValue): void {
-        Chat.database.prepare(`UPDATE Chat SET ${key} = ? WHERE id = ?`).run(value, this.bean.id)
+    setAttr(key: string, value: SQLInputValue) {
+        Chat.database.prepare(`UPDATE Chat SET ${key} = ? WHERE count = ?`).run(value, this.bean.count)
         this.bean[key] = value
     }
 
@@ -198,6 +200,14 @@ export default class Chat {
 
         return null
     }
+    getId() {
+        return this.bean.id
+    }
+    setId(id: string) {
+        if (Chat.findAllChatBeansByCondition('id = ?', id).length > 0)
+            throw new DataWrongError(`对话ID ${id} 已被使用`)
+        this.setAttr("id", id)
+    }
     setTitle(title: string) {
         if (this.bean.type == 'private')
             throw new Error('不允许对私聊进行命名')
@@ -210,5 +220,8 @@ export default class Chat {
     getAvatarFileHash(userMySelf?: User) {
         if (this.bean.type == 'group') return this.bean.avatar_file_hash
         if (this.bean.type == 'private') return this.getAnotherUserForPrivate(userMySelf as User)?.getAvatarFileHash()
+    }
+    async setAvatar(avatar: Buffer) {
+        this.setAttr("avatar_file_hash", (await FileManager.uploadFile(`avatar_chat_${this.bean.count}`, avatar)).getHash())
     }
 }
