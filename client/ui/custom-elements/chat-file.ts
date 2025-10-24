@@ -19,7 +19,6 @@ customElements.define('chat-file', class extends HTMLElement {
         $(e).attr('download', href)
         e.style.textDecoration = 'none'
         e.style.color = 'inherit'
-        // deno-lint-ignore no-window
         e.onclick = (e) => {
             e.stopPropagation()
         }
