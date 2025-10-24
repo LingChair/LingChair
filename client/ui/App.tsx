@@ -184,7 +184,7 @@ export default function App() {
                     <ContactsList
                         openChatInfoDialog={openChatInfoDialog}
                         addContactDialogRef={addContactDialogRef as any}
-                        createGroupDialogRef={createGroupDialogRef}
+                        createGroupDialogRef={createGroupDialogRef as any}
                         display={navigationItemSelected == "Contacts"} />
                 }
             </div>
