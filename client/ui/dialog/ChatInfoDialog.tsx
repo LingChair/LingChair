@@ -7,6 +7,7 @@ import { Dialog } from "mdui"
 import Avatar from "../Avatar.tsx"
 import { checkApiSuccessOrSncakbar } from "../snackbar.ts"
 import User from "../../api/client_data/User.ts"
+import getUrlForFileByHash from "../../getUrlForFileByHash.ts"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     chat: Chat
@@ -36,7 +37,7 @@ export default function ChatInfoDialog({ chat, chatInfoDialogRef, openChatFragme
                 display: 'flex',
                 alignItems: 'center',
             }}>
-                <Avatar src={chat?.avatar as string} text={chat?.nickname as string} style={{
+                <Avatar src={getUrlForFileByHash(chat?.avatar_file_hash as string)} text={chat?.nickname as string} style={{
                     width: '50px',
                     height: '50px',
                 }} />

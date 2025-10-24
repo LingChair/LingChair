@@ -198,7 +198,7 @@ export default class ChatApi extends BaseApi {
                             user_id: user?.bean.id,
                             reason: v.reason,
                             title: user!.getNickName(),
-                            avatar: user!.getAvatarFileHash() ? "uploaded_files/" + user!.getAvatarFileHash() : null,
+                            avatar_file_hash: user!.getAvatarFileHash() ? user!.getAvatarFileHash() : null,
                         }
                     }),
                 }
@@ -421,7 +421,7 @@ export default class ChatApi extends BaseApi {
                         id: args.target as string,
                         type: chat.bean.type,
                         title: chat.getTitle(mine),
-                        avatar: chat.getAvatarFileHash(mine) ? "uploaded_files/" + chat.getAvatarFileHash(mine) : undefined,
+                        avatar_file_hash: chat.getAvatarFileHash(mine) ? chat.getAvatarFileHash(mine) : undefined,
                         settings: JSON.parse(chat.bean.settings),
                         is_member: true,
                         is_admin: true,
@@ -436,7 +436,7 @@ export default class ChatApi extends BaseApi {
                         id: args.target as string,
                         type: chat.bean.type,
                         title: chat.getTitle(),
-                        avatar: chat.getAvatarFileHash() ? "uploaded_files/" + chat.getAvatarFileHash() : undefined,
+                        avatar_file_hash: chat.getAvatarFileHash() ? chat.getAvatarFileHash() : undefined,
                         settings: JSON.parse(chat.bean.settings),
                         is_member: UserChatLinker.checkUserIsLinkedToChat(token.author, chat!.bean.id),
                         is_admin: chat.checkUserIsAdmin(token.author),

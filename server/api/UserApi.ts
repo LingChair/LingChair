@@ -231,7 +231,7 @@ export default class UserApi extends BaseApi {
                 data: {
                     username: user!.getUserName(),
                     nickname: user!.getNickName(),
-                    avatar: user!.getAvatarFileHash() ? "uploaded_files/" + user!.getAvatarFileHash() : null,
+                    avatar_file_hash: user!.getAvatarFileHash() ? user!.getAvatarFileHash() : null,
                     id: token.author,
                 }
             }
@@ -258,7 +258,7 @@ export default class UserApi extends BaseApi {
                     content,
                     id: chatId,
                     title: chat?.getTitle(user) || "未知",
-                    avatar: chat?.getAvatarFileHash(user) ? "uploaded_files/" + chat?.getAvatarFileHash(user) : undefined
+                    avatar_file_hash: chat?.getAvatarFileHash(user) ? chat?.getAvatarFileHash(user) : undefined
                 })
             }
 
@@ -297,7 +297,7 @@ export default class UserApi extends BaseApi {
                             id,
                             type: chat?.bean.type,
                             title: chat?.getTitle(user) || "未知",
-                            avatar: chat?.getAvatarFileHash(user) ? "uploaded_files/" + chat?.getAvatarFileHash(user) : undefined
+                            avatar_file_hash: chat?.getAvatarFileHash(user) ? chat?.getAvatarFileHash(user) : undefined
                         }
                     })
                 }
@@ -366,7 +366,7 @@ export default class UserApi extends BaseApi {
                 data: {
                     username: user!.getUserName(),
                     nickname: user!.getNickName(),
-                    avatar: user!.getAvatarFileHash() ? "uploaded_files/" + user!.getAvatarFileHash() : null,
+                    avatar_file_hash: user!.getAvatarFileHash() ? user!.getAvatarFileHash() : null,
                     id: user.bean.id,
                 }
             }

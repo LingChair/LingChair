@@ -1,13 +1,12 @@
 import * as React from 'react'
-import { Button, Dialog, TextField, dialog } from "mdui"
-import useEventListener from "../useEventListener.ts"
-import { checkApiSuccessOrSncakbar, snackbar } from "../snackbar.ts"
+import { Dialog } from "mdui"
+import { checkApiSuccessOrSncakbar } from "../snackbar.ts"
 import Client from "../../api/Client.ts"
 
-import * as CryptoJS from 'crypto-js'
 import data from "../../Data.ts"
 import Avatar from "../Avatar.tsx"
 import User from "../../api/client_data/User.ts"
+import getUrlForFileByHash from "../../getUrlForFileByHash.ts"
 
 interface Refs {
     userProfileDialogRef: React.MutableRefObject<Dialog>
@@ -28,7 +27,7 @@ export default function UserProfileDialog({
                 display: 'flex',
                 alignItems: 'center',
             }}>
-                <Avatar src={user?.avatar} text={user?.nickname} style={{
+                <Avatar src={getUrlForFileByHash(user?.avatar_file_hash)} text={user?.nickname} style={{
                     width: '50px',
                     height: '50px',
                 }} />

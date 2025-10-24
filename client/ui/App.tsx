@@ -24,6 +24,7 @@ import AddContactDialog from './dialog/AddContactDialog.tsx'
 import CreateGroupDialog from './dialog/CreateGroupDialog.tsx'
 import UserProfileDialog from "./dialog/UserProfileDialog.tsx"
 import DataCaches from "../api/DataCaches.ts"
+import getUrlForFileByHash from "../getUrlForFileByHash.ts"
 
 declare global {
     namespace React {
@@ -160,7 +161,7 @@ export default function App() {
 
             <mdui-navigation-rail contained value="Recents" ref={navigationRailRef}>
                 <mdui-button-icon slot="top">
-                    <Avatar src={myUserProfileCache?.avatar} text={myUserProfileCache?.nickname} avatarRef={openMyProfileDialogButtonRef} />
+                    <Avatar src={getUrlForFileByHash(myUserProfileCache?.avatar_file_hash)} text={myUserProfileCache?.nickname} avatarRef={openMyProfileDialogButtonRef} />
                 </mdui-button-icon>
 
                 <mdui-navigation-rail-item icon="watch_later--outlined" active-icon="watch_later--filled" value="Recents"></mdui-navigation-rail-item>

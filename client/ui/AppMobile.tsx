@@ -23,6 +23,7 @@ import AddContactDialog from './dialog/AddContactDialog.tsx'
 import CreateGroupDialog from './dialog/CreateGroupDialog.tsx'
 import UserProfileDialog from "./dialog/UserProfileDialog.tsx"
 import DataCaches from "../api/DataCaches.ts"
+import getUrlForFileByHash from "../getUrlForFileByHash.ts"
 
 declare global {
     namespace React {
@@ -200,7 +201,7 @@ export default function AppMobile() {
                 }}></div>
                 <mdui-button-icon icon="settings"></mdui-button-icon>
                 <mdui-button-icon>
-                    <Avatar src={myUserProfileCache?.avatar} text={myUserProfileCache?.nickname} avatarRef={openMyProfileDialogButtonRef} />
+                    <Avatar src={getUrlForFileByHash(myUserProfileCache?.avatar_file_hash)} text={myUserProfileCache?.nickname} avatarRef={openMyProfileDialogButtonRef} />
                 </mdui-button-icon>
             </mdui-top-app-bar>
             {
@@ -226,7 +227,7 @@ export default function AppMobile() {
                     <ContactsList
                         openChatInfoDialog={openChatInfoDialog}
                         addContactDialogRef={addContactDialogRef as any}
-                        createGroupDialogRef={createGroupDialogRef}
+                        createGroupDialogRef={createGroupDialogRef as any}
                         display={navigationItemSelected == "Contacts"} />
                 }
             </div>

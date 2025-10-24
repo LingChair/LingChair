@@ -4,7 +4,7 @@ export default class Chat {
     declare type: ChatType
     declare id: string
     declare title: string
-    declare avatar?: string
+    declare avatar_file_hash?: string
     declare settings?: { [key: string]: unknown }
 
     declare is_member: boolean

@@ -11,6 +11,7 @@ import React from "react"
 import isMobileUI from "../isMobileUI.ts"
 import ReactJson from 'react-json-view'
 import User from "../../api/client_data/User.ts"
+import getUrlForFileByHash from "../../getUrlForFileByHash.ts"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     userId: string
@@ -29,7 +30,7 @@ export default function Message({ userId, rawData, renderHTML, message, openUser
     useAsyncEffect(async () => {
         const user = await DataCaches.getUserProfile(userId)
         setNickName(user.nickname)
-        setAvatarUrl(user?.avatar)
+        setAvatarUrl(getUrlForFileByHash(user?.avatar_file_hash))
     }, [userId])
 
     const dropDownRef = React.useRef<Dropdown>(null)
@@ -40,7 +41,7 @@ export default function Message({ userId, rawData, renderHTML, message, openUser
     useEventListener(dropDownRef, 'closed', (e) => {
         setDropDownOpen(false)
     })
-    
+
     const [isDropDownOpen, setDropDownOpen] = React.useState(false)
 
     return (
@@ -114,8 +115,11 @@ export default function Message({ userId, rawData, renderHTML, message, openUser
                     padding: "15px",
                     alignSelf: isAtRight ? "flex-end" : "flex-start",
                 }}>
-                <mdui-dialog close-on-overlay-click close-on-esc ref={messageJsonDialogRef}>
-                    <ReactJson src={message} />
+                <mdui-dialog close-on-overlay-click close-on-esc fullscreen ref={messageJsonDialogRef}>
+                    {
+                        // @ts-ignore 这是可以正常工作的
+                        <ReactJson src={message} />
+                    }
                 </mdui-dialog>
                 <mdui-dropdown trigger="manual" ref={dropDownRef} open={isDropDownOpen}>
                     <span

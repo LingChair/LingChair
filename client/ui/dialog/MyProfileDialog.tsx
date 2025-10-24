@@ -8,6 +8,7 @@ import * as CryptoJS from 'crypto-js'
 import data from "../../Data.ts"
 import Avatar from "../Avatar.tsx"
 import User from "../../api/client_data/User.ts"
+import getUrlForFileByHash from "../../getUrlForFileByHash.ts"
 
 interface Refs {
     myProfileDialogRef: React.MutableRefObject<Dialog>
@@ -50,7 +51,7 @@ export default function MyProfileDialog({
                 display: 'flex',
                 alignItems: 'center',
             }}>
-                <Avatar src={user?.avatar} text={user?.nickname} style={{
+                <Avatar src={getUrlForFileByHash(user?.avatar_file_hash)} text={user?.nickname} style={{
                     width: '50px',
                     height: '50px',
                 }} />
@@ -111,7 +112,7 @@ export default function MyProfileDialog({
                 display: 'flex',
                 alignItems: 'center',
             }}>
-                <Avatar src={user?.avatar} text={user?.nickname} avatarRef={editAvatarButtonRef} style={{
+                <Avatar src={getUrlForFileByHash(user?.avatar_file_hash)} text={user?.nickname} avatarRef={editAvatarButtonRef} style={{
                     width: '50px',
                     height: '50px',
                 }} />

@@ -2,6 +2,7 @@ import { $ } from "mdui/jq"
 import RecentChat from "../../api/client_data/RecentChat.ts"
 import Avatar from "../Avatar.tsx"
 import React from 'react'
+import getUrlForFileByHash from "../../getUrlForFileByHash.ts"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     recentChat: RecentChat
@@ -10,7 +11,7 @@ interface Args extends React.HTMLAttributes<HTMLElement> {
 }
 
 export default function RecentsListItem({ recentChat, openChatFragment, active }: Args) {
-    const { id, title, avatar, content } = recentChat
+    const { id, title, avatar_file_hash, content } = recentChat
 
     const itemRef = React.useRef<HTMLElement>(null)
     React.useEffect(() => {
@@ -22,7 +23,7 @@ export default function RecentsListItem({ recentChat, openChatFragment, active }
             marginBottom: '3px',
         }} onClick={() => openChatFragment(id)} active={active} ref={itemRef}>
             {title}
-            <Avatar src={avatar} text={title} slot="icon" />
+            <Avatar src={getUrlForFileByHash(avatar_file_hash as string)} text={title} slot="icon" />
             <span slot="description"
                 style={{
                     width: "100%",
