@@ -48,7 +48,6 @@ export default function Message({ userId, rawData, renderHTML, message, openUser
 
     React.useEffect(() => {
         const text = $(dropDownRef.current as HTMLElement).find('#msg').text().trim()
-        console.log(renderHTML)
         setIsUsingFullDisplay(text == '' || (
             rawData.split("tws:\/\/file\?hash=").length == 2
             && /\<\/chat\-(file|image|video)\>(\<\/span\>)?$/.test(renderHTML.trim())
