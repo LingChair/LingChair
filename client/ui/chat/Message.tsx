@@ -44,6 +44,17 @@ export default function Message({ userId, rawData, renderHTML, message, openUser
 
     const [isDropDownOpen, setDropDownOpen] = React.useState(false)
 
+    const [isUsingFullDisplay, setIsUsingFullDisplay] = React.useState(false)
+
+    React.useEffect(() => {
+        const text = $(dropDownRef.current as HTMLElement).find('#msg').text().trim()
+        console.log(renderHTML)
+        setIsUsingFullDisplay(text == '' || (
+            rawData.split("tws:\/\/file\?hash=").length == 2
+            && /\<\/chat\-(file|image|video)\>(\<\/span\>)?$/.test(renderHTML.trim())
+        ))
+    }, [renderHTML])
+
     return (
         <div
             slot="trigger"
@@ -112,10 +123,12 @@ export default function Message({ userId, rawData, renderHTML, message, openUser
                     minWidth: "0%",
                     [isAtRight ? "marginRight" : "marginLeft"]: "55px",
                     marginTop: "-5px",
-                    padding: "15px",
+                    padding: isUsingFullDisplay ? undefined : "13px",
+                    paddingTop: isUsingFullDisplay ? undefined : "14px",
                     alignSelf: isAtRight ? "flex-end" : "flex-start",
+                    backgroundColor: isUsingFullDisplay ? "inherit" : undefined
                 }}>
-                <mdui-dialog close-on-overlay-click close-on-esc fullscreen ref={messageJsonDialogRef}>
+                <mdui-dialog close-on-overlay-click close-on-esc ref={messageJsonDialogRef}>
                     {
                         // @ts-ignore 这是可以正常工作的
                         <ReactJson src={message} />

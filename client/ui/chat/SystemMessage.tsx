@@ -11,10 +11,10 @@ export default function SystemMessage({ children }: React.HTMLAttributes<HTMLEle
             <mdui-card variant="filled"
                 style={{
                     alignSelf: 'center',
-                    paddingTop: '9px',
-                    paddingBottom: '9px',
-                    paddingLeft: '18px',
-                    paddingRight: '18px',
+                    paddingTop: '8px',
+                    paddingBottom: '8px',
+                    paddingLeft: '17px',
+                    paddingRight: '17px',
                     fontSize: '92%',
                 }}>
                 {children}
