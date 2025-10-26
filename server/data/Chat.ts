@@ -137,7 +137,7 @@ export default class Chat {
         return Chat.database.prepare(`SELECT * FROM ${this.getJoinRequestsTableName()}`).all()
     }
     protected findAllJoinRequestsByCondition(condition: string, ...args: SQLInputValue[]) {
-        return Chat.database.prepare(`SELECT * FROM ${this.getAdminsTableName()} WHERE ${condition}`).all(...args)
+        return Chat.database.prepare(`SELECT * FROM ${this.getJoinRequestsTableName()} WHERE ${condition}`).all(...args)
     }
 
     /**
