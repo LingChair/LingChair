@@ -7,6 +7,7 @@ export type CallMethod =
     "User.setAvatar" |
     "User.updateProfile" |
     "User.getMyInfo" |
+    "User.resetPassword" |
 
     "User.getInfo" |
 

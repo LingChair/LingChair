@@ -79,7 +79,7 @@ export default class UserApi extends BaseApi {
                     msg: "验证失败",
                     code: 401,
                 }
-                
+
                 const user = User.findById(refresh_token.author) as User
 
                 return {
@@ -154,6 +154,41 @@ export default class UserApi extends BaseApi {
                 data: {
                     userid: user.bean.id
                 },
+            }
+        })
+        // 登錄
+        this.registerEvent("User.resetPassword", (args, { deviceId }) => {
+            if (this.checkArgsMissing(args, ['token', 'old_password', 'new_password'])) return {
+                msg: "参数缺失",
+                code: 400,
+            }
+            if (this.checkArgsEmpty(args, ['token', 'old_password', 'new_password'])) return {
+                msg: "参数不得为空",
+                code: 400,
+            }
+
+            const token = TokenManager.decode(args.token as string)
+            if (!this.checkToken(token, deviceId)) return {
+                code: 401,
+                msg: "令牌无效",
+            }
+            const user = User.findById(token.author) as User
+
+            if (user.getPassword() == args.old_password) {
+                user.setPassword(args.new_password as string)
+                return {
+                    msg: "成功",
+                    code: 200,
+                    data: {
+                        refresh_token: TokenManager.make(user, null, deviceId, 'refresh_token'),
+                        access_token: TokenManager.make(user, null, deviceId),
+                    },
+                }
+            }
+
+            return {
+                msg: "账号或密码错误",
+                code: 400,
             }
         })
         /*
