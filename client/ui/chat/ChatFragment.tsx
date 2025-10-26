@@ -297,7 +297,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                     alignItems: 'center',
                 }}>
                     <div>
-                        <mdui-button onClick={async () => {
+                        <mdui-button disabled={!groupPreferenceStore.state.allow_new_member_join} onClick={async () => {
                             const re = await Client.invoke("Chat.sendJoinRequest", {
                                 token: data.access_token,
                                 target: target,
