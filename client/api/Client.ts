@@ -3,7 +3,7 @@ import { CallMethod, ClientEvent, CallableMethodBeforeAuth } from './ApiDeclare.
 import ApiCallbackMessage from './ApiCallbackMessage.ts'
 import User from "./client_data/User.ts"
 import data from "../Data.ts"
-import { checkApiSuccessOrSncakbar } from "../ui/snackbar.ts"
+import { checkApiSuccessOrSncakbar, snackbar } from "../ui/snackbar.ts"
 import randomUUID from "../randomUUID.ts"
 
 class Client {
@@ -32,6 +32,21 @@ class Client {
         })
         this.socket!.on("disconnect", () => {
             this.connected = false
+            const s = snackbar({
+                message: '重新连接服务器中...',
+                placement: 'top',
+                autoCloseDelay: 0,
+            })
+            let i = 1
+            const id = setInterval(() => {
+                s.textContent = `重新连接服务器中... (${i}s)`
+                i++
+                this.socket!.connect()
+            }, 1000)
+            this.socket!.once('connect', () => {
+                s.open = false
+                clearTimeout(id)
+            })
         })
         this.socket!.on("The_White_Silk", (name: string, data: unknown, callback: (ret: unknown) => void) => {
             try {
