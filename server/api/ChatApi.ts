@@ -283,8 +283,16 @@ export default class ChatApi extends BaseApi {
                 code: 404,
                 msg: "对话不存在",
             }
-
-            chat.addJoinRequest(token.author, args.reason as string)
+            if (chat.bean.type == 'group') {
+                const settings = ChatGroup.fromChat(chat).getSettings()
+                if (settings.settings.allow_new_member_join)
+                    chat.addJoinRequest(token.author, args.reason as string)
+                else
+                    return {
+                        code: 403,
+                        msg: "该对话不允许加入请求",
+                    }
+            }
 
             return {
                 code: 200,
