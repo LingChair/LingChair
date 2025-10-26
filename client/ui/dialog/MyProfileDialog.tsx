@@ -42,6 +42,12 @@ export default function MyProfileDialog({
     const editNickNameRef = React.useRef<TextField>(null)
     const editUserNameRef = React.useRef<TextField>(null)
 
+    const accountSettingsDialogRef = React.useRef<Dialog>(null)
+
+    const editPasswordDialogRef = React.useRef<Dialog>(null)
+    const editPasswordOldInputRef = React.useRef<TextField>(null)
+    const editPasswordNewInputRef = React.useRef<TextField>(null)
+
     return (<>
         {
             // 公用 - 資料卡
@@ -66,14 +72,10 @@ export default function MyProfileDialog({
 
             <mdui-list>
                 <mdui-list-item icon="edit" rounded onClick={() => userProfileEditDialogRef.current!.open = true}>编辑资料</mdui-list-item>
-                <mdui-list-item icon="settings" rounded>账号设定</mdui-list-item>
+                <mdui-list-item icon="settings" rounded onClick={() => accountSettingsDialogRef.current!.open = true}>账号设定</mdui-list-item>
                 {/*
                 <mdui-list-item icon="lock" rounded>隱私設定</mdui-list-item>
                 */}
-                <mdui-divider style={{
-                    marginTop: "10px",
-                    marginBottom: "10px",
-                }}></mdui-divider>
                 <mdui-list-item icon="logout" rounded onClick={() => dialog({
                     headline: "退出登录",
                     description: "请确保在退出登录前, 设定了用户名或者已经记录下了用户 ID, 以免无法登录账号",
@@ -101,9 +103,35 @@ export default function MyProfileDialog({
         {
             // 账号设定
         }
-        <mdui-dialog close-on-overlay-click close-on-esc ref={userProfileEditDialogRef} headline="账号设定">
-            
-            <mdui-button slot="action" variant="text" onClick={() => userProfileEditDialogRef.current!.open = false}>关闭</mdui-button>
+        <mdui-dialog close-on-overlay-click close-on-esc ref={accountSettingsDialogRef} headline="账号设定">
+            <mdui-list-item icon="edit" rounded onClick={() => editPasswordDialogRef.current!.open = true}>修改密码</mdui-list-item>
+            <mdui-button slot="action" variant="text" onClick={() => accountSettingsDialogRef.current!.open = false}>关闭</mdui-button>
+        </mdui-dialog>
+        <mdui-dialog close-on-overlay-click close-on-esc ref={editPasswordDialogRef} headline="修改密码">
+            <mdui-text-field label="旧密码" type="password" toggle-password ref={editPasswordOldInputRef as any}></mdui-text-field>
+            <div style={{
+                height: "10px",
+            }}></div>
+            <mdui-text-field label="新密码" type="password" toggle-password ref={editPasswordNewInputRef as any}></mdui-text-field>
+
+            <mdui-button slot="action" variant="text" onClick={() => editPasswordDialogRef.current!.open = false}>关闭</mdui-button>
+            <mdui-button slot="action" variant="text" onClick={async () => {
+                const re = await Client.invoke("User.resetPassword", {
+                    token: data.access_token,
+                    old_password: CryptoJS.SHA256(editPasswordOldInputRef.current?.value || '').toString(CryptoJS.enc.Hex),
+                    new_password: CryptoJS.SHA256(editPasswordNewInputRef.current?.value || '').toString(CryptoJS.enc.Hex),
+                })
+
+                if (checkApiSuccessOrSncakbar(re, "修改失败")) return
+                snackbar({
+                    message: "修改成功 (其他客户端需要重新登录)",
+                    placement: "top",
+                })
+                data.access_token = re.data!.access_token as string
+                data.refresh_token = re.data!.refresh_token as string
+                data.apply()
+                editPasswordDialogRef.current!.open = false
+            }}>确定</mdui-button>
         </mdui-dialog>
         {
             // 個人資料編輯
