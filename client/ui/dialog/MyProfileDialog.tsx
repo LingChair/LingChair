@@ -65,9 +65,9 @@ export default function MyProfileDialog({
             }}></mdui-divider>
 
             <mdui-list>
-                <mdui-list-item icon="edit" rounded onClick={() => userProfileEditDialogRef.current!.open = true}>編輯資料</mdui-list-item>
+                <mdui-list-item icon="edit" rounded onClick={() => userProfileEditDialogRef.current!.open = true}>编辑资料</mdui-list-item>
+                <mdui-list-item icon="settings" rounded>账号设定</mdui-list-item>
                 {/*
-                <mdui-list-item icon="settings" rounded>賬號設定</mdui-list-item>
                 <mdui-list-item icon="lock" rounded>隱私設定</mdui-list-item>
                 */}
                 <mdui-divider style={{
@@ -97,6 +97,13 @@ export default function MyProfileDialog({
                     ],
                 })}>退出登录</mdui-list-item>
             </mdui-list>
+        </mdui-dialog>
+        {
+            // 账号设定
+        }
+        <mdui-dialog close-on-overlay-click close-on-esc ref={userProfileEditDialogRef} headline="账号设定">
+            
+            <mdui-button slot="action" variant="text" onClick={() => userProfileEditDialogRef.current!.open = false}>关闭</mdui-button>
         </mdui-dialog>
         {
             // 個人資料編輯
