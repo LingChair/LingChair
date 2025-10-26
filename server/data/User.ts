@@ -115,6 +115,7 @@ export default class User {
         return this.bean.username
     }
     setUserName(userName: string) {
+        if (this.getUserName() == userName) return
         if (User.findAllBeansByCondition('username = ?', userName).length > 0)
             throw new DataWrongError(`用户名 ${userName} 已存在`)
         this.setAttr("username", userName)
