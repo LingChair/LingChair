@@ -78,7 +78,9 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
         tabRef.current != null && setTabItemSelected(tabRef.current!.value as string)
     })
 
-    useAsyncEffect(async () => {
+    async function getChatInfoAndInit() {
+        setMessagesList([])
+        page.current = 0
         const re = await Client.invoke('Chat.getInfo', {
             token: data.access_token,
             target: target,
@@ -101,7 +103,8 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                 behavior: "smooth",
             })
         }, 300)
-    }, [target])
+    }
+    useAsyncEffect(getChatInfoAndInit, [target])
 
     const page = React.useRef(0)
     async function loadMore() {
@@ -222,6 +225,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
         for (const file of files) {
             addFile(file.type, file.name, file)
         }
+        uploadChatAvatarRef.current!.value = ''
     })
     useEventListener(uploadChatAvatarRef, 'change', async (_e) => {
         const file = uploadChatAvatarRef.current!.files?.[0] as File
@@ -232,6 +236,7 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
             target: target,
             avatar: file
         })
+        uploadChatAvatarRef.current!.value = ''
 
         if (checkApiSuccessOrSncakbar(re, "修改失败")) return
         snackbar({
@@ -283,6 +288,11 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
                 <div style={{
                     flexGrow: '1',
                 }}></div>
+                <mdui-button-icon icon="refresh" onClick={() => getChatInfoAndInit()} style={{
+                    alignSelf: 'center',
+                    marginLeft: '5px',
+                    marginRight: '5px',
+                }}></mdui-button-icon>
                 <mdui-button-icon icon="info" onClick={() => openChatInfoDialog(chatInfo)} style={{
                     alignSelf: 'center',
                     marginLeft: '5px',
