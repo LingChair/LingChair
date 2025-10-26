@@ -12,7 +12,7 @@ export type CallMethod =
     "User.getInfo" |
 
     "User.getMyContacts" |
-    "User.addContact" |
+    "User.addContacts" |
     "User.removeContacts" |
 
     "User.getMyRecentChats" | 

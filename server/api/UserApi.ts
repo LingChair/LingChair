@@ -339,8 +339,41 @@ export default class UserApi extends BaseApi {
             }
         })
         // 添加聯絡人
-        this.registerEvent("User.addContact", (args, { deviceId }) => {
-            if (this.checkArgsMissing(args, ['token', 'target'])) return {
+        this.registerEvent("User.addContacts", (args, { deviceId }) => {
+            if (this.checkArgsMissing(args, ['token', 'targets'])) return {
+                msg: "参数缺失",
+                code: 400,
+            }
+
+            const token = TokenManager.decode(args.token as string)
+            if (!this.checkToken(token, deviceId)) return {
+                code: 401,
+                msg: "令牌无效",
+            }
+
+            let fail = 0
+            const user = User.findById(token.author) as User
+            for (const target of (args.targets as string[])) {
+                const chat = Chat.findById(target) || Chat.findByName(target)
+                const targetUser = User.findByAccount(target) as User
+                if (chat)
+                    user!.addContact(chat.bean.id)
+                else if (targetUser) {
+                    const privChat = ChatPrivate.findOrCreateForPrivate(user, targetUser)
+                    user!.addContact(privChat.bean.id)
+                } else {
+                    fail++
+                }
+            }
+
+            return {
+                msg: "添加成功 (失败 " + fail + " 个)",
+                code: 200,
+            }
+        })
+        // 添加聯絡人
+        this.registerEvent("User.removeContacts", (args, { deviceId }) => {
+            if (this.checkArgsMissing(args, ['token', 'targets'])) return {
                 msg: "参数缺失",
                 code: 400,
             }
@@ -352,19 +385,7 @@ export default class UserApi extends BaseApi {
             }
 
             const user = User.findById(token.author) as User
-            const chat = Chat.findById(args.target as string) || Chat.findByName(args.target as string)
-            const targetUser = User.findByAccount(args.target as string) as User
-            if (chat)
-                user!.addContact(chat.bean.id)
-            else if (targetUser) {
-                const privChat = ChatPrivate.findOrCreateForPrivate(user, targetUser)
-                user!.addContact(privChat.bean.id)
-            } else {
-                return {
-                    msg: "找不到目标",
-                    code: 404,
-                }
-            }
+            user.removeContacts(args.targets as string[])
 
             return {
                 msg: "成功",

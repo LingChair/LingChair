@@ -18,14 +18,14 @@ export default function AddContactDialog({
     const inputTargetRef = React.useRef<TextField>(null)
 
     async function addContact() {
-        const re = await Client.invoke("User.addContact", {
-            target: inputTargetRef.current!.value,
+        const re = await Client.invoke("User.addContacts", {
+            targets: [inputTargetRef.current!.value],
             token: data.access_token,
         })
 
         if (checkApiSuccessOrSncakbar(re, "添加失敗")) return
         snackbar({
-            message: "添加成功!",
+            message: re.msg,
             placement: "top",
         })
         EventBus.emit('ContactsList.updateContacts')
