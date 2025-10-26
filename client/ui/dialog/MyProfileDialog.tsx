@@ -87,6 +87,7 @@ export default function MyProfileDialog({
                         {
                             text: "确定",
                             onClick: () => {
+                                data.refresh_token = ''
                                 data.access_token = ''
                                 data.apply()
                                 location.reload()
