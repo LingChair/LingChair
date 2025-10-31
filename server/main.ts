@@ -62,7 +62,7 @@ const httpServer: HttpServerLike = (
     http.createServer(app)
 )
 const io = new SocketIo.Server(httpServer, {
-    maxHttpBufferSize: 1e114514,
+    transports: ["polling", "websocket", "webtransport"],
 })
 
 ApiManager.initServer(httpServer, io)
