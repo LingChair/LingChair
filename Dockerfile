@@ -17,4 +17,4 @@ RUN deno task build
 EXPOSE 3601
 
 # 启动服务
-CMD ["deno", "task", "server"]
+CMD ["deno", "task", "build-and-run-server"]

@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "command": "deno task debug",
+            "command": "deno task build-and-run-server",
             "name": "Run debug",
             "request": "launch",
             "type": "node-terminal",
