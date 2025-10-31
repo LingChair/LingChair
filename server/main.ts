@@ -11,50 +11,22 @@ import process from "node:process"
 import chalk from "chalk"
 import child_process from "node:child_process"
 import FileManager from "./data/FileManager.ts"
-import TokenManager from "./api/TokenManager.ts"
-import UserChatLinker from "./data/UserChatLinker.ts"
 import path from "node:path"
 import cookieParser from 'cookie-parser'
 import fs from 'node:fs/promises'
 // @ts-types="npm:@types/express-fileupload"
 import fileUpload from 'express-fileupload'
+import { Middleware } from "./middleware.ts"
 
 const app = express()
 app.use('/', express.static(config.data_path + '/page_compiled'))
 app.use(cookieParser())
-app.get('/uploaded_files/:hash', (req, res) => {
-    const hash = req.params.hash as string
-    if (hash == null) {
-        res.status(404).send({
-            msg: "404 Not Found",
-        })
-        return
-    }
-    const file = FileManager.findByHash(hash)
+app.get('/uploaded_files/:hash',Middleware.Get_uploaded_files, (req, res) => {
+    const file = FileManager.findByHash(req.params.hash as string)
 
     if (file == null) {
-        res.status(404).send({
-            msg: "404 Not Found",
-        })
-        return
+        return;
     }
-
-    if (file.getChatId() != null) {
-        const userToken = TokenManager.decode(req.headers.token || req.cookies.token)
-        if (!TokenManager.checkToken(userToken, req.headers['device-id'] || req.cookies.device_id)) {
-            res.status(401).send({
-                msg: "401 UnAuthorized",
-            })
-            return
-        }
-        if (!UserChatLinker.checkUserIsLinkedToChat(userToken.author, file.getChatId() as string)) {
-            res.status(403).send({
-                msg: "403 Forbidden",
-            })
-            return
-        }
-    }
-
     const fileName = encodeURIComponent(file!.getName()?.replaceAll('"', ''))
     res.setHeader('Content-Disposition', `inline; filename="${fileName}"`)
     res.setHeader('Content-Type', file!.getMime())
@@ -69,35 +41,8 @@ app.use(fileUpload({
     tempFileDir: config.data_path + '/upload_cache',
     abortOnLimit: true,
 }))
-app.post('/upload_file', async (req, res) => {
-    const userToken = TokenManager.decode(req.headers.token || req.cookies.token)
-    if (!TokenManager.checkToken(userToken, req.headers['device-id'] || req.cookies.device_id)) {
-        res.status(401).send({
-            msg: "401 UnAuthorized",
-        })
-        return
-    }
-    if (req.body.chat_id && !UserChatLinker.checkUserIsLinkedToChat(userToken.author, req.body.chat_id)) {
-        res.status(403).send({
-            msg: "403 Forbidden",
-        })
-        return
-    }
-
+app.post('/upload_file',Middleware.Post_upload_file, async (req, res) => {
     const file = req.files?.file as fileUpload.UploadedFile
-    if (file?.data == null) {
-        res.status(400).send({
-            msg: "No file was found or multiple files were uploaded",
-        })
-        return
-    }
-    if (req.body.file_name == null) {
-        res.status(400).send({
-            msg: "Filename is required",
-        })
-        return
-    }
-
     const hash = (await FileManager.uploadFile(req.body.file_name, await fs.readFile(file.tempFilePath), req.body.chat_id)).getHash()
 
     res.status(200).send({
