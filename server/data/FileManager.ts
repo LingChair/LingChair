@@ -53,6 +53,9 @@ class File {
     getUploadTime() {
         return this.bean.upload_time
     }
+    updateLastUsedTime() {
+       this.setAttr("last_used_time", Date.now())
+    }
     getLastUsedTime() {
         return this.bean.last_used_time
     }
