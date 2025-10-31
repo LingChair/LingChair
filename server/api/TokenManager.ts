@@ -44,7 +44,7 @@ export default class TokenManager {
         })
     }
     /**
-     * 嚴格檢驗令牌: 時間, 用戶, (設備 ID)
+     * 根据时间, 用户, 设备 ID (和类型 (默认访问令牌)) 检验令牌
      */
     static checkToken(token: Token, deviceId?: string, type: TokenType = 'access_token') {
         if (token.expired_time < Date.now()) return false
