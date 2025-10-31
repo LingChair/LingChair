@@ -5,3 +5,6 @@ thewhitesilk_data/
 
 deno.lock
 node_modules/
+
+#npm
+package-lock.json

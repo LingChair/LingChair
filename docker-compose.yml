@@ -13,3 +13,4 @@ services:
     volumes:
       - ./thewhitesilk_config.json:/app/thewhitesilk_config.json
       - ./thewhitesilk_data:/app/thewhitesilk_data
+    network_mode: bridge
