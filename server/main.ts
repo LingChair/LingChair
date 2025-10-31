@@ -35,8 +35,8 @@ app.get('/uploaded_files/:hash', (req, res) => {
     }
 
     if (file.getChatId() != null) {
-        const userToken = TokenManager.decode(req.cookies.token)
-        if (!TokenManager.checkToken(userToken, req.cookies.device_id)) {
+        const userToken = TokenManager.decode(req.headers['token'] || req.cookies.token)
+        if (!TokenManager.checkToken(userToken, req.headers['device_id'] || req.cookies.device_id)) {
             res.status(401).send("401 UnAuthorized")
             return
         }
