@@ -1,0 +1,15 @@
+version: '3'
+services:
+  lingchair:
+    container_name: lingchair
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      TZ: Asia/Shanghai
+    ports:
+      - "3601:3601"
+    restart: always
+    volumes:
+      - ./thewhitesilk_config.json:/app/thewhitesilk_config.json
+      - ./thewhitesilk_data:/app/thewhitesilk_data
