@@ -167,7 +167,10 @@ export default class User {
     getAvatarFileHash() {
         return this.bean.avatar_file_hash
     }
+    setAvatarFileHash(hash: string) {
+        this.setAttr("avatar_file_hash", hash)
+    }
     async setAvatar(avatar: Buffer) {
-        this.setAttr("avatar_file_hash", (await FileManager.uploadFile(`avatar_user_${this.bean.count}`, avatar)).getHash())
+        this.setAvatarFileHash((await FileManager.uploadFile(`avatar_user_${this.bean.count}`, avatar)).getHash())
     }
 }

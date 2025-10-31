@@ -231,7 +231,10 @@ export default class Chat {
         if (this.bean.type == 'group') return this.bean.avatar_file_hash
         if (this.bean.type == 'private') return this.getAnotherUserForPrivate(userMySelf as User)?.getAvatarFileHash()
     }
+    setAvatarFileHash(hash: string) {
+        this.setAttr("avatar_file_hash", hash)
+    }
     async setAvatar(avatar: Buffer) {
-        this.setAttr("avatar_file_hash", (await FileManager.uploadFile(`avatar_chat_${this.bean.count}`, avatar)).getHash())
+        this.setAvatarFileHash((await FileManager.uploadFile(`avatar_chat_${this.bean.count}`, avatar)).getHash())
     }
 }
