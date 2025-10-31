@@ -116,6 +116,37 @@ class Client {
         }
         return re
     }
+    static async uploadFileLikeApi(fileName: string, fileData: ArrayBuffer | Blob | Response, chatId?: string) {
+        const form = new FormData()
+        form.append("file", 
+            fileData instanceof ArrayBuffer 
+            ? new File([fileData], fileName, { type: 'application/octet-stream' })
+            : (
+                fileData instanceof Blob ? fileData : 
+                new File([await fileData.arrayBuffer()], fileName, { type: 'application/octet-stream' })
+            )
+        )
+        form.append('file_name', fileName)
+        chatId && form.append('chat_id', chatId)
+        const re = await fetch('./upload_file', {
+            method: 'POST',
+            headers: {
+                "Token": data.access_token,
+                "Device-Id": data.device_id,
+            } as HeadersInit,
+            body: form,
+            credentials: 'omit',
+        })
+        return {
+            ...await re.json(),
+            code: re.status,
+        } as ApiCallbackMessage
+    }
+    static async uploadFile(fileName: string, fileData: ArrayBuffer | Blob | Response, chatId?: string) {
+        const re = await this.uploadFileLikeApi(fileName, fileData, chatId)
+        if (re.code != 200) throw new Error(re.msg)
+        return re.data!.hash as string
+    }
     static async updateCachedProfile() {
         this.myUserProfile = (await Client.invoke("User.getMyInfo", {
             token: data.access_token

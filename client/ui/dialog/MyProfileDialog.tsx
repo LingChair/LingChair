@@ -21,14 +21,23 @@ export default function MyProfileDialog({
 }: Refs) {
     const editAvatarButtonRef = React.useRef<HTMLElement>(null)
     const chooseAvatarFileRef = React.useRef<HTMLInputElement>(null)
-    useEventListener(editAvatarButtonRef, 'click', () => chooseAvatarFileRef.current!.click())
+    useEventListener(editAvatarButtonRef, 'click', () => {
+        chooseAvatarFileRef.current!.value = ''
+        chooseAvatarFileRef.current!.click()
+    })
     useEventListener(chooseAvatarFileRef, 'change', async (_e) => {
         const file = chooseAvatarFileRef.current!.files?.[0] as File
         if (file == null) return
 
-        const re = await Client.invoke("User.setAvatar", {
+        let re = await Client.uploadFileLikeApi(
+            'avatar',
+            file
+        )
+        if (checkApiSuccessOrSncakbar(re, "上传失败")) return
+        const hash = re.data!.file_hash
+        re = await Client.invoke("User.setAvatar", {
             token: data.access_token,
-            avatar: file
+            file_hash: hash
         })
 
         if (checkApiSuccessOrSncakbar(re, "修改失败")) return

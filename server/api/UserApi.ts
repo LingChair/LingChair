@@ -198,12 +198,8 @@ export default class UserApi extends BaseApi {
          */
         // 更新頭像
         this.registerEvent("User.setAvatar", (args, { deviceId }) => {
-            if (this.checkArgsMissing(args, ['avatar', 'token'])) return {
+            if (this.checkArgsMissing(args, ['file_hash', 'token'])) return {
                 msg: "参数缺失",
-                code: 400,
-            }
-            if (!(args.avatar instanceof Buffer)) return {
-                msg: "参数不合法",
                 code: 400,
             }
             const token = TokenManager.decode(args.token as string)
@@ -212,9 +208,9 @@ export default class UserApi extends BaseApi {
                 msg: "令牌无效",
             }
 
-            const avatar: Buffer = args.avatar as Buffer
+            // const avatar: Buffer = args.avatar as Buffer
             const user = User.findById(token.author)
-            user!.setAvatar(avatar)
+            user!.setAvatarFileHash(args.file_hash as string) //.setAvatar(avatar)
 
             return {
                 msg: "成功",

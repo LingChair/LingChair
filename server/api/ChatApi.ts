@@ -118,7 +118,7 @@ export default class ChatApi extends BaseApi {
          * @param file_name 文件名稱
          * @param data 文件二進制數據
          */
-        this.registerEvent("Chat.uploadFile", async (args, { deviceId }) => {
+        /* this.registerEvent("Chat.uploadFile", async (args, { deviceId }) => {
             if (this.checkArgsMissing(args, ['token', 'target', 'data', 'file_name'])) return {
                 msg: "参数缺失",
                 code: 400,
@@ -149,7 +149,7 @@ export default class ChatApi extends BaseApi {
                     file_hash: file.getHash()
                 },
             }
-        })
+        }) */
         /**
          * ======================================================
          *                       加入对话申请
@@ -463,14 +463,14 @@ export default class ChatApi extends BaseApi {
         })
         // 更新頭像
         this.registerEvent("Chat.setAvatar", (args, { deviceId }) => {
-            if (this.checkArgsMissing(args, ['avatar', 'token'])) return {
+            if (this.checkArgsMissing(args, ['file_hash', 'token'])) return {
                 msg: "参数缺失",
                 code: 400,
             }
-            if (!(args.avatar instanceof Buffer)) return {
+            /* if (!(args.avatar instanceof Buffer)) return {
                 msg: "参数不合法",
                 code: 400,
-            }
+            } */
             const token = TokenManager.decode(args.token as string)
 
             const user = User.findById(token.author) as User
@@ -483,9 +483,10 @@ export default class ChatApi extends BaseApi {
 
             if (chat.bean.type == 'group')
                 if (chat.checkUserIsAdmin(user.bean.id)) {
-                    const avatar: Buffer = args.avatar as Buffer
+                    chat.setAvatarFileHash(args.file_hash as string)
+                    /* const avatar: Buffer = args.avatar as Buffer
                     if (avatar)
-                        chat.setAvatar(avatar)
+                        chat.setAvatar(avatar) */
                 } else
                     return {
                         code: 403,

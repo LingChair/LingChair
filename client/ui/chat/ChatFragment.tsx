@@ -167,12 +167,16 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
             setIsMessageSending(true)
             for (const fileName of Object.keys(cachedFiles.current)) {
                 if (text.indexOf(fileName) != -1) {
-                    const re = await Client.invoke("Chat.uploadFile", {
+                    /* const re = await Client.invoke("Chat.uploadFile", {
                         token: data.access_token,
                         file_name: fileName,
                         target,
                         data: cachedFiles.current[fileName],
-                    }, 5000)
+                    }, 5000) */
+                    const re = await Client.uploadFileLikeApi(
+                        fileName,
+                        cachedFiles.current[fileName]
+                    )
                     if (checkApiSuccessOrSncakbar(re, `文件[${fileName}] 上传失败`)) return setIsMessageSending(false)
                     text = text.replaceAll('(' + fileName + ')', '(tws://file?hash=' + re.data!.file_hash as string + ')')
                 }
@@ -225,16 +229,22 @@ export default function ChatFragment({ target, showReturnButton, onReturnButtonC
         for (const file of files) {
             addFile(file.type, file.name, file)
         }
-        uploadChatAvatarRef.current!.value = ''
+        attachFileInputRef.current!.value = ''
     })
     useEventListener(uploadChatAvatarRef, 'change', async (_e) => {
         const file = uploadChatAvatarRef.current!.files?.[0] as File
         if (file == null) return
 
-        const re = await Client.invoke("Chat.setAvatar", {
+        let re = await Client.uploadFileLikeApi(
+            'avatar',
+            file
+        )
+        if (checkApiSuccessOrSncakbar(re, "上传失败")) return
+        const hash = re.data!.file_hash
+        re = await Client.invoke("Chat.setAvatar", {
             token: data.access_token,
             target: target,
-            avatar: file
+            file_hash: hash,
         })
         uploadChatAvatarRef.current!.value = ''
 

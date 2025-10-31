@@ -9,6 +9,7 @@
         "file-type": "npm:file-type@21.0.0",
         "express": "npm:express@5.1.0",
         "socket.io": "npm:socket.io@4.8.1",
-        "cookie-parser": "npm:cookie-parser@1.4.7"
+        "cookie-parser": "npm:cookie-parser@1.4.7",
+        "express-fileupload": "npm:express-fileupload@1.5.2"
     }
 }
