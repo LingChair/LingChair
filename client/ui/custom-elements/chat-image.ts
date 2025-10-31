@@ -11,8 +11,8 @@ customElements.define('chat-image', class extends HTMLElement {
     connectedCallback() {
         this.style.display = 'block'
         const e = new Image()
-        e.style.maxWidth = "100%"
-        e.style.maxHeight = "90%"
+        e.style.maxWidth = "400px"
+        e.style.maxHeight = "300px"
         e.style.marginTop = '5px'
         e.style.marginBottom = '5px'
         e.style.borderRadius = "var(--mdui-shape-corner-medium)"
