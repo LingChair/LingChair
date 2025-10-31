@@ -119,30 +119,37 @@ export default function App() {
         userProfileDialogRef.current!.open = true
     }
 
-    Notification.requestPermission()
-    React.useEffect(() => {
-        interface OnMessageData {
-            chat: string
-            msg: Message
-        }
-        async function onMessage(_event: unknown) {
-            EventBus.emit('RecentsList.updateRecents')
-
-            const event = _event as OnMessageData
-            if (currentChatId != event.chat) {
-                const chat = await DataCaches.getChatInfo(event.chat)
-                const user = await DataCaches.getUserProfile(event.msg.user_id)
-                new Notification(`${user.nickname} (对话: ${chat.title})`, {
-                    icon: getUrlForFileByHash(chat.avatar_file_hash),
-                    body: event.msg.text,
-                })
+    if ('Notification' in window) {
+        Notification.requestPermission()
+        React.useEffect(() => {
+            interface OnMessageData {
+                chat: string
+                msg: Message
             }
-        }
-        Client.on('Client.onMessage', onMessage)
-        return () => {
-            Client.off('Client.onMessage', onMessage)
-        }
-    }, [currentChatId])
+            async function onMessage(_event: unknown) {
+                EventBus.emit('RecentsList.updateRecents')
+
+                const event = _event as OnMessageData
+                if (currentChatId != event.chat) {
+                    const chat = await DataCaches.getChatInfo(event.chat)
+                    const user = await DataCaches.getUserProfile(event.msg.user_id)
+                    const notification = new Notification(`${user.nickname} (对话: ${chat.title})`, {
+                        icon: getUrlForFileByHash(chat.avatar_file_hash),
+                        body: event.msg.text,
+                    })
+                    notification.addEventListener('click', () => {
+                        setCurrentChatId(chat.id)
+                        setIsShowChatFragment(true)
+                        notification.close()
+                    })
+                }
+            }
+            Client.on('Client.onMessage', onMessage)
+            return () => {
+                Client.off('Client.onMessage', onMessage)
+            }
+        }, [currentChatId])
+    }
 
     return (
         <div style={{
