@@ -25,3 +25,14 @@ const onResize = () => {
 // deno-lint-ignore no-window no-window-prefix
 window.addEventListener('resize', onResize)
 onResize()
+
+// @ts-ignore 工作正常, 这里是获取为 URL 以便于构建
+import sw from './sw.ts?worker&url'
+
+if ("serviceWorker" in navigator)
+    try {
+        navigator.serviceWorker
+            .register(sw as URL)
+    } catch (e) {
+        console.error(e)
+    }
