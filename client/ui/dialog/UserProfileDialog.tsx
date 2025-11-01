@@ -7,6 +7,8 @@ import data from "../../Data.ts"
 import Avatar from "../Avatar.tsx"
 import User from "../../api/client_data/User.ts"
 import getUrlForFileByHash from "../../getUrlForFileByHash.ts"
+import openImageViewer from "../openImageViewer.ts"
+import Chat from "../../api/client_data/Chat.ts"
 
 interface Refs {
     userProfileDialogRef: React.MutableRefObject<Dialog>
@@ -21,16 +23,17 @@ export default function UserProfileDialog({
     openChatFragment,
     user
 }: Refs) {
+    const avatarUrl = getUrlForFileByHash(user?.avatar_file_hash)
     return (
         <mdui-dialog close-on-overlay-click close-on-esc ref={userProfileDialogRef}>
             <div style={{
                 display: 'flex',
                 alignItems: 'center',
             }}>
-                <Avatar src={getUrlForFileByHash(user?.avatar_file_hash)} text={user?.nickname} style={{
+                <Avatar src={avatarUrl} text={user?.nickname} style={{
                     width: '50px',
                     height: '50px',
-                }} />
+                }} onClick={() => avatarUrl && openImageViewer(avatarUrl)} />
                 <span style={{
                     marginLeft: "15px",
                     fontSize: '16.5px',

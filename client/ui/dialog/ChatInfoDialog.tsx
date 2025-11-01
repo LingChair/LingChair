@@ -8,6 +8,7 @@ import Avatar from "../Avatar.tsx"
 import { checkApiSuccessOrSncakbar } from "../snackbar.ts"
 import User from "../../api/client_data/User.ts"
 import getUrlForFileByHash from "../../getUrlForFileByHash.ts"
+import openImageViewer from "../openImageViewer.ts"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     chat: Chat
@@ -30,6 +31,7 @@ export default function ChatInfoDialog({ chat, chatInfoDialogRef, openChatFragme
             return checkApiSuccessOrSncakbar(re, '获取对话信息失败')
         setChatInfo(re.data!.chat_info as Chat)
     })
+    const avatarUrl = getUrlForFileByHash(chat?.avatar_file_hash as string)
 
     return (
         <mdui-dialog close-on-overlay-click close-on-esc ref={chatInfoDialogRef}>
@@ -37,10 +39,10 @@ export default function ChatInfoDialog({ chat, chatInfoDialogRef, openChatFragme
                 display: 'flex',
                 alignItems: 'center',
             }}>
-                <Avatar src={getUrlForFileByHash(chat?.avatar_file_hash as string)} text={chat?.nickname as string} style={{
+                <Avatar src={avatarUrl} text={chat?.nickname as string} style={{
                     width: '50px',
                     height: '50px',
-                }} />
+                }} onClick={() => avatarUrl && openImageViewer(avatarUrl)} />
                 <span style={{
                     marginLeft: "15px",
                     fontSize: '16.5px',
