@@ -16,12 +16,12 @@ import cookieParser from 'cookie-parser'
 import fs from 'node:fs/promises'
 // @ts-types="npm:@types/express-fileupload"
 import fileUpload from 'express-fileupload'
-import { Middleware } from "./middleware.ts"
+import FileUploadMiddleware from "./fileupload-middleware.ts"
 
 const app = express()
 app.use('/', express.static(config.data_path + '/page_compiled'))
 app.use(cookieParser())
-app.get('/uploaded_files/:hash',Middleware.Get_uploaded_files, (req, res) => {
+app.get('/uploaded_files/:hash', FileUploadMiddleware.checkAccessingUploadedFiles, (req, res) => {
     const file = FileManager.findByHash(req.params.hash as string)
 
     if (file == null) {
@@ -41,7 +41,7 @@ app.use(fileUpload({
     tempFileDir: config.data_path + '/upload_cache',
     abortOnLimit: true,
 }))
-app.post('/upload_file',Middleware.Post_upload_file, async (req, res) => {
+app.post('/upload_file', FileUploadMiddleware.checkUploadedFile, async (req, res) => {
     const file = req.files?.file as fileUpload.UploadedFile
     const hash = (await FileManager.uploadFile(req.body.file_name, await fs.readFile(file.tempFilePath), req.body.chat_id)).getHash()
 
