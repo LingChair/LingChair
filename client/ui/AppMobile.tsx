@@ -74,6 +74,8 @@ export default function AppMobile() {
 
     const [currentChatId, setCurrentChatId] = React.useState('')
 
+    const [sharedFavouriteChats, setSharedFavouriteChats] = React.useState<Chat[]>([])
+
     const chatFragmentDialogRef = React.useRef<Dialog>(null)
     React.useEffect(() => {
         const shadow = chatFragmentDialogRef.current!.shadowRoot as ShadowRoot
@@ -162,6 +164,7 @@ export default function AppMobile() {
             <ChatInfoDialog
                 chatInfoDialogRef={chatInfoDialogRef as any}
                 openUserInfoDialog={openUserInfoDialog}
+                sharedFavouriteChats={sharedFavouriteChats}
                 openChatFragment={(id) => {
                     setCurrentChatId(id)
                     setIsShowChatFragment(true)
@@ -226,6 +229,7 @@ export default function AppMobile() {
                     // 對話列表
                     <ContactsList
                         openChatInfoDialog={openChatInfoDialog}
+                        setSharedFavouriteChats={setSharedFavouriteChats}
                         addContactDialogRef={addContactDialogRef as any}
                         createGroupDialogRef={createGroupDialogRef as any}
                         display={navigationItemSelected == "Contacts"} />

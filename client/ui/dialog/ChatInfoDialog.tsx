@@ -9,17 +9,19 @@ import { checkApiSuccessOrSncakbar } from "../snackbar.ts"
 import User from "../../api/client_data/User.ts"
 import getUrlForFileByHash from "../../getUrlForFileByHash.ts"
 import openImageViewer from "../openImageViewer.ts"
+import EventBus from "../../EventBus.ts"
 
 interface Args extends React.HTMLAttributes<HTMLElement> {
     chat: Chat
     openChatFragment: (id: string) => void
     chatInfoDialogRef: React.MutableRefObject<Dialog>
     openUserInfoDialog: (user: User | string) => void
+    sharedFavouriteChats: Chat[]
 }
 
-export default function ChatInfoDialog({ chat, chatInfoDialogRef, openChatFragment, openUserInfoDialog }: Args) {
+export default function ChatInfoDialog({ chat, chatInfoDialogRef, openChatFragment, openUserInfoDialog, sharedFavouriteChats }: Args) {
     const [chatInfo, setChatInfo] = React.useState(null as unknown as Chat)
-    const isMySelf = Client.myUserProfile?.id == chatInfo?.user_a_id && Client.myUserProfile?.id == chatInfo?.user_b_id
+    const [favourited, setIsFavourited] = React.useState(false)
 
     useAsyncEffect(async () => {
         if (chat == null) return
@@ -29,8 +31,11 @@ export default function ChatInfoDialog({ chat, chatInfoDialogRef, openChatFragme
         })
         if (re.code != 200)
             return checkApiSuccessOrSncakbar(re, '获取对话信息失败')
-        setChatInfo(re.data!.chat_info as Chat)
-    })
+
+        const info = re.data as Chat
+        setChatInfo(info)
+        setIsFavourited(sharedFavouriteChats.indexOf(info) != -1)
+    }, [chat, sharedFavouriteChats])
     const avatarUrl = getUrlForFileByHash(chat?.avatar_file_hash as string)
 
     return (
@@ -66,6 +71,17 @@ export default function ChatInfoDialog({ chat, chatInfoDialogRef, openChatFragme
                         openUserInfoDialog(re.data!.user_id as string)
                     }}>用户详情</mdui-list-item>
                 }
+                <mdui-list-item icon={favourited ? "favorite_border" : "favorite"} rounded onClick={async () => {
+                    const re = await Client.invoke(favourited ? "User.removeContacts" : "User.addContacts", {
+                        token: data.access_token,
+                        targets: [
+                            chat.id
+                        ],
+                    })
+                    if (re.code != 200)
+                        checkApiSuccessOrSncakbar(re, favourited ? "取消收藏失败" : "收藏失败")
+                    EventBus.emit('ContactsList.updateContacts')
+                }}>{favourited ? '取消收藏' : '收藏对话'}</mdui-list-item>
                 <mdui-list-item icon="chat" rounded onClick={() => {
                     chatInfoDialogRef.current!.open = false
                     openChatFragment(chat.id)

@@ -13,6 +13,7 @@ interface Args extends React.HTMLAttributes<HTMLElement> {
     openChatInfoDialog: (chat: Chat) => void
     addContactDialogRef: React.MutableRefObject<Dialog>
     createGroupDialogRef: React.MutableRefObject<Dialog>
+    setSharedFavouriteChats: React.Dispatch<React.SetStateAction<Chat[]>>
 }
 
 export default function ContactsList({
@@ -20,6 +21,7 @@ export default function ContactsList({
     openChatInfoDialog,
     addContactDialogRef,
     createGroupDialogRef,
+    setSharedFavouriteChats,
     ...props
 }: Args) {
     const searchRef = React.useRef<HTMLElement>(null)
@@ -40,7 +42,9 @@ export default function ContactsList({
             if (re.code != 200)
                 return checkApiSuccessOrSncakbar(re, "获取所有对话列表失败")
 
-            setContactsList(re.data!.contacts_list as Chat[])
+            const ls = re.data!.contacts_list as Chat[]
+            setContactsList(ls)
+            setSharedFavouriteChats(ls)
         }
         updateContacts()
         EventBus.on('ContactsList.updateContacts', () => updateContacts())

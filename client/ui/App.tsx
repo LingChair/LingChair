@@ -77,6 +77,8 @@ export default function App() {
 
     const [currentChatId, setCurrentChatId] = React.useState('')
 
+    const [sharedFavouriteChats, setSharedFavouriteChats] = React.useState<Chat[]>([])
+
     useAsyncEffect(async () => {
         const split = Split(['#SideBar', '#ChatFragment'], {
             sizes: data.split_sizes ? data.split_sizes : [25, 75],
@@ -176,6 +178,7 @@ export default function App() {
                 chatInfoDialogRef={chatInfoDialogRef as any}
                 openChatFragment={openChatFragment}
                 openUserInfoDialog={openUserInfoDialog}
+                sharedFavouriteChats={sharedFavouriteChats}
                 chat={chatInfo} />
 
             <MyProfileDialog
@@ -218,6 +221,7 @@ export default function App() {
                     // 對話列表
                     <ContactsList
                         openChatInfoDialog={openChatInfoDialog}
+                        setSharedFavouriteChats={setSharedFavouriteChats}
                         addContactDialogRef={addContactDialogRef as any}
                         createGroupDialogRef={createGroupDialogRef as any}
                         display={navigationItemSelected == "Contacts"} />
